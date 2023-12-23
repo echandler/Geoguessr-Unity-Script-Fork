@@ -5,3 +5,5 @@ I'm trying to contact the original developer and would like them to review the c
 code on [greasyfork.org](https://greasyfork.org/en/scripts/436813-geoguessr-unity-script).
 
 [Online instructions and features created by original developer.](https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing)
+
+There is bug that causes the satellite map to display the wrong location sometimes. If it's a real problem, and not just an annoyance, I'll try to fix it.
