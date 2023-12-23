@@ -1,28 +1,30 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.1
+// @version       7.0.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
 // @license       MIT
 // @namespace     https://greasyfork.org/users/838374
 // @grant         none
+// @downloadURL   https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.user.js 
+// @updateURL     https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.meta.js 
 // ==/UserScript==
- 
+
 /**
  * Custom your YouTube Search here!
  * Replace " Tour Visit" with any keyword,
  * e.g. "Drone", to customize YouTube mode
  * search results.
  */
- 
+
 let customWord = " Tour Visit";
- 
+
 /**
  * Custom your minimap here!
  */
- 
+
 /**
  * 1: replace "roadmap" in the customMode field with any of the options below:
  * "roadmap" displays the default road map view. This is the default map type.
@@ -30,17 +32,17 @@ let customWord = " Tour Visit";
  * "hybrid" displays a mixture of normal and satellite views.
  * "terrain" displays a physical map based on terrain information.
  */
- 
+
 let customMode = "roadmap";
- 
+
 /**
  * 2: Go to https://mapstyle.withgoogle.com/ first click "No thanks, take me to the old style wizard"
  * then click "MORE OPTIONS" to hide or reveal certain features.
  * When you are done, click "FINISH", then "COPY JSON", and replace my settings in custom with your settings below.
  */
- 
+
 let custom =
- 
+
     [
         {
             "featureType": "administrative",
@@ -84,26 +86,26 @@ let custom =
             ]
         }
     ]
- 
+
 /**
  * End of Minimap customization instruction section
  */
- 
+
 /**
  * Overlay anything on the minimap here!
  * 1. overlay an GeoJSON object
  * 2. overlay a custom image
  */
- 
+
 /**
  * Overlay an GeoJSON object:
  */
- 
+
 // change the GeoJson display style.
 // strokeOpacity, strokeWeight, fillOpacity takes a value between 0 and 1.
 // strokeColor and fillColor supports Hexadecimal color (#00FF00 is green)
 // If clickable is set to true, you would not be able to make a guess within the shape
- 
+
 let GEOJSON_STYLE =
     {
         strokeColor: "black",
@@ -113,23 +115,23 @@ let GEOJSON_STYLE =
         fillOpacity: 0,
         clickable: false,
     }
- 
+
 // replace the URL with your desired link
 // For example, search "Germany GeoJson" on Github, find this link (https://github.com/isellsoap/deutschlandGeoJSON/blob/main/4_kreise/4_niedrig.geo.json)
 // Then click "Download" to get the raw.githubusercontent.com link (https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/4_kreise/4_niedrig.geo.json)
 // and replace the URL below with that URL.
 // State zipcode: see this site https://github.com/OpenDataDE/State-zip-code-GeoJSON
- 
+
 let YOUR_URL = "https://raw.githubusercontent.com/severinlandolt/map-switzerland/main/02%20GeoJSON/CH_Kantonsgrenzen_100_geo.json"
- 
+
 // set it to true to add your custom GeoJSON by copy it to the code below (this is for
- 
+
 let GeoJsonCustomUser = false
- 
+
 // replace with your custom GeoJson, go to https://geojson.io/ to customize it then copy the Json to here
- 
+
 let CUSTOM_GEOJSON =
- 
+
     {
         "type": "FeatureCollection",
         "features": [
@@ -238,21 +240,21 @@ let CUSTOM_GEOJSON =
             }
         ]
     }
- 
+
 /**
  * Overlay a custom image:
  */
- 
+
 // set it to true to add your image overlay
- 
-let OverlayCustom = false
- 
+
+let OverlayCustom = false; 
+
 // replace the URL with your desired link
- 
+
 let OVERLAY_URL = "https://www.battleface.com/blog/wp-content/uploads/2020/10/patreon-profile-tom-geowizard.jpg"
- 
+
 // set the bounds for the image - latitude (North and South), longitude (North and South)
- 
+
 let OVERLAY_BOUNDS =
     {
         north: 53,
@@ -260,21 +262,21 @@ let OVERLAY_BOUNDS =
         south: 51,
         east: 1,
     };
- 
+
 // change the image overlay display style.
- 
+
 let OVERLAY_STYLE =
     {
         fillOpacity: 0.2,
         clickable: false,
     }
- 
+
 /**
  * End of Minimap Overlay instruction section
  */
- 
+
 // API Keys
- 
+
 var MS_API_KEY = "Ap2DwDDitzY7jJuYeIJF6YyfqDkYt-QxIBjeQ6SDEJelSfb6ghAVb-V4I-G3om-s";
 var YANDEX_API_KEY = "b704b5a9-3d67-4d19-b702-ec7807cecfc6";
 var KAKAO_API_KEY = "cbacbe41e3a223d794f321de4f3e247b";
@@ -291,16 +293,16 @@ var MAPILLARY_API_KEY_LIST =
      "MLY|4618251611628426|0cef71d6ec8b997a5ec06ecdeabf11ec",
      "MLY|4096846270415982|fa2ce29641503e6ef665f17459633570",
      "MLY|4231415756962414|fe353880fd246e8a4a6ae32152f7dbb0",]
- 
+
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
- 
-console.log("Geoguessr Unity Script v7.0.1 by Jupaoqq");
- 
- 
+
+console.log("Geoguessr Unity Script v7.0.3 by Jupaoqq");
+
+
 // Store each player instance
- 
-let YandexPlayer, KakaoPlayer, GooglePlayer, MapillaryPlayer, MSStreetPlayer, MapboxPlayer, MapboxMarker, MapyPlayer;
+
+let YandexPlayer, KakaoPlayer, GooglePlayer, MapillaryPlayer, MSStreetPlayer, MapboxPlayer, MapboxMapboxPlayerMarker, MapyPlayer;
 let YANDEX_INJECTED = false;
 let BAIDU_INJECTED = false;
 let KAKAO_INJECTED = false;
@@ -309,16 +311,16 @@ let MS_INJECTED = false;
 let MAPBOX_INJECTED = false;
 let MAPY_INJECTED = false;
 let rainLayer;
- 
+
 // Game mode detection
- 
+
 let isBattleRoyale = false;
 let isDuel = false;
 let isBullseye = false;
 let isLiveChallenge = false;
- 
+
 // Player detection and coordinate conversion
- 
+
 let nextPlayer = "Google";
 let nextPlayer_save = "Google";
 let global_lat = 0;
@@ -329,20 +331,20 @@ let global_BDID, global_BDAh, global_BDBh;
 let yId, yTime, yEnd, iId;
 let global_heading = null;
 let global_pitch = null;
- 
+
 let krCoordinates = [38.75292321084364, 124.2804539232574, 33.18509676203202, 129.597381999198]
 let global_radi = 100
- 
+
 // Callback variables
- 
+
 let eventListenerAttached = false;
 let povListenerAttached = false;
 let playerLoaded = false;
 let teleportLoaded = false;
 let syncLoaded = false;
- 
+
 // Minimize Yandex API use
- 
+
 let yandex_map = false;
 let Kakao_map = false;
 let Wikipedia_map = false;
@@ -350,40 +352,40 @@ let Minecraft_map = false;
 let Youtube_map = false;
 let bing_map = false;
 let Mapy_map = false;
- 
+
 // Mapillary Image Key
- 
+
 let mmKey = 0;
- 
+
 // Handle Yandex compass
- 
+
 let COMPASS = null;
- 
+
 // Handle undo
- 
+
 let locHistory = [];
 let defaultPanoIdChange = true;
- 
+
 // Round check
- 
+
 let ROUND = 0;
 let CURRENT_ROUND_DATA = null;
- 
+
 let switch_call = true;
 let one_reset = false;
 // let cnt = 0;
- 
+
 var isFirefox = typeof InstallTrigger !== 'undefined';
- 
+
 let linksList = []
 let fire1 = true;
 let allowDetect = false;
 let planetType = "None";
- 
+
 // Satellite Map Radius (in Meters)
 let ms_radius = 15000;
 let sat_choice = false;
- 
+
 // Create the Maps, but not reload API
 let partialCreateYandex = false;
 let partialCreateKakao = false;
@@ -391,12 +393,12 @@ let partialCreateMapillary = false;
 let partialCreateMS = false;
 let partialCreateMapbox = false;
 let partialCreateMapy = false;
- 
+
 // let NEW_ROUND_LOADED = false;
- 
+
 // Geoguessr Canvas String Names
- 
-let GENERAL_LAYOUT = ".game-layout__canvas";
+
+let GENERAL_LAYOUT = `[class*="game_canvas"]`;//`[aria-label="Street View"] > canvas`;//".game-layout__canvas";
 let GENERAL_CANVAS = ".game-layout__panorama-canvas";
 let BR_CANVAS = ".br-game-layout__panorama-canvas";
 let BR_WRAPPER = ".br-game-layout__panorama-wrapper";
@@ -411,58 +413,58 @@ let LIVE_CANVAS = ".game-panorama_panorama__IuPsO";
 let LIVE_CANVAS2 = ".game-panorama_panoramaCanvas__HbDig";
 let DUELS_POPUP = ".overlay_overlay__AR02x";
 let BR_POPUP = ".popup__content";
- 
+
 let BR_LOAD_KAKAO = false;
 let BR_LOAD_YANDEX = false;
 let BR_LOAD_MS = false;
 let BR_LOAD_MP = false;
 let BR_LOAD_MAPILLARY = false;
 let BR_LOAD_MAPY = false;
- 
+
 let ms_sat_map = false;
 let rtded = false;
 let NM = false;
 let NP = false;
 let NZ = false;
- 
+
 let initBing = false;
- 
+
 let menuLocCounter = 0;
 let wikiUrl = "";
 let bullseyeMapillary = false;
 let randomPlanets = false;
- 
+
 let corsString = "https://nameless-bastion-28139.herokuapp.com/"
 // Additional: https://cors.eu.org/
 let carteCity = ""
- 
+
 let youtubeIndex = -1;
 let youtubeList = [];
- 
+
 let GAME_CANVAS = "";
 let DUEL_CANVAS = "";
- 
+
 let skySpecial = false;
 let soilSpecial = false;
 let skewedSpecial = false;
 let zoomSpecial = false;
 let randomSpecial = false;
 let nmpzSpecial = false;
- 
+
 let mosaicPre = false;
 let restrictMovement = false;
- 
-var Weather = true;
+
+var Weather = false;
 var Dimension = true;
 var mapSty = true;
 var Building = false;
- 
+
 window.toggleSatellite = (e) => {
     if (e.checked)
     {
         sat_choice = true;
         document.getElementById('tgs').style.display = "";
- 
+
     }
     else
     {
@@ -470,53 +472,53 @@ window.toggleSatellite = (e) => {
         document.getElementById('tgs').style.display = "none";
     }
 }
- 
+
 window.toggleWeather = (e) => {
     Weather = e.checked ? true : false;
 }
- 
+
 window.toggleBuildings = (e) => {
     Building = e.checked ? true : false;
 }
- 
+
 window.toggle3D = (e) => {
     Dimension = e.checked ? true : false;
 }
- 
+
 window.toggleSky = (e) => {
     skySpecial = e.checked ? true : false;
 }
- 
+
 window.toggleSoil = (e) => {
     soilSpecial = e.checked ? true : false;
 }
- 
+
 window.toggleSkewed = (e) => {
     skewedSpecial = e.checked ? true : false;
 }
- 
+
 window.toggleMaxZoom = (e) => {
     zoomSpecial = e.checked ? true : false;
 }
- 
+
 window.toggleRdn = (e) => {
     randomSpecial = e.checked ? true : false;
 }
- 
+
 window.toggleNMPZSpecial = (e) => {
     nmpzSpecial = e.checked ? true : false;
 }
- 
+
 window.toggleMosaic = (e) => {
     mosaicPre = e.checked ? true : false;
 }
- 
+
 window.toggleRestrictMovement = (e) => {
     restrictMovement = e.checked ? true : false;
 }
- 
+
 let guiEnabled = true;
- 
+
 const guiHTML = `
 <div id="Unity Start Menu" style="margin-top: 20px;margin-bottom: 20px;">
 <div class="section_sectionHeader__WQ7Xz section_sizeMedium__yPqLK"><div class="bars_root___G89E bars_center__vAqnw"><div class="bars_before__xAA7R bars_lengthLong__XyWLx"></div><span class="bars_content__UVGlL"><h3>Satellite Mode (Unity Script)</h3></span><div class="bars_after__Z1Rxt bars_lengthLong__XyWLx"></div></div></div>
@@ -584,7 +586,7 @@ const guiHTML = `
 </div>
 </div>
 `
- 
+
 const checkInsertGui = () => {
     if ((document.querySelector('.copy-link_root__dBcXL') || document.querySelector('.radio-box_root__ka_9S')) && document.getElementById('toggleSky') === null && document.querySelector('.section_sectionMedium__yXgE6')) {
         document.querySelector('.section_sectionMedium__yXgE6').insertAdjacentHTML('beforeend', guiHTML);
@@ -631,10 +633,10 @@ const checkInsertGui = () => {
         {
             document.getElementById('toggleRestrictMovement').checked = true;
         }
- 
+
     }
 }
- 
+
 let observerNew = new MutationObserver((mutations) => {
     if (guiEnabled) {
         checkInsertGui();
@@ -651,14 +653,14 @@ let observerNew = new MutationObserver((mutations) => {
         }
     }
 });
- 
+
 observerNew.observe(document.body, {
     characterDataOldValue: false,
     subtree: true,
     childList: true,
     characterData: false
 });
- 
+
 function sleep(milliseconds) {
     var start = new Date().getTime();
     for (var i = 0; i < 1e7; i++) {
@@ -667,27 +669,27 @@ function sleep(milliseconds) {
         }
     }
 }
- 
+
 // window.addEventListener('popstate', function(event) {
 //     var photo = document.getElementById("sat_map");
 //     console.log(photo);
 //     document.body.appendChild(photo);
 // }, false);
- 
- 
- 
+
+
+
 /**
  * Helper Functions
  */
- 
+
 // Highlight API Load Message
- 
+
 function myHighlight(...args) {
     console.log(`%c${[...args]}`, "color: dodgerblue; font-size: 24px;");
 }
- 
+
 // Hex to number conversion for Baidu coordinate conversion
- 
+
 function hex2a(hexx) {
     var hex = hexx.toString();
     var str = '';
@@ -697,50 +699,50 @@ function hex2a(hexx) {
     }
     return str;
 }
- 
+
 // Coordinate computation given heading, distance and current coordinates for teleport
- 
+
 function FindPointAtDistanceFrom(lat, lng, initialBearingRadians, distanceKilometres) {
     const radiusEarthKilometres = 6371.01;
     var distRatio = distanceKilometres / radiusEarthKilometres;
     var distRatioSine = Math.sin(distRatio);
     var distRatioCosine = Math.cos(distRatio);
- 
+
     var startLatRad = DegreesToRadians(lat);
     var startLonRad = DegreesToRadians(lng);
- 
+
     var startLatCos = Math.cos(startLatRad);
     var startLatSin = Math.sin(startLatRad);
- 
+
     var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(initialBearingRadians)));
- 
+
     var endLonRads = startLonRad
     + Math.atan2(
         Math.sin(initialBearingRadians) * distRatioSine * startLatCos,
         distRatioCosine - startLatSin * Math.sin(endLatRads));
- 
+
     return { lat: RadiansToDegrees(endLatRads), lng: RadiansToDegrees(endLonRads) };
 }
- 
+
 function DegreesToRadians(degrees) {
     const degToRadFactor = Math.PI / 180;
     return degrees * degToRadFactor;
 }
- 
+
 function RadiansToDegrees(radians) {
     const radToDegFactor = 180 / Math.PI;
     return radians * radToDegFactor;
 }
- 
+
 function toRadians(degrees) {
     return degrees * Math.PI / 180;
 };
- 
+
 // Converts from radians to degrees.
 function toDegrees(radians) {
     return radians * 180 / Math.PI;
 }
- 
+
 function bearing(start_latitude, start_longitude, stop_latitude, stop_longitude){
     let y = Math.sin(stop_longitude-start_longitude) * Math.cos(stop_latitude);
     let x = Math.cos(start_latitude)*Math.sin(stop_latitude) -
@@ -748,40 +750,40 @@ function bearing(start_latitude, start_longitude, stop_latitude, stop_longitude)
     let brng = Math.atan2(y, x) * 180 / Math.PI;
     return brng
 }
- 
+
 // Check if two floating point numbers are really really really really close to each other (to 10 decimal points)
 function almostEqual (a, b) {
     return a.toFixed(10) === b.toFixed(10)
 }
- 
+
 function almostEqual2 (a, b) {
     return a.toFixed(3) === b.toFixed(3)
 }
- 
+
 function moveFrom(coords, angle, distance){
     const R_EARTH = 6378.137;
     const M = (1 / ((2 * Math.PI / 360) * R_EARTH)) / 1000;
     let radianAngle = -angle * Math.PI / 180;
     let x = 0 + (distance * Math.cos(radianAngle));
     let y = 0 + (distance * Math.sin(radianAngle));
- 
+
     let newLat = coords.lat + (y * M);
     let newLng = coords.lng + (x * M) / Math.cos(coords.lat * (Math.PI / 180));
     return { lat: newLat, lng: newLng };
 }
- 
+
 function getBBox(coordinates, meters){
     let SW = moveFrom(coordinates, 135, meters);
     let NE = moveFrom(coordinates, 315, meters);
     return `${SW.lng},${SW.lat},${NE.lng},${NE.lat}`;
 }
- 
+
 // function getBBox2(coordinates, meters){
 //     let SW = moveFrom(coordinates, 135, meters * 1.44);
 //     let NE = moveFrom(coordinates, 315, meters * 1.44);
 //     return [NE.lat,SW.lng,SW.lat,NE.lng];
 // }
- 
+
 function getBBox2(coordinates, meters){
     let SW = moveFrom(coordinates, 135, meters * 1.44);
     let NE = moveFrom(coordinates, 315, meters * 1.44);
@@ -807,24 +809,24 @@ function getBBox2(coordinates, meters){
     }
     return [NE.lat,SW.lng,SW.lat,NE.lng];
 }
- 
+
 function distance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295; // Math.PI / 180
     var c = Math.cos;
     var a = 0.5 - c((lat2 - lat1) * p)/2 +
         c(lat1 * p) * c(lat2 * p) *
         (1 - c((lon2 - lon1) * p))/2;
- 
+
     return 1000 * 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
- 
+
 function convertMMSS(input) {
     var parts = input.split(':'),
         minutes = +parts[0],
         seconds = +parts[1];
     return (minutes * 60 + seconds).toFixed(3);
 }
- 
+
 function handleBtwRoundsClear()
 {
     youtubeIndex = -1;
@@ -838,10 +840,10 @@ function handleBtwRoundsClear()
     //         iframe.src = "";
     //     }
 }
- 
+
 // Script injection, extracted from extenssr:
 // https://gitlab.com/nonreviad/extenssr/-/blob/main/src/injected_scripts/maps_api_injecter.ts
- 
+
 function overrideOnLoad(googleScript, observer, overrider) {
     const oldOnload = googleScript.onload
     googleScript.onload = (event) => {
@@ -855,7 +857,7 @@ function overrideOnLoad(googleScript, observer, overrider) {
         }
     }
 }
- 
+
 function grabGoogleScript(mutations) {
     for (const mutation of mutations) {
         for (const newNode of mutation.addedNodes) {
@@ -868,7 +870,7 @@ function grabGoogleScript(mutations) {
     }
     return null
 }
- 
+
 function injecter(overrider) {
     if (document.documentElement)
     {
@@ -879,8 +881,8 @@ function injecter(overrider) {
         alert("Script didn't load, refresh to try loading the script");
     }
 }
- 
- 
+
+
 function injecterCallback(overrider)
 {
     new MutationObserver((mutations, observer) => {
@@ -890,7 +892,7 @@ function injecterCallback(overrider)
         }
     }).observe(document.documentElement, { childList: true, subtree: true })
 }
- 
+
 function magic_formula(boundary)
 {
     let area = Math.abs((boundary[0] - boundary[2]) * (boundary[1] - boundary[3]))
@@ -900,7 +902,7 @@ function magic_formula(boundary)
     if (dist < 250) dist = 250
     return dist
 }
- 
+
 function formatDist()
 {
     if (ms_radius > 999)
@@ -914,9 +916,9 @@ function formatDist()
         return parseFloat(d.toPrecision(3)).toString() + "m";
     }
 }
- 
+
 // Getter function for the button elements
- 
+
 function setButtons()
 {
     // console.log("set")
@@ -929,7 +931,7 @@ function setButtons()
             document.getElementById("Decrease Restrict Distance"), document.getElementById("Restrict Bounds Enable"),
             document.getElementById("Restrict Distance Reset")];
 }
- 
+
 function setButtons2()
 {
     // console.log("set")
@@ -945,9 +947,9 @@ function setButtons2()
             document.getElementById("Circus Menu"),
            ]
 }
- 
+
 // Store default position for the button elements
- 
+
 function btnPosFinal(element)
 {
     if (element.id !== "Show Buttons")
@@ -956,7 +958,7 @@ function btnPosFinal(element)
         {
             element.style.right = "0.5em";
         }
- 
+
         if (element.classList.contains("full") || element.classList.contains("extra-full"))
         {
             element.style.right = "4em";
@@ -999,7 +1001,7 @@ function btnPosFinal(element)
         {
             element.style.right = "6.5em";
         }
- 
+
         if (element.classList.contains("vertical-0"))
         {
             element.style.top = "6em";
@@ -1034,7 +1036,7 @@ function btnPosFinal(element)
         }
     }
 }
- 
+
 function handleDropdown()
 {
     function dropdownHelper1(nm, val)
@@ -1045,7 +1047,7 @@ function handleDropdown()
             hC++;
         }
     }
- 
+
     // let classN = ["preset-minimap", "overlay-minimap", "space-mainmap", "space-minimap"]
     let classN = ["preset-minimap", "overlay-minimap", "space-minimap", "space-2minimap", "space-3minimap"]
     for (let x of classN)
@@ -1059,7 +1061,7 @@ function handleDropdown()
     }
     allowDetect = true;
 }
- 
+
 function resetBtnPos()
 {
     let [
@@ -1074,9 +1076,9 @@ function resetBtnPos()
         ClockMenuBtn,
         SpecialMapMenuBtn
     ] = setButtons2();
- 
+
     // Manu Buttons
- 
+
     mainMenuBtn.style.top = "6em";
     YoutubeBtn.style.top = "6em";
     infoMenu.style.top = "9.5em";
@@ -1087,19 +1089,19 @@ function resetBtnPos()
     mosaicMenu.style.top = "24.5em";
     ClockMenuBtn.style.top = "27.5em";
     SpecialMapMenuBtn.style.top = "30.5em";
- 
+
     mainMenuBtn.style.right = "0.5em";
     mainMenuBtn.style.width = "3em";
- 
+
     for (let element of document.getElementsByClassName("unity-btn")){
         btnPosFinal(element);
     }
     handleDropdown();
- 
+
 }
- 
+
 // Adjust Buttons for different game modes
- 
+
 function AdjustBtnPos(top, right, arg)
 {
     if (arg)
@@ -1114,7 +1116,7 @@ function AdjustBtnPos(top, right, arg)
         // console.log(element.style.top)
     }
 }
- 
+
 function handleStyles()
 {
     let unityCSS =
@@ -1134,7 +1136,7 @@ function handleStyles()
     text-decoration: none;
     display: inline-block;
     font-size: 16px;`;
- 
+
     for (let element of document.getElementsByClassName("unity-btn")){
         if (element.id !== "Show Buttons")
         {
@@ -1154,7 +1156,7 @@ function handleStyles()
                     element.style.background = "#ff1493";
                 }
             }
- 
+
             if (element.classList.contains("menu-btn"))
             {
                 element.style.width = "3em";
@@ -1162,19 +1164,19 @@ function handleStyles()
                 //                 element.style.borderStyle = "solid";
                 //                 element.style.borderWidth = "0.1px"
                 //                 element.style.borderColor = "black";
- 
+
             }
- 
+
             if (element.classList.contains("special-map-btn") && !element.classList.contains("full"))
             {
                 element.style.background = "#ff69b4";
             }
- 
+
             if (element.classList.contains("extra-height"))
             {
                 element.style.height = "4.5em";
             }
- 
+
             if (element.classList.contains("extra-full"))
             {
                 element.style.width = "22.75em";
@@ -1202,7 +1204,7 @@ function handleStyles()
             btnPosFinal(element);
         }
     }
- 
+
     let dict = {
         'Info Menu': ["url(https://www.svgrepo.com/show/299161/big-data.svg)", "#ff9999"],
         'Teleport Menu': ["url(https://www.svgrepo.com/show/12767/car.svg)", "#ffcba4"],
@@ -1213,25 +1215,28 @@ function handleStyles()
         'Space Menu Button': ["url(https://www.svgrepo.com/show/120980/saturn.svg)", "#e0ffff"],
         'Circus Menu': ["url(https://www.svgrepo.com/show/296852/circus.svg)", "#ff99c2"],
     };
- 
+
     for (let element of document.getElementsByClassName("menu-btn"))
     {
         element.style.backgroundImage = dict[element.id][0];
         element.style.backgroundColor = dict[element.id][1];
         element.style.backgroundRepeat = "no-repeat";
         element.style.backgroundOrigin = "content-box";
+        element.style.backgroundSize = "50%";
+        element.style.backgroundPositionX = "50%";
+        element.style.backgroundPositionY = "50%";
         element.style.visibility = "";
     }
- 
+
     handleDropdown();
 }
- 
+
 /**
  * Creates Unity buttons
  *
  * @returns Promise
  */
- 
+
 function hideOtherBtn()
 {
     for (let element of document.getElementsByClassName("unity-btn")){
@@ -1249,7 +1254,7 @@ function hideOtherBtn()
         }
     }
 }
- 
+
 function switchBtn(arg)
 {
     for (let element of document.getElementsByClassName("unity-btn")){
@@ -1267,7 +1272,7 @@ function switchBtn(arg)
         }
     }
 }
- 
+
 function getVar(argm)
 {
     if (argm == "Weather")
@@ -1291,7 +1296,7 @@ function getVar(argm)
         return false;
     }
 }
- 
+
 function setVar(argm)
 {
     if (argm == "Weather")
@@ -1311,7 +1316,7 @@ function setVar(argm)
         mapSty = !mapSty;
     }
 }
- 
+
 function handleSatColor(cond1, cond2)
 {
     let sC = document.getElementById("Satellite Type Button");
@@ -1355,7 +1360,7 @@ function handleSatColor(cond1, cond2)
         }
     }
 }
- 
+
 function enterChaosMode(heading)
 {
     if (heading === -999)
@@ -1381,7 +1386,7 @@ function enterChaosMode(heading)
             {
                 hdn = (GooglePlayer.getPhotographerPov().heading + 90) % 360;
             }
- 
+
             if (randomSpecial)
             {
                 pch = Math.random() * 180 - 90;
@@ -1410,16 +1415,16 @@ function enterChaosMode(heading)
         GooglePlayer.setZoom(zmn);
     }, 300);
 }
- 
- 
- 
+
+
+
 function UnityInitiate() {
     const google = window.google;
     let curPosition;
     let kakao_enabled = true;
- 
+
     ZoomControls();
- 
+
     function svCheck(data, status) {
         if (status === 'OK') {
             // console.log("STATUS OK");
@@ -1469,7 +1474,7 @@ function UnityInitiate() {
             teleportMain.innerHTML = "Teleport: " + teleportMain.distance + " m";
         }
     }
- 
+
     google.maps.Map = class extends google.maps.Map {
         constructor(...args) {
             super(...args);
@@ -1488,10 +1493,10 @@ function UnityInitiate() {
                 let customOverlay = new google.maps.GroundOverlay(OVERLAY_URL, OVERLAY_BOUNDS, OVERLAY_STYLE);
                 customOverlay.setMap(this);
             }
- 
+
             for (let mapDiv of document.getElementsByClassName("preset-minimap")){
                 google.maps.event.addDomListener(mapDiv, "click", () => {
- 
+
                     MinimapBtn.current = mapDiv.id;
                     if (mapDiv.id == "Hybrid")
                     {
@@ -1540,7 +1545,7 @@ function UnityInitiate() {
                     }
                 });
             }
- 
+
             for (let mapDiv of document.getElementsByClassName("overlay-minimap")){
                 google.maps.event.addDomListener(mapDiv, "click", () => {
                     OverlayBtn.current = mapDiv.id;
@@ -1589,12 +1594,12 @@ function UnityInitiate() {
                             this.overlayMapTypes.clear();
                             const coverageLayer = new google.maps.ImageMapType({
                                 getTileUrl ({ x, y }, z) {
- 
+
                                     // Omits photospheres
                                     // return `https://mts1.googleapis.com/vt?hl=en-US&lyrs=svv|cb_client:apiv3&style=5,8&x=${x}&y=${y}&z=${z}`
- 
+
                                     // Omits unofficial and trekker, but also half of mongolia
- 
+
                                     if (mapDiv.id == "Official")
                                     {
                                         return `https://mts1.googleapis.com/vt?hl=en-US&lyrs=svv|cb_client:app&style=5,8&x=${x}&y=${y}&z=${z}`
@@ -1620,7 +1625,7 @@ function UnityInitiate() {
                                         return `https://tile.thunderforest.com/spinal-map/${z}/${x}/${y}.png?apikey=1360c6d2440c4202bf725238d1b9c761`
                                     }
                                     // return `https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i${z}!2i${x}!3i${y}!4i256!2m8!1e2!2ssvv!4m2!1scb_client!2sapp!4m2!1scc!2s*211m3*211e3*212b1*213e2*211m3*211e2*212b1*213e2!3m3!3sUS!12m1!1e68!4e0`
- 
+
                                     // Includes everything
                                     else if (mapDiv.id == "Coverage")
                                     {
@@ -1631,13 +1636,13 @@ function UnityInitiate() {
                                 tileSize: new google.maps.Size(256, 256),
                             })
                             this.overlayMapTypes.push(coverageLayer);
- 
+
                             //                             let other = "Official";
                             //                             if (mapDiv.id == "Official")
                             //                             {
                             //                                 other = "Coverage";
                             //                             }
- 
+
                             for (let element of document.getElementsByClassName("overlay-minimap")){
                                 if (["Clear", "City Lights", "Watercolor", "Toner", "Fire"].includes(element.id))
                                 {
@@ -1677,16 +1682,16 @@ function UnityInitiate() {
                                         element.style.background = "red";
                                     }
                                 }
- 
+
                             }
                         }
                     }
                 });
             }
- 
- 
- 
- 
+
+
+
+
             for (let spMini of document.getElementsByClassName("spaceMM")) {
                 google.maps.event.addDomListener(spMini, "click", () => {
                     OverlayBtn.current = spMini.id;
@@ -1730,9 +1735,9 @@ function UnityInitiate() {
                             maxZoom: 20,
                             tileSize: new google.maps.Size(256, 256),
                         })
- 
+
                         this.overlayMapTypes.push(coverageLayer);
- 
+
                         if (spMini.id == ("Mars (Labels)"))
                         {
                             const coverageLayer2 = new google.maps.ImageMapType({
@@ -1757,23 +1762,23 @@ function UnityInitiate() {
                     }
                 });
             }
- 
- 
+
+
         }
- 
+
     }
- 
+
     const svService = new google.maps.StreetViewService();
     google.maps.StreetViewPanorama = class extends google.maps.StreetViewPanorama {
         constructor(...args) {
             super(...args);
             GooglePlayer = this;
- 
+
             const isGamePage = () => location.pathname.startsWith("/challenge/") || location.pathname.startsWith("/results/") ||
                   location.pathname.startsWith("/game/")|| location.pathname.startsWith("/battle-royale/") ||
                   location.pathname.startsWith("/duels/") || location.pathname.startsWith("/team-duels/") || location.pathname.startsWith("/bullseye/")
             || location.pathname.startsWith("/live-challenge/");
- 
+
             this.addListener('position_changed', () => {
                 // Maybe this could be used to update the position in the other players
                 // so that they are always in sync
@@ -1784,14 +1789,14 @@ function UnityInitiate() {
                     const lat = this.getPosition().lat();
                     const lng = this.getPosition().lng();
                     const { heading, pitch } = this.getPov();
- 
+
                     if (skySpecial || soilSpecial || skewedSpecial || zoomSpecial || randomSpecial)
                     {
                         enterChaosMode(heading);
                     }
- 
+
                     curPosition = { lat, lng, heading };
- 
+
                     if (switchCovergeButton.useGoogle)
                     {
                         switchCovergeButton.lng = lng;
@@ -1811,8 +1816,8 @@ function UnityInitiate() {
                     }
                     //                     switchCovergeButton.useGoogle = true;
                     teleportMain.google = true;
- 
- 
+
+
                     if (restrictMovement)
                     {
                         let dist = distance(lat, lng , global_lat, global_lng);
@@ -1859,13 +1864,13 @@ function UnityInitiate() {
             });
         }
     };
- 
+
     var mainMenuBtn = document.createElement("Button");
     mainMenuBtn.classList.add("unity-btn", "main-btn");
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = true;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.1</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.3EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1887,37 +1892,37 @@ function UnityInitiate() {
             mainMenuBtn.hide = true;
         }
     });
- 
- 
+
+
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.1</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.3</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
     //     });
- 
+
     var HelpBtn = document.createElement("Button");
     HelpBtn.classList.add("unity-btn", "info-btn", "half", "horizontal-1", "vertical-3");
     HelpBtn.id = "Help Button";
     HelpBtn.innerHTML = "Help & Credits";
- 
+
     document.body.appendChild(HelpBtn);
     HelpBtn.addEventListener("click", () => {
         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
     });
- 
+
     var UpdateBtn = document.createElement("Button");
     UpdateBtn.classList.add("unity-btn", "info-btn", "half", "horizontal-2", "vertical-3");
     UpdateBtn.id = "Update Button";
     UpdateBtn.innerHTML = "Check Update";
- 
+
     document.body.appendChild(UpdateBtn);
     UpdateBtn.addEventListener("click", () => {
         window.open('https://greasyfork.org/en/scripts/436813-geoguessr-unity-script');
     });
- 
+
     var menuResetBtn = document.createElement("Button");
     menuResetBtn.classList.add("unity-btn", "info-btn", "large", "vertical-4");
     menuResetBtn.id = "Menu Reset";
@@ -1927,7 +1932,7 @@ function UnityInitiate() {
         menuLocCounter = 0;
         btnAll();
     });
- 
+
     var menuUpBtn = document.createElement("Button");
     menuUpBtn.classList.add("unity-btn", "info-btn", "small", "horizontal-1", "vertical-4");
     menuUpBtn.id = "Menu Up";
@@ -1937,7 +1942,7 @@ function UnityInitiate() {
         AdjustBtnPos("-2em", "0em", false);
         menuLocCounter++;
     });
- 
+
     var menuDownBtn = document.createElement("Button");
     menuDownBtn.classList.add("unity-btn", "info-btn", "small", "horizontal-3", "vertical-4");
     menuDownBtn.id = "Menu down";
@@ -1947,7 +1952,7 @@ function UnityInitiate() {
         AdjustBtnPos("2em", "0em", false);
         menuLocCounter--;
     });
- 
+
     var infoMenu = document.createElement("Button");
     infoMenu.classList.add("unity-btn", "menu-btn");
     infoMenu.classList.add();
@@ -1971,11 +1976,11 @@ function UnityInitiate() {
             }
         }
     });
- 
+
     function handleCountries(locStr)
     {
         let locStr2 = "";
- 
+
         let hardCode = {"Finland": 3, "United Kingdom": 3, "France": 3, "Czech": 3, "Slovakia": 3};
         if (["Finland", "United Kingdom", "France", "Czech", "Slovakia"].some(v => locStr.includes(v)))
         {
@@ -2032,7 +2037,7 @@ function UnityInitiate() {
         {
             locStr2 = locStr;
         }
- 
+
         const toStrip = ["Região Geográfica Intermediária de", "Região Geográfica Imediata de", "Região Imediata de", "Região Metropolitana de",
                          "Voivodeship", "okres", "kraj", "Oblast", "Krai", "Urban Okrug", "Hromada", "Urban Hromada", "Raion", "Settlement",
                          "Metropolitan Municipality", "Municipality", "Municipal", "Administrative", "District", "Subdistrict", "Province", "Regional", "Council", "Township", "Department", "Local",
@@ -2041,17 +2046,17 @@ function UnityInitiate() {
         toStrip.forEach(x => {
             locStr2 = locStr2.replaceAll(x, '');
         });
- 
+
         if (!locStr2.includes("United States"))
         {
             locStr2 = locStr2.replaceAll("County", '');
         }
- 
+
         if (!locStr2.includes("Botswana"))
         {
             locStr2 = locStr2.replaceAll("Region", '');
         }
- 
+
         if (playYoutubeBtn.travel)
         {
             console.log("travel video")
@@ -2061,10 +2066,10 @@ function UnityInitiate() {
         {
             console.log("Any video")
         }
- 
+
         return locStr2;
     }
- 
+
     function moduleHandleYoutube()
     {
         // console.log(youtubeList);
@@ -2073,9 +2078,9 @@ function UnityInitiate() {
         {
             yId = youtubeList[youtubeIndex];
         }
- 
+
         let srcString = "https://www.youtube.com/embed/" + yId + "?&playlist=" + yId + "&autoplay=1&modestbranding=1&controls=0";
- 
+
         if (yTime !== "0")
         {
             srcString += "&start=" + yTime;
@@ -2091,7 +2096,7 @@ function UnityInitiate() {
         iframe.style.visibility = "";
         playYoutubeBtn.innerHTML = `Check | [${youtubeIndex + 1}]`;
     }
- 
+
     var youtubeResetBtn = document.createElement("Button");
     youtubeResetBtn.classList.add("unity-btn", "youtube-btn", "small", "horizontal-1", "vertical-0");
     youtubeResetBtn.id = "Youtube Reset";
@@ -2103,7 +2108,7 @@ function UnityInitiate() {
             moduleHandleYoutube();
         }
     });
- 
+
     var youtubeRandomBtn = document.createElement("Button");
     youtubeRandomBtn.classList.add("unity-btn", "youtube-btn", "small", "horizontal-sp", "vertical-0");
     youtubeRandomBtn.id = "Youtube Random";
@@ -2116,7 +2121,7 @@ function UnityInitiate() {
             moduleHandleYoutube();
         }
     });
- 
+
     var youtubeTravelBtn = document.createElement("Button");
     youtubeTravelBtn.classList.add("unity-btn", "youtube-btn", "small", "horizontal-3", "vertical-0");
     youtubeTravelBtn.id = "Youtube Travel";
@@ -2134,9 +2139,9 @@ function UnityInitiate() {
             youtubeTravelBtn.innerHTML = "<font size=2>Trip</font>";
         }
         playYoutubeBtn.innerHTML = "Check YouTube";
- 
+
     });
- 
+
     var playYoutubeBtn = document.createElement("Button");
     playYoutubeBtn.classList.add("unity-btn", "lgMinus", "youtube-btn", "vertical-0");
     playYoutubeBtn.id = "Youtube Button";
@@ -2147,7 +2152,7 @@ function UnityInitiate() {
         let iframe = document.getElementById("i_container");
         iframe.style.position = "absolute";
         iframe.allow = "autoplay";
- 
+
         if (!yEnd)
         {
             let url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&lat=${global_lat}&lon=${global_lng}`
@@ -2196,12 +2201,12 @@ function UnityInitiate() {
             moduleHandleYoutube();
         }
     });
- 
+
     // Teleport Module Buttons
     // Class: teleport-btn
     // Button: teleportMenu
     // Buttons: teleportForward, teleportReverse, teleportMain, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, TeleportArisBtn
- 
+
     function teleportModule(dir)
     {
         if (switchCovergeButton.init)
@@ -2234,27 +2239,27 @@ function UnityInitiate() {
             }
         }
     }
- 
+
     var teleportForward = document.createElement("Button");
     teleportForward.classList.add("unity-btn", "teleport-btn", "half", "horizontal-1", "vertical-1");
     teleportForward.id = "Teleport Forward";
     teleportForward.innerHTML = "↑ Forward";
     document.body.appendChild(teleportForward);
- 
+
     teleportForward.addEventListener("click", () => {
         teleportModule(true);
     });
- 
+
     var teleportReverse = document.createElement("Button");
     teleportReverse.classList.add("unity-btn", "teleport-btn", "half", "horizontal-2", "vertical-1");
     teleportReverse.id = "Teleport Reverse";
     teleportReverse.innerHTML = "↓ Reverse";
     document.body.appendChild(teleportReverse);
- 
+
     teleportReverse.addEventListener("click", () => {
         teleportModule(false);
     });
- 
+
     var teleportMain = document.createElement("Button");
     teleportMain.classList.add("unity-btn", "teleport-btn", "large", "vertical-2");
     teleportMain.teleType = "default";
@@ -2263,7 +2268,7 @@ function UnityInitiate() {
     teleportMain.google = true;
     teleportMain.innerHTML = "Teleport: 100m";
     document.body.appendChild(teleportMain);
- 
+
     var teleportMoreBtn = document.createElement("Button");
     teleportMoreBtn.classList.add("unity-btn", "teleport-btn", "small", "horizontal-3", "vertical-2");
     teleportMoreBtn.id = "plus"
@@ -2275,7 +2280,7 @@ function UnityInitiate() {
         }
         teleportMain.innerHTML = "Teleport: " + teleportMain.distance + " m";
     });
- 
+
     var teleportLessBtn = document.createElement("Button");
     teleportLessBtn.classList.add("unity-btn", "teleport-btn", "small", "horizontal-1", "vertical-2");
     teleportLessBtn.id = "minus"
@@ -2287,7 +2292,7 @@ function UnityInitiate() {
         }
         teleportMain.innerHTML = "Teleport: " + teleportMain.distance + " m";
     });
- 
+
     var teleportDistResetBtn = document.createElement("Button");
     teleportDistResetBtn.classList.add("unity-btn", "teleport-btn", "half", "horizontal-1", "vertical-3");
     teleportDistResetBtn.id = "reset"
@@ -2297,7 +2302,7 @@ function UnityInitiate() {
         teleportMain.distance = 100;
         teleportMain.innerHTML = "Teleport: " + teleportMain.distance + " m";
     });
- 
+
     var TeleportArisBtn = document.createElement("Button");
     TeleportArisBtn.classList.add("unity-btn", "teleport-btn", "half", "horizontal-2", "vertical-3");
     TeleportArisBtn.id = "Teleport Options Button";
@@ -2315,8 +2320,8 @@ function UnityInitiate() {
             TeleportArisBtn.innerHTML = "+ Unofficial";
         }
     });
- 
- 
+
+
     var RestrictBoundsBtn = document.createElement("Button");
     RestrictBoundsBtn.classList.add("unity-btn", "teleport-btn", "full", "horizontal-1", "vertical-4");
     RestrictBoundsBtn.id = "Restrict Bounds Main";
@@ -2325,14 +2330,14 @@ function UnityInitiate() {
     RestrictBoundsBtn.lng = 0;
     RestrictBoundsBtn.maxDist = 250;
     document.body.appendChild(RestrictBoundsBtn);
- 
- 
+
+
     var RestrictBoundsDistBtn = document.createElement("Button");
     RestrictBoundsDistBtn.classList.add("unity-btn", "teleport-btn", "large", "vertical-5");
     RestrictBoundsDistBtn.id = "Restrict Distance";
     RestrictBoundsDistBtn.innerHTML = "Limit: 250m";
     document.body.appendChild(RestrictBoundsDistBtn);
- 
+
     var RestrictMoreBtn = document.createElement("Button");
     RestrictMoreBtn.classList.add("unity-btn", "teleport-btn", "small", "horizontal-3", "vertical-5");
     RestrictMoreBtn.id = "Increase Restrict Distance";
@@ -2360,7 +2365,7 @@ function UnityInitiate() {
             RestrictBoundsDistBtn.innerHTML = "Limit: &#8734;";
         }
     });
- 
+
     var RestrictLessBtn = document.createElement("Button");
     RestrictLessBtn.classList.add("unity-btn", "teleport-btn", "small", "horizontal-1", "vertical-5");
     RestrictLessBtn.id = "Decrease Restrict Distance";
@@ -2388,7 +2393,7 @@ function UnityInitiate() {
             RestrictBoundsDistBtn.innerHTML = "Limit: &#8734;";
         }
     });
- 
+
     var RestrictBoundsEnableBtn = document.createElement("Button");
     RestrictBoundsEnableBtn.classList.add("unity-btn", "teleport-btn", "half", "horizontal-2", "vertical-6");
     RestrictBoundsEnableBtn.id = "Restrict Bounds Enable";
@@ -2408,7 +2413,7 @@ function UnityInitiate() {
             RestrictBoundsBtn.innerHTML = "No Escape Mode Enabled";
         }
     });
- 
+
     var RestrictResetBtn = document.createElement("Button");
     RestrictResetBtn.classList.add("unity-btn", "teleport-btn", "half", "horizontal-1", "vertical-6");
     RestrictResetBtn.id = "Restrict Distance Reset";
@@ -2418,11 +2423,11 @@ function UnityInitiate() {
         RestrictBoundsBtn.maxDist = 250;
         RestrictBoundsDistBtn.innerHTML = "Limit: " + RestrictBoundsBtn.maxDist + "m";
     });
- 
- 
- 
+
+
+
     // Switch Coverage Module
- 
+
     var switchCovergeButton = document.createElement("Button");
     switchCovergeButton.classList.add("unity-btn", "timemachine-btn", "full", "vertical-1");
     switchCovergeButton.sat = false;
@@ -2442,7 +2447,7 @@ function UnityInitiate() {
         let GOOGLE_MAPS_CANVAS4 = document.querySelector(BULLSEYE_CANVAS2);
         let GOOGLE_MAPS_CANVAS5 = document.querySelector(LIVE_CANVAS2);
         let duel = false;
- 
+
         let GOOGLE_MAPS_CANVAS = null;
         if (GOOGLE_MAPS_CANVAS1 !== null)
         {
@@ -2464,7 +2469,7 @@ function UnityInitiate() {
         {
             duel = true;
         }
- 
+
         let KAKAO_MAPS_CANVAS = document.getElementById("roadview");
         let YANDEX_MAPS_CANVAS = document.querySelector(".ymaps-2-1-79-panorama-screen");
         let MAPILLARY_MAPS_CANVAS = document.getElementById("mapillary-player")
@@ -2476,7 +2481,7 @@ function UnityInitiate() {
         if (switchCovergeButton.useGoogle == false) {
             if (duel)
             {
- 
+
                 if (nextPlayer == "Kakao")
                 {
                     KAKAO_MAPS_CANVAS.className = "inactive";
@@ -2557,7 +2562,7 @@ function UnityInitiate() {
             switchCovergeButton.useGoogle = true;
             teleportMain.google = true;
             switchCovergeButton.init = false;
- 
+
             console.log("use Google");
         }
         else {
@@ -2565,7 +2570,7 @@ function UnityInitiate() {
             //             {
             //                 MS_MAPS_CANVAS.style.visibility = "hidden";
             //             }
- 
+
             if (duel)
             {
                 document.getElementById("default_player").className = "inactive";
@@ -2609,7 +2614,7 @@ function UnityInitiate() {
                     // document.querySelector(".mapillary-canvas").style.;
                     // mapillary-canvas
                 }
- 
+
             }
             else
             {
@@ -2679,8 +2684,8 @@ function UnityInitiate() {
             }
         }
     });
- 
- 
+
+
     var timeMachineNewerBtn = document.createElement("Button");
     timeMachineNewerBtn.classList.add("unity-btn", "timemachine-btn", "small", "horizontal-3", "vertical-2");
     timeMachineNewerBtn.id = "plus year"
@@ -2694,9 +2699,9 @@ function UnityInitiate() {
             // console.log(timeMachineBtn.index)
         }
         GenBtnColor();
- 
+
     });
- 
+
     var timeMachineOlderBtn = document.createElement("Button");
     timeMachineOlderBtn.classList.add("unity-btn", "timemachine-btn", "small", "horizontal-1", "vertical-2");
     timeMachineOlderBtn.id = "minus year"
@@ -2711,7 +2716,7 @@ function UnityInitiate() {
         }
         GenBtnColor();
     });
- 
+
     function svCheck2(data, status) {
         let l = []
         if (status === 'OK') {
@@ -2719,7 +2724,7 @@ function UnityInitiate() {
             // console.log(data.time)
             for (const alt of data.time) {
                 let date = Object.values(alt).find((value) => value instanceof Date)
- 
+
                 l.push([alt.pano, date.toDateString()]);
             }
             // console.log(l);
@@ -2732,7 +2737,7 @@ function UnityInitiate() {
             // timeMachineBtn.innerHTML = "Default Date";
         }
     }
- 
+
     function waitPopulate()
     {
         // console.log(timeMachineBtn.list);
@@ -2746,7 +2751,7 @@ function UnityInitiate() {
             setTimeout(waitPopulate, 250);
         }
     }
- 
+
     var timeMachineBtn = document.createElement("Button");
     timeMachineBtn.classList.add("unity-btn", "timemachine-btn", "large", "vertical-2");
     timeMachineBtn.id = "Date Button";
@@ -2780,8 +2785,8 @@ function UnityInitiate() {
             waitPopulate();
         }
     });
- 
- 
+
+
     var timeMachineMenu = document.createElement("Button");
     timeMachineMenu.classList.add("unity-btn", "menu-btn");
     timeMachineMenu.id = "Time Machine Button";
@@ -2803,8 +2808,8 @@ function UnityInitiate() {
             }
         }
     });
- 
- 
+
+
     var teleportMenu = document.createElement("Button");
     teleportMenu.classList.add("unity-btn", "menu-btn");
     teleportMenu.id = "Teleport Menu";
@@ -2826,7 +2831,7 @@ function UnityInitiate() {
             }
         }
     });
- 
+
     // Satellite Module Buttons
     // Class: satelliteSwitchButton, satellite-menu
     // subclass 1: satellite-btn-type
@@ -2834,24 +2839,23 @@ function UnityInitiate() {
     // Buttons: satelliteRadius, satelliteType, satelliteStyle
     // satelliteDefault, satelliteNight, satelliteClassic, roadDefault, roadClassic
     // skyDefault, skyCurrent, skyLocal
- 
+
     var satelliteTypeBtn = document.createElement("Button");
     satelliteTypeBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-1", "vertical-2");
     satelliteTypeBtn.id = "Satellite Type Button";
     satelliteTypeBtn.innerHTML = "Map Style";
     satelliteTypeBtn.currentTime = "solarNoon";
     document.body.appendChild(satelliteTypeBtn);
- 
- 
+
+
     var satelliteStyleBtn = document.createElement("Button");
     satelliteStyleBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-2", "vertical-2");
     satelliteStyleBtn.id = "Satellite Style Button";
     satelliteStyleBtn.innerHTML = "Time";
- 
+
     document.body.appendChild(satelliteStyleBtn);
- 
- 
- 
+
+
     for (let satT of satType)
     {
         let satTButton = document.createElement("Button");
@@ -2866,10 +2870,14 @@ function UnityInitiate() {
             handleSatColor(true, false);
         })
         document.body.appendChild(satTButton);
+
+        if (satT[0] === "Dimension"){
+            satTButton.title = "In 3D mode, radius is 50%; tilt map to see full radius.";
+        }
     }
- 
- 
- 
+
+
+
     for (let satS of satStyle)
     {
         let satSButton = document.createElement("Button");
@@ -2883,9 +2891,9 @@ function UnityInitiate() {
         })
         document.body.appendChild(satSButton);
     }
- 
- 
- 
+
+
+
     function handleSatMenu(cond)
     {
         let transition = true;
@@ -2918,7 +2926,7 @@ function UnityInitiate() {
             }
         }
     }
- 
+
     var satelliteSwitchButton = document.createElement("Button");
     satelliteSwitchButton.classList.add("unity-btn", "satellite-btn", "full", "vertical-1");
     satelliteSwitchButton.id = "Satellite Switch";
@@ -2932,11 +2940,11 @@ function UnityInitiate() {
             let di = formatDist();
             //             satelliteRadius.innerHTML = `Satellite (${di})`;
             satelliteSwitchButton.innerHTML = `Satellite (${di})`;
- 
+
             initBing = true;
             MAPBOX_INJECTED = false;
             BR_LOAD_MP = true;
- 
+
             let canvas = document.getElementById("sat_map");
             if (!canvas)
             {
@@ -2950,7 +2958,7 @@ function UnityInitiate() {
             nextPlayer = "Mapbox Satellite";
             injectCanvas();
             satCallback();
- 
+
             sat_choice = true;
             console.log("Load Mapbox Satellite API")
             //
@@ -2962,12 +2970,12 @@ function UnityInitiate() {
                 // console.log("true!!")
                 let di2 = formatDist();
                 satelliteSwitchButton.innerHTML = `Satellite (${di2})`;
- 
+
                 nextPlayer = "Mapbox Satellite";
                 injectCanvas();
                 satCallback();
                 nextPlayer = nextPlayer_save;
- 
+
                 sat_choice = true;
                 // console.log("hello")
             }
@@ -2982,7 +2990,7 @@ function UnityInitiate() {
                 {
                     nextPlayer = nextPlayer_save;
                 }
- 
+
                 injectCanvas();
                 if (sat_choice)
                 {
@@ -3006,7 +3014,7 @@ function UnityInitiate() {
             }
         }
     });
- 
+
     var satelliteMenu = document.createElement("Button");
     satelliteMenu.classList.add("unity-btn", "menu-btn");
     satelliteMenu.id = "Satellite Menu";
@@ -3025,12 +3033,12 @@ function UnityInitiate() {
                 element.style.visibility = "hidden";
             }
         }
- 
+
     });
- 
- 
+
+
     // Mosaic Module Buttons
- 
+
     var mosaicMain = document.createElement("Button");
     mosaicMain.classList.add("unity-btn", "mosaic-btn", "full", "vertical-1");
     mosaicMain.id = "Mosaic Enable";
@@ -3041,13 +3049,13 @@ function UnityInitiate() {
     // mosaicMain.blink = false;
     mosaicMain.innerHTML = "Mosaic Mode";
     document.body.appendChild(mosaicMain);
- 
+
     var mosaicGridSize = document.createElement("Button");
     mosaicGridSize.classList.add("unity-btn", "mosaic-btn", "half", "horizontal-2", "vertical-2");
     mosaicGridSize.id = "Mosaic Grid";
     mosaicGridSize.innerHTML = "Grid Size";
     document.body.appendChild(mosaicGridSize);
- 
+
     let gridWidth = [0, 3, 5, 7, 10, 20, 50, 100];
     for (let i = 0; i < gridWidth.length; i++)
     {
@@ -3069,13 +3077,13 @@ function UnityInitiate() {
             loadGridBtn(gridWidth[i]);
         });
     }
- 
+
     var mosaicGridOpt = document.createElement("Button");
     mosaicGridOpt.classList.add("unity-btn", "mosaic-btn", "half", "horizontal-1", "vertical-2");
     mosaicGridOpt.id = "Mosaic Options";
     mosaicGridOpt.innerHTML = "Options";
     document.body.appendChild(mosaicGridOpt);
- 
+
     // ["Blink Mode"]
     let gridOpt = ["Add Color", "Remove Label", "Reveal 5%", "Reveal All", "Peek 0.01s", "Peek 0.1s", "Peek 0.25s", "Peek 0.5s" , "Peek 1s", "Peek 3s"];
     for (let i = 0; i < gridOpt.length; i++)
@@ -3165,7 +3173,7 @@ function UnityInitiate() {
             });
         }
     }
- 
+
     var mosaicMenu = document.createElement("Button");
     mosaicMenu.classList.add("unity-btn", "menu-btn");
     mosaicMenu.id = "Mosaic Menu";
@@ -3187,11 +3195,11 @@ function UnityInitiate() {
             }
         }
     });
- 
- 
- 
+
+
+
     // Minimap Module
- 
+
     var MinimapBtn = document.createElement("Button");
     MinimapBtn.classList.add("unity-btn", "minimap-btn", "half", "horizontal-2", "vertical-1");
     MinimapBtn.id = "Minimap Button";
@@ -3199,7 +3207,7 @@ function UnityInitiate() {
     MinimapBtn.current = "Default";
     //     MinimapBtn.childVisible = false;
     document.body.appendChild(MinimapBtn);
- 
+
     for (let a of presetMinimap)
     {
         let aButton = document.createElement("Button");
@@ -3208,7 +3216,7 @@ function UnityInitiate() {
         aButton.innerHTML = a[1];
         document.body.appendChild(aButton);
     }
- 
+
     var OverlayBtn = document.createElement("Button");
     OverlayBtn.classList.add("unity-btn", "minimap-btn", "half", "horizontal-1", "vertical-1");
     OverlayBtn.id = "Overlay Button";
@@ -3216,7 +3224,7 @@ function UnityInitiate() {
     OverlayBtn.current = "Clear";
     //     OverlayBtn.childVisible = false;
     document.body.appendChild(OverlayBtn);
- 
+
     for (let b of presetOverlay)
     {
         let bButton = document.createElement("Button");
@@ -3227,7 +3235,7 @@ function UnityInitiate() {
         bButton.innerHTML = b[0];
         document.body.appendChild(bButton);
     }
- 
+
     var MinimapMenuBtn = document.createElement("Button");
     MinimapMenuBtn.classList.add("unity-btn", "menu-btn");
     MinimapMenuBtn.id = "Minimap Menu Button";
@@ -3247,15 +3255,15 @@ function UnityInitiate() {
             }
         }
     });
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
     // Space Buttons Module
- 
+
     //     var SpaceMainmapBtn = document.createElement("Button");
     //     SpaceMainmapBtn.classList.add("unity-btn", "space-btn", "half", "horizontal-2", "vertical-1");
     //     SpaceMainmapBtn.id = "SpMini Button";
@@ -3263,7 +3271,7 @@ function UnityInitiate() {
     //     SpaceMainmapBtn.current = "Default";
     //     //     SpaceMainmapBtn.childVisible = false;
     //     document.body.appendChild(SpaceMainmapBtn);
- 
+
     //     for (let a of spaceMainmap)
     //     {
     //         let saButton = document.createElement("Button");
@@ -3273,7 +3281,7 @@ function UnityInitiate() {
     //         saButton.innerHTML = a[0];
     //         document.body.appendChild(saButton);
     //     }
- 
+
     var SpaceOverlayBtn = document.createElement("Button");
     SpaceOverlayBtn.classList.add("unity-btn", "space-btn", "extra-full", "horizontal-1", "vertical-1");
     SpaceOverlayBtn.id = "SpOver Button";
@@ -3281,7 +3289,7 @@ function UnityInitiate() {
     SpaceOverlayBtn.current = "Clear";
     //     SpaceOverlayBtn.childVisible = false;
     document.body.appendChild(SpaceOverlayBtn);
- 
+
     for (let b of spaceMinimap)
     {
         let sbButton = document.createElement("Button");
@@ -3291,7 +3299,7 @@ function UnityInitiate() {
         sbButton.innerHTML = b[0];
         document.body.appendChild(sbButton);
     }
- 
+
     for (let c of spaceMinimap2)
     {
         let scButton = document.createElement("Button");
@@ -3301,7 +3309,7 @@ function UnityInitiate() {
         scButton.innerHTML = c[0];
         document.body.appendChild(scButton);
     }
- 
+
     for (let d of spaceMinimap3)
     {
         let sdButton = document.createElement("Button");
@@ -3311,8 +3319,8 @@ function UnityInitiate() {
         sdButton.innerHTML = d[0];
         document.body.appendChild(sdButton);
     }
- 
- 
+
+
     var SpaceMenuBtn = document.createElement("Button");
     SpaceMenuBtn.classList.add("unity-btn", "menu-btn");
     SpaceMenuBtn.id = "Space Menu Button";
@@ -3332,7 +3340,7 @@ function UnityInitiate() {
             }
         }
     });
- 
+
     var wikiLocalLang = document.createElement("Button");
     wikiLocalLang.classList.add("unity-btn", "full", "horizontal-1", "vertical-0");
     wikiLocalLang.id = "local language";
@@ -3359,14 +3367,14 @@ function UnityInitiate() {
             wikiLocalLang.state = true;
         }
     });
- 
- 
+
+
     var specialMapMain = document.createElement("Button");
     specialMapMain.classList.add("unity-btn", "special-map-btn", "full", "vertical-1");
     specialMapMain.id = "Circus Main";
     specialMapMain.innerHTML = "Circus Mode";
     document.body.appendChild(specialMapMain);
- 
+
     var specialMapSky = document.createElement("Button");
     specialMapSky.classList.add("unity-btn", "special-map-btn", "half", "horizontal-1", "vertical-2");
     specialMapSky.id = "Circus Sky";
@@ -3380,7 +3388,7 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
+
     var specialMapSkewed = document.createElement("Button");
     specialMapSkewed.classList.add("unity-btn", "special-map-btn", "half", "horizontal-2", "vertical-2");
     specialMapSkewed.id = "Circus Skewed";
@@ -3394,7 +3402,7 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
+
     var specialMapSoil = document.createElement("Button");
     specialMapSoil.classList.add("unity-btn", "special-map-btn", "half", "horizontal-1", "vertical-3");
     specialMapSoil.id = "Circus Soil";
@@ -3408,7 +3416,7 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
+
     var specialMapZoom = document.createElement("Button");
     specialMapZoom.classList.add("unity-btn", "special-map-btn", "half", "horizontal-2", "vertical-3");
     specialMapZoom.id = "Circus Zoom";
@@ -3422,7 +3430,7 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
+
     var specialMapRandom = document.createElement("Button");
     specialMapRandom.classList.add("unity-btn", "special-map-btn", "half", "horizontal-2", "vertical-4");
     specialMapRandom.id = "Circus Random";
@@ -3436,7 +3444,7 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
+
     var specialMapNMPZ = document.createElement("Button");
     specialMapNMPZ.classList.add("unity-btn", "special-map-btn", "half", "horizontal-1", "vertical-4");
     specialMapNMPZ.id = "Circus NMPZ";
@@ -3461,9 +3469,9 @@ function UnityInitiate() {
         }
         handleSpecialColor();
     });
- 
- 
- 
+
+
+
     var specialMapClear = document.createElement("Button");
     specialMapClear.classList.add("unity-btn", "special-map-btn", "half", "horizontal-2", "vertical-5");
     specialMapClear.id = "Circus Clear";
@@ -3478,8 +3486,8 @@ function UnityInitiate() {
         enterChaosMode(-999);
         handleSpecialColor();
     });
- 
- 
+
+
     var specialMapMenu = document.createElement("Button");
     specialMapMenu.classList.add("unity-btn", "menu-btn");
     specialMapMenu.id = "Circus Menu";
@@ -3501,17 +3509,17 @@ function UnityInitiate() {
             }
         }
     });
- 
- 
- 
- 
+
+
+
+
     handleStyles();
- 
- 
- 
+
+
+
     console.log("Script buttons Loaded");
 }
- 
+
 function loadNMPZ()
 {
     let gridBtn = document.createElement("div");
@@ -3530,9 +3538,9 @@ function loadNMPZ()
                 `;
     GAME_CANVAS.appendChild(gridBtn);
 }
- 
+
 // Handle Grid Mode
- 
+
 function loadGridBtn(num)
 {
     let gridCanvas = document.getElementById("grid");
@@ -3557,7 +3565,7 @@ function loadGridBtn(num)
         gridCanvas = gridBtn;
         reload = true;
     }
- 
+
     if (gridCanvas)
     {
         let mosaicMenu = document.getElementById("Mosaic Enable");
@@ -3599,9 +3607,9 @@ function loadGridBtn(num)
             else
             {
                 gridCanvas.style.visibility = "hidden";
- 
+
             }
- 
+
             for (let grid2 of document.getElementsByClassName("grid-size"))
             {
                 grid2.style.background = "#ff69b4";
@@ -3611,7 +3619,7 @@ function loadGridBtn(num)
                 }
             }
         }
- 
+
         if (num !== 0)
         {
             gridCanvas.style.visibility = "";
@@ -3627,8 +3635,8 @@ function loadGridBtn(num)
         }
     }
 }
- 
- 
+
+
 function GenBtnColor()
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -3656,16 +3664,16 @@ function GenBtnColor()
         timeMachineOlderBtn.disabled = false;
     }
 }
- 
+
 /**
  * Handle Keyboard inputs
  */
- 
+
 function kBoard()
 {
     document.addEventListener('keydown', logKey);
 }
- 
+
 function logKey(e) {
     // console.log(e.code);
     let isGamePage2 = ["challenge", "results", "game", "battle-royale", "duels", "team-duels", "bullseye"].some(v => window.location.pathname.includes(v));
@@ -3719,12 +3727,12 @@ function logKey(e) {
         }
     }
 }
- 
- 
+
+
 /**
  * Hide or reveal the buttons, and disable buttons if such feature is not available
  */
- 
+
 function setHidden(cond)
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -3756,7 +3764,7 @@ function setHidden(cond)
             //                     // TODO
             //                 }
             //             }
- 
+
         }
         else
         {
@@ -3769,11 +3777,11 @@ function setHidden(cond)
         }
     }
 }
- 
+
 function setDisable(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let btnList = [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ];
- 
+
     function setAll(cond1, cond2)
     {
         for (let btn of btnList)
@@ -3782,7 +3790,7 @@ function setDisable(cond) {
             btn.disabled = cond2;
         }
     }
- 
+
     function setMapstyle(cond1, cond2)
     {
         for (let mapDiv of document.getElementsByClassName("preset-minimap"))
@@ -3802,7 +3810,7 @@ function setDisable(cond) {
             }
         }
     }
- 
+
     if (teleportBtn != null) {
         setMapstylePlanet("None");
         if (rtded) {
@@ -3874,7 +3882,7 @@ function setDisable(cond) {
                     btns.style.backgroundColor = "red";
                     btns.disabled = true;
                 }
- 
+
             }
             else if (nextPlayer == "Mapbox Satellite") {
                 setAll("#ba55d3", false);
@@ -3897,10 +3905,10 @@ function setDisable(cond) {
         timeMachineNewerBtn.disabled = true;
         timeMachineOlderBtn.style.backgroundColor = "red";
         timeMachineOlderBtn.disabled = true;
- 
+
     }
 }
- 
+
 function setMapstylePlanet(cond)
 {
     for (let mapDiv of document.getElementsByClassName("spaceMM"))
@@ -3922,14 +3930,14 @@ function setMapstylePlanet(cond)
         }
     }
 }
- 
- 
+
+
 /**
  * This observer stays alive while the script is running
  */
- 
- 
- 
+
+
+
 function launchObserver() {
     UnityInitiate();
     handleTeleport();
@@ -3944,7 +3952,6 @@ function launchObserver() {
         mutations.forEach((mutation) => {
             if (oldHref != document.location.href && allowDetect) {
                 oldHref = document.location.href;
-                detectGamePage();
             }
             if (mutation.removedNodes)
             {
@@ -3952,14 +3959,33 @@ function launchObserver() {
                     if (m.classList)
                     {
                         let sat = m.getElementsByTagName('sat-map');
+                        let sat0 = null;
                         if (sat.length !== 0)
                         {
-                            let sat0 = sat[0];
+                            sat0 = sat[0];
                             sat0.style.display = "none";
                             // console.log(sat0)
-                            sat0.querySelector('.mapboxgl-map').classList.remove("inactive", "game-panorama_panorama__ncMwh", "game-panorama_panorama__IuPsO", "br-game-layout__panorama", "game-layout__panorama", "game-panorama_panorama__rdhFg")
+                            //sat0.querySelector('.mapboxgl-map').classList.remove("inactive", "game-panorama_panorama__ncMwh", "game-panorama_panorama__IuPsO", "br-game-layout__panorama", "game-layout__panorama", "game-panorama_panorama__rdhFg")
                             document.body.appendChild(sat0);
+                            
+                            let t = setInterval(()=>{
+
+                                let GAME_CANVAS = document.querySelector(GENERAL_LAYOUT);
+                                if (!GAME_CANVAS) return;
+                                
+                                clearInterval(t);
+
+                                GAME_CANVAS.id = "player";
+                                GAME_CANVAS.appendChild(sat0)
+
+                                sat0.style.display = "";
+
+                                detectGamePage();
+
+                            }, 100);
                         }
+
+
                     }
                 }
             }
@@ -4027,15 +4053,15 @@ function launchObserver() {
                                 detectGamePage();
                             }
                         }
- 
+
                         let sat = m.getElementsByClassName('result-layout_bottom__qLPd2');
- 
+
                         if (m.getElementsByClassName('result-layout_bottom__qLPd2').length !== 0)
                         {
                             // console.log("Round middle Callback");
                             nextButtonCallback();
                         }
- 
+
                         let sat2 = m.getElementsByClassName('guess-map__canvas-container');
                         if (sat2.length !== 0)
                         {
@@ -4049,16 +4075,16 @@ function launchObserver() {
     })
     observer3.observe(document.body, {childList: true, subtree: true, attributes: false, characterData: false})
 }
- 
- 
+
+
 /**
  * Once the Google Maps API was loaded we can do more stuff
  */
- 
+
 var oldHref = document.location.href;
- 
+
 window.addEventListener('DOMContentLoaded', (event) => {
- 
+
     if (!document.getElementById("Show Buttons"))
     {
         injecter(() => {
@@ -4066,7 +4092,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         })
     }
 });
- 
+
 const base62 = {
     charset: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     .split(''),
@@ -4084,12 +4110,12 @@ const base62 = {
     decode: chars => chars.split('').reverse().reduce((prev, curr, i) =>
                                                       prev + (base62.charset.indexOf(curr) * (62 ** i)), 0)
 };
- 
- 
+
+
 /**
  * Check whether the current page is a game, if so which game mode
  */
- 
+
 function detectGamePage() {
     // console.log("detect game change");
     if (document.querySelector(FAIL_TO_LOAD_CANVAS) !== null && !one_reset)
@@ -4101,13 +4127,12 @@ function detectGamePage() {
     function loadModule()
     {
         // console.log("load module")
- 
         if (toLoad) {
             // console.log("initializeCanvas")
             initializeCanvas();
         }
         waitLoad();
- 
+
     }
     let toLoad = !playerLoaded && !YANDEX_INJECTED && !KAKAO_INJECTED && !MAPILLARY_INJECTED && !MS_INJECTED && !MAPBOX_INJECTED && !MAPY_INJECTED;
     const PATHNAME = window.location.pathname;
@@ -4175,7 +4200,7 @@ function detectGamePage() {
         // console.log("Not a Game page");
     }
 }
- 
+
 function rstValues()
 {
     ROUND = 0;
@@ -4184,10 +4209,10 @@ function rstValues()
     MapillaryPlayer = null;
     MSStreetPlayer = null;
     MapyPlayer = null;
- 
+
     // MapboxPlayer = null;
     // MapboxMarker = null;
- 
+
     BAIDU_INJECTED = false;
     YANDEX_INJECTED = false;
     KAKAO_INJECTED = false;
@@ -4195,7 +4220,7 @@ function rstValues()
     MS_INJECTED = false;
     MAPBOX_INJECTED = false;
     MAPY_INJECTED = false;
- 
+
     nextPlayer = "Google";
     nextPlayer_save = "Google";
     global_lat = 0;
@@ -4209,7 +4234,7 @@ function rstValues()
     yTime = null;
     yEnd = null;
     iId = null;
- 
+
     COMPASS = null;
     eventListenerAttached = false;
     povListenerAttached = false;
@@ -4226,36 +4251,36 @@ function rstValues()
     mmKey = 0;
     CURRENT_ROUND_DATA = null;
     ms_radius = 15000;
- 
+
     isDuel = false;
     isBattleRoyale = false;
     isBullseye = false;
     isLiveChallenge = false;
- 
+
     BR_LOAD_KAKAO = false;
     BR_LOAD_YANDEX = false;
     BR_LOAD_MS = false;
     BR_LOAD_MP = false;
     BR_LOAD_MAPILLARY = false;
     BR_LOAD_MAPY = false;
- 
+
     ms_sat_map = false;
     rtded = false;
- 
+
     linksList = [];
- 
+
     NM = false;
     NP = false;
     NZ = false;
     initBing = false;
- 
+
     planetType = "None";
     bullseyeMapillary = false;
- 
+
     GAME_CANVAS = "";
     DUEL_CANVAS = "";
     randomPlanets = false;
- 
+
     //     let RestrictBoundsBtn = document.getElementById("Restrict Bounds Main");
     //     let RestrictBoundsEnableBtn = document.getElementById("Restrict Bounds Enable");
     //     if (RestrictBoundsBtn && RestrictBoundsEnableBtn)
@@ -4265,11 +4290,11 @@ function rstValues()
     //         RestrictBoundsEnableBtn.innerHTML = "Enable Limit";
     //     }
 }
- 
+
 /**
  * Wait for various players to load
  */
- 
+
 function btnAll()
 {
     // console.log([document.querySelector(BULLSEYE_CANVAS), "???"])
@@ -4332,11 +4357,12 @@ function btnAll()
         }
     }
 }
- 
+
 function waitLoad() {
-    if (!YandexPlayer || !KakaoPlayer || !MapillaryPlayer || !MSStreetPlayer || !MapboxPlayer || !MapyPlayer || !document.getElementById("i_container") || !YANDEX_INJECTED || !KAKAO_INJECTED || !MAPILLARY_INJECTED || !MS_INJECTED || !MAPBOX_INJECTED || !MAPY_INJECTED) {
+    //if (!YandexPlayer || !KakaoPlayer || !MapillaryPlayer || !MSStreetPlayer || !MapboxPlayer || !MapyPlayer || !document.getElementById("i_container") || !YANDEX_INJECTED || !KAKAO_INJECTED || !MAPILLARY_INJECTED || !MS_INJECTED || !MAPBOX_INJECTED || !MAPY_INJECTED) {
+    if (!YandexPlayer || !KakaoPlayer || !MapillaryPlayer || !MSStreetPlayer || !MapboxPlayer || !MapyPlayer /*|| !document.getElementById("i_container")*/ || !YANDEX_INJECTED || !KAKAO_INJECTED || !MAPILLARY_INJECTED || !MS_INJECTED || !MAPBOX_INJECTED || !MAPY_INJECTED) {
         // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
- 
+
         if ((isBullseye || isLiveChallenge) && (document.getElementById("player") == null))
         {
             BAIDU_INJECTED = false;
@@ -4358,11 +4384,11 @@ function waitLoad() {
         checkRound();
     }
 }
- 
+
 /**
  * Checks for round changes
  */
- 
+
 function checkRound() {
     //   console.log("Check Round");
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -4386,11 +4412,11 @@ function checkRound() {
         getMapData();
     }
 }
- 
+
 /**
  * Add listeners if buttons have been created
  */
- 
+
 function finalDetail()
 {
     let target = document.querySelector("a[data-qa='play-same-map']");
@@ -4429,7 +4455,7 @@ function finalDetail()
         setTimeout(finalDetail, 500);
     }
 }
- 
+
 function nextButtonCallback()
 {
     let nextButton = document.querySelector("button[data-qa='close-round-result']");
@@ -4438,7 +4464,7 @@ function nextButtonCallback()
     //     {
     //         fire1 = false;
     nextButton.addEventListener("click", (e) => {
- 
+
         if (ROUND == 5)
         {
             console.log("Game Finished")
@@ -4449,7 +4475,7 @@ function nextButtonCallback()
         }
     })
     let urlStr = ""
- 
+
     if (nextPlayer !== "Google" && nextPlayer !== "Planets")
     {
         // console.log("Clone buttons");
@@ -4527,7 +4553,7 @@ function nextButtonCallback()
     //         setTimeout(nextButtonCallback, 1000);
     //     }
 }
- 
+
 function guessButtonCallback()
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -4535,7 +4561,7 @@ function guessButtonCallback()
     let mainMenuBtn = document.getElementById("Show Buttons");
     if (guessButton != null)
     {
- 
+
         guessButton.addEventListener("click", (e) => {
             if (mainMenuBtn != null)
             {
@@ -4550,22 +4576,21 @@ function guessButtonCallback()
         setTimeout(guessButtonCallback, 1000);
     }
 }
- 
+
 /**
  * Load different streetview players
  */
- 
-function loaderChecker(data)
+
+function loaderChecker(map_name)
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
- 
     let substrings = ["Yandex", "Bing Streetside", "Kakao", "Mapbox", "Bing Satellite", "Planets"]
-    bullseyeMapillary = ((isBullseye || isLiveChallenge) && !["Mapillary", "A United World", "A Unity World", "Unity Test","Unity Special Edition"].some(v => data.includes(v)));
-    if (substrings.some(v => data.includes(v)) || rtded || bullseyeMapillary)
+    bullseyeMapillary = ((isBullseye || isLiveChallenge) && !["Mapillary", "A United World", "A Unity World", "Unity Test","Unity Special Edition"].some(v => map_name.includes(v)));
+    if (substrings.some(v => map_name.includes(v)) || rtded || bullseyeMapillary)
     {
         MapillaryPlayer = "MA";
         MAPILLARY_INJECTED = true;
- 
+
         console.log("Not loading Mapillary");
     }
     else
@@ -4573,17 +4598,17 @@ function loaderChecker(data)
         BR_LOAD_MAPILLARY = true;
         injectMapillaryPlayer();
     }
- 
-    if (data.includes("A United World") || data.includes("A Unity World") || data.includes("Unity Test") || data.includes("Unity Special Edition"))
+
+    if (map_name.includes("A United World") || map_name.includes("A Unity World") || map_name.includes("Unity Test") || map_name.includes("Unity Special Edition"))
     {
         console.log("Complete Map");
-        data = "Yandex Bing Streetside Kakao Mapbox Mapy";
+        map_name = "Yandex Bing Streetside Kakao Mapbox Mapy";
     }
- 
-    if (data.includes("Yandex"))
+
+    if (map_name.includes("Yandex"))
     {
         console.log("Yandex Map");
-        if (data == "Yandex Bing Streetside Kakao Mapbox Mapy")
+        if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             yandex_map = false;
         }
@@ -4591,6 +4616,7 @@ function loaderChecker(data)
         {
             yandex_map = true;
         }
+
         injectYandexScript().then(() => {
             console.log("Ready to inject Yandex player");
             injectYandexPlayer();
@@ -4605,23 +4631,23 @@ function loaderChecker(data)
         YANDEX_INJECTED = true;
         YandexPlayer = "YD";
     }
- 
-    if (data.includes("Bing Streetside") || data.includes("Planets"))
+
+    if (map_name.includes("Bing Streetside") || map_name.includes("Planets"))
     {
         console.log("Bing Map");
-        if (data.includes("Planets"))
+        if (map_name.includes("Planets"))
         {
             let tempRad2;
-            tempRad2 = data.split("Planets")[1];
+            tempRad2 = map_name.split("Planets")[1];
             if (/\d/.test(tempRad2))
             {
                 ms_radius = parseInt(tempRad2.replace(/\D/g,'')) * 1000;
             }
             bing_map = true;
- 
+
             for (let pl of spaceList)
             {
-                if (data.includes(pl))
+                if (map_name.includes(pl))
                 {
                     planetType = pl;
                 }
@@ -4631,20 +4657,21 @@ function loaderChecker(data)
                 randomPlanets = true;
             }
             console.log(planetType)
-            //             else if (data.includes("GTA V"))
+            //             else if (map_name.includes("GTA V"))
             //             {
             //                 planetType = "GTAV";
             //             }
-            //             else if (data.includes("GTA San Andreas"))
+            //             else if (map_name.includes("GTA San Andreas"))
             //             {
             //                 planetType = "GTASA";
             //             }
- 
+
         }
-        if (data == "Yandex Bing Streetside Kakao Mapbox Mapy")
+        if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             bing_map = false;
         }
+        debugger;
         injectMSPlayer();
         // initBing = true;
         BR_LOAD_MS = true;
@@ -4655,12 +4682,12 @@ function loaderChecker(data)
         MS_INJECTED = true;
         MSStreetPlayer = "MS";
     }
- 
- 
+
+
     let canvas = document.getElementById("sat_map");
-    if (data.includes("Bing Satellite") || data.includes("Mapbox") || data.includes("Unity Satellite") || (sat_choice && !rtded))
+    if (/🛰️|🛰/.test(map_name) || map_name.includes("Bing Satellite") || map_name.includes("Mapbox") || map_name.includes("Unity Satellite") || (sat_choice && !rtded))
     {
-        if (data == "Yandex Bing Streetside Kakao Mapbox Mapy")
+        if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             ms_sat_map = false;
         }
@@ -4669,27 +4696,30 @@ function loaderChecker(data)
             ms_sat_map = true;
         }
         let tempRad;
-        if (data.includes("Bing Satellite"))
+        if (map_name.includes("Bing Satellite"))
         {
-            tempRad = data.split("Bing Satellite")[1];
+            tempRad = map_name.split("Bing Satellite")[1];
         }
-        else if (data.includes("Mapbox"))
+        else if (map_name.includes("Mapbox"))
         {
-            tempRad = data.split("Mapbox")[1];
+            tempRad = map_name.split("Mapbox")[1];
         }
-        else if (data.includes("Unity Satellite"))
+        else if (map_name.includes("Unity Satellite"))
         {
-            tempRad = data.split("Unity Satellite")[1];
+            tempRad = map_name.split("Unity Satellite")[1];
         }
- 
- 
+        else if (/🛰️|🛰/.test(map_name))
+        {
+            tempRad = map_name.replace(/(🛰️|🛰)(\d+)(🛰️|🛰)/, '$2');
+        }
+
         if (/\d/.test(tempRad))
         {
             ms_radius = parseInt(tempRad.replace(/\D/g,'')) * 1000;
         }
         console.log("Mapbox Satellite Map");
         // console.log(canvas)
- 
+
         if (!canvas)
         {
             injectMapboxPlayer();
@@ -4710,13 +4740,13 @@ function loaderChecker(data)
         }
         MAPBOX_INJECTED = true;
         // console.log("Not Mapbox Satellite map");
- 
+
     }
- 
-    if (data.includes("Kakao"))
+
+    if (map_name.includes("Kakao"))
     {
         console.log("Kakao Map");
-        if (data == "Yandex Bing Streetside Kakao Mapbox Mapy")
+        if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             Kakao_map = false;
         }
@@ -4736,11 +4766,11 @@ function loaderChecker(data)
         KakaoPlayer = "KK";
         // console.log("Not Kakao map");
     }
- 
-    if (data.includes("Mapy") || data.includes("mapy"))
+
+    if (map_name.includes("Mapy") || map_name.includes("mapy"))
     {
         console.log("Mapy Map");
-        if (data == "Yandex Bing Streetside Kakao Mapbox Mapy")
+        if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             Mapy_map = false;
         }
@@ -4756,58 +4786,61 @@ function loaderChecker(data)
         MapyPlayer = "MPP";
         // console.log("Not Kakao map");
     }
- 
-    if (data.includes("Wikipedia"))
+
+    if (map_name.includes("Wikipedia"))
     {
         console.log("Wikipedia Map");
         Wikipedia_map = true;
- 
+
     }
     else{
         // console.log("Not Wikipedia map");
     }
- 
-    if (data.includes("Minecraft"))
+
+    if (map_name.includes("Minecraft"))
     {
         console.log("Minecraft Map");
         Minecraft_map = true;
- 
+
     }
     else{
         // console.log("Not Minecraft map");
     }
- 
-    if (data.includes("Youtube") || data.includes("YouTube"))
+
+    if (map_name.includes("Youtube") || map_name.includes("YouTube"))
     {
         console.log("Youtube Map");
         Youtube_map = true;
- 
+
     }
     else{
         // console.log("Not Minecraft map");
     }
- 
+
     setHidden(false);
-    if (data.includes("China Tips for each province"))
+    if (map_name.includes("China Tips for each province"))
     {
         guaranteeUI();
         AdjustBtnPos("0em", "22em", true);
         console.log("AdjustBtnPos");
     }
 }
- 
+
 function loadPlayers() {
     let mapBounds;
+
     playerLoaded = true;
     injectContainer();
- 
+
     getSeed().then((data) => {
         // console.log(data)
         let map_name = "Default"
+
         if (typeof data.isRated !== 'undefined')
         {
             rtded = data.isRated;
         }
+
         if (typeof data.options !== 'undefined')
         {
             if (typeof data.options.isRated !== 'undefined')
@@ -4815,6 +4848,7 @@ function loadPlayers() {
                 rtded = data.options.isRated;
             }
         }
+
         if (rtded)
         {
             map_name = "Public Game";
@@ -4850,19 +4884,20 @@ function loadPlayers() {
                 }
             }
         }
+
         if (mapBounds)
         {
             ms_radius = magic_formula(mapBounds);
             // console.log(ms_radius / 1000)
         }
+
         loaderChecker(map_name)
- 
+
     }).catch((error) => {
         console.log(error);
     });
- 
 }
- 
+
 function guaranteeUI()
 {
     // console.log("UI")
@@ -4875,11 +4910,11 @@ function guaranteeUI()
         setTimeout(guaranteeUI, 500);
     }
 }
- 
+
 /**
  * Handles Return to start and undo
  */
- 
+
 function handleReturnToStart() {
     let rtsButton = document.querySelector("button[data-qa='return-to-start']");
     // console.log("Handle Return to start");
@@ -4899,7 +4934,7 @@ function handleReturnToStart() {
     guessButtonCallback();
     // setTimeout(function () {goToLocation();}, 1000);
 }
- 
+
 function handleUndo() {
     let undoButton = document.querySelector("button[data-qa='undo-move']");
     // console.log("Handle undo");
@@ -4910,11 +4945,11 @@ function handleUndo() {
         }
     })
 }
- 
+
 /**
  * Load game information
  */
- 
+
 function satCallback()
 {
     if (typeof MapboxPlayer.flyTo !== typeof undefined)
@@ -4926,7 +4961,7 @@ function satCallback()
         setTimeout(satCallback, 250);
     }
 }
- 
+
 function kakaoCallback()
 {
     console.log("Kakao callback")
@@ -4940,8 +4975,8 @@ function kakaoCallback()
         setTimeout(kakaoCallback, 250);
     }
 }
- 
- 
+
+
 function modularget(data)
 {
     if (data)
@@ -4959,10 +4994,10 @@ function modularget(data)
         handleButtons();
     }
 }
- 
+
 function getMapData() {
     // myHighlight("Seed data");
- 
+
     getSeed().then((data) => {
         let switchCovergeButton = document.getElementById("switch");
         let mainMenuBtn = document.getElementById("Show Buttons")
@@ -4977,7 +5012,7 @@ function getMapData() {
                     CURRENT_ROUND_DATA = data
                     origin = true;
                 }
- 
+
                 if (origin || !(data.currentRoundNumber === CURRENT_ROUND_DATA.currentRoundNumber)) {
                     // myHighlight("Battle Royale New round");
                     switchCovergeButton.init = true;
@@ -4995,12 +5030,12 @@ function getMapData() {
         else {
             modularget(data);
         }
- 
+
     }).catch((error) => {
         console.log(error);
     });
 }
- 
+
 function handleMinimapCallback()
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -5023,20 +5058,21 @@ function handleMinimapCallback()
         setTimeout(handleMinimapCallback, 1000);
     }
 }
- 
+
 /**
  * Hide unnecessary buttons for non-Google coverages
  */
- 
+
 function handleButtons() {
     let CHECKPOINT = document.querySelector("button[data-qa='set-checkpoint']");
     let ZOOM_IN = document.querySelector("button[data-qa='pano-zoom-in']");
     let ZOOM_OUT = document.querySelector("button[data-qa='pano-zoom-out']");
     let UNDO_MOVE = document.querySelector("button[data-qa='undo-move']");
-    let DEFAULT_COMPASS = document.querySelector(".compass");
+    //let DEFAULT_COMPASS = document.querySelector(".compass");
+    let DEFAULT_COMPASS = document.querySelector("[title*='Compass' i]");
     let NEW_COMPASS = document.querySelector(".panorama-compass_compassContainer__MEnh0");
     let RETURN_TO_START = document.querySelector("button[data-qa='return-to-start']");
- 
+
     let C1 = (CHECKPOINT !== null);
     let C2 = (ZOOM_IN !== null);
     let C3 = (ZOOM_OUT !== null);
@@ -5044,7 +5080,7 @@ function handleButtons() {
     let C5 = (DEFAULT_COMPASS !== null);
     let C6 = (NEW_COMPASS !== null);
     let C7 = (RETURN_TO_START !== null);
- 
+
     let waitCond = C5 || C6;
     let cpCond = true;
     let comCond = true;
@@ -5056,10 +5092,10 @@ function handleButtons() {
     {
         comCond = C2 && C3;
     }
- 
+
     function moduleButtons(cond)
     {
- 
+
         if (!NM)
         {
             CHECKPOINT.style.visibility = cond;
@@ -5079,7 +5115,7 @@ function handleButtons() {
             NEW_COMPASS.style.visibility = cond;
         }
     }
- 
+
     if (waitCond && cpCond && comCond)
     {
         // console.log("Handle Buttons");
@@ -5120,18 +5156,18 @@ function handleButtons() {
         setTimeout(handleButtons, 250);
     }
 }
- 
+
 /**
  * Check which player to use for the next location
  */
- 
+
 function locationCheck(data) {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let round;
     let switchCovergeButton = document.getElementById("switch");
     let satelliteSwitchButton = document.getElementById("Satellite Switch");
     // console.log(data)
- 
+
     if (isBattleRoyale) {
         if (isDuel || isBullseye)
         {
@@ -5148,26 +5184,26 @@ function locationCheck(data) {
             round = data.rounds[data.currentRoundNumber - 1];
             global_cc = "us"; // No field available
         }
- 
+
     }
     else {
         round = data.rounds[data.round - 1];
         global_cc = round.streakLocationCode;
     }
- 
+
     global_lat = round.lat;
     global_lng = round.lng;
     global_panoID = round.panoId;
- 
+
     global_heading = round.heading;
     global_pitch = round.pitch;
- 
+
     //     console.log(data);
- 
+
     // console.log(global_panoID);
- 
+
     nextPlayer = "Google";
- 
+
     function runCheck()
     {
         if (Kakao_map)
@@ -5203,7 +5239,7 @@ function locationCheck(data) {
             nextPlayer = "Google";
         }
     }
- 
+
     if (global_panoID) {
         let locInfo;
         if (isBullseye)
@@ -5228,18 +5264,18 @@ function locationCheck(data) {
         else
         {
             let mapType = locInfo.substring(0, 5);
- 
+
             // panoId unchanged
- 
+
             if (mapType === "YDMAP" ) {
                 nextPlayer = "Yandex";
             }
             else if (mapType === "KKMAP" ) {
                 nextPlayer = "Kakao";
             }
- 
+
             // New panoId formats
- 
+
             else if (mapType === "BAIDU" ) {
                 nextPlayer = "Baidu";
                 let lengths = [5, 7, 7, 3];
@@ -5270,7 +5306,7 @@ function locationCheck(data) {
                     nextPlayer = "Planets";
                     let num = mapType.slice(-1).charCodeAt(0) - 65;
                     planetType = spaceList[num];
- 
+
                     ms_radius = parseInt(locInfo.substring(5).replace(/\D/g,'')) * 1000;
                 }
             }
@@ -5316,9 +5352,9 @@ function locationCheck(data) {
     {
         runCheck();
     }
- 
+
     // Disable buttons if NM, NMPZ
- 
+
     if(!isBattleRoyale)
     {
         NM = data.forbidMoving;
@@ -5349,7 +5385,7 @@ function locationCheck(data) {
     {
         setDisable(nextPlayer);
     }
- 
+
     if (nextPlayer == "Google")
     {
         switchCovergeButton.innerHTML = "Switch to Mapillary";
@@ -5359,8 +5395,8 @@ function locationCheck(data) {
         switchCovergeButton.innerHTML = "Switch to Google Streetview";
     }
     nextPlayer_save = nextPlayer;
- 
- 
+
+
     // console.log("??")
     // console.log(sessionStorage.getItem('Satellite') == "T")
     // console.log(ms_sat_map)
@@ -5368,7 +5404,7 @@ function locationCheck(data) {
     {
         nextPlayer = "Mapbox Satellite";
     }
- 
+
     if (nextPlayer == "Mapbox Satellite")
     {
         let di3 = formatDist();
@@ -5388,18 +5424,18 @@ function locationCheck(data) {
         console.log("rated game, no canvas injection");
     }
 }
- 
- 
+
+
 /**
  * setID for canvas
  */
- 
+
 function initializeCanvas() {
     GAME_CANVAS = "";
     DUEL_CANVAS = "";
     //console.log("Is duels");
     //console.log(duels);
- 
+
     if (isBattleRoyale) {
         if (isDuel) {
             GAME_CANVAS = document.querySelector(DUELS_CANVAS);
@@ -5428,19 +5464,17 @@ function initializeCanvas() {
     {
         console.log("Canvas injected");
         GAME_CANVAS.id = "player";
- 
- 
- 
+
         if (isDuel) {
             DUEL_CANVAS.id = "default_player";
         }
- 
+
         let mosaicBtn = document.getElementById("Mosaic Enable");
         if (mosaicPre)
         {
             loadGridBtn(mosaicBtn.grid);
         }
- 
+
         partialCreateMapillary = (typeof mapillary !== typeof undefined)
         partialCreateYandex = (typeof ymaps !== typeof undefined)
         partialCreateKakao = (typeof kakao !== typeof undefined)
@@ -5448,20 +5482,20 @@ function initializeCanvas() {
         partialCreateMapbox = (typeof mapboxgl !== typeof undefined);
         partialCreateMapy = (typeof SMap !== typeof undefined);
         loadPlayers();
- 
- 
+
+
     }
     else
     {
         setTimeout(initializeCanvas, 250);
     }
- 
+
 }
- 
+
 /**
  * Hide or show players based on where the next location is
  */
- 
+
 function injectCanvas() {
     if (isDuel)
     {
@@ -5501,20 +5535,20 @@ function injectCanvas() {
             Mapy();
         }
     }
- 
+
 }
- 
+
 // for duels (class ID change)
- 
+
 function canvasSwitch()
 {
- 
+
     // console.log("canvas switch")
     //     let cond = true;
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let teleportMenu = document.getElementById("Teleport Button");
     let switchCovergeButton = document.getElementById("switch");
- 
+
     let GOOGLE_MAPS_CANVAS = document.querySelector(DUELS_CANVAS);
     let BAIDU_MAPS_CANVAS = document.getElementById("i_container");
     let KAKAO_MAPS_CANVAS = document.getElementById("roadview");
@@ -5524,7 +5558,7 @@ function canvasSwitch()
     let MAPBOX_MAPS_CANVAS = document.getElementById("mapbox-player");
     let MAPY_MAPS_CANVAS = document.getElementById("mapy-player");
     // console.log([GOOGLE_MAPS_CANVAS, BAIDU_MAPS_CANVAS, MAPILLARY_MAPS_CANVAS, BR_LOAD_KAKAO, KAKAO_MAPS_CANVAS, BR_LOAD_MS, BING_MAPS_CANVAS, BR_LOAD_YANDEX, YANDEX_MAPS_CANVAS])
- 
+
     if (GOOGLE_MAPS_CANVAS && BAIDU_MAPS_CANVAS && (!BR_LOAD_MAPILLARY || MAPILLARY_MAPS_CANVAS) && (!BR_LOAD_KAKAO || KAKAO_MAPS_CANVAS) &&
         (!BR_LOAD_MS || BING_MAPS_CANVAS) && (!BR_LOAD_YANDEX || YANDEX_MAPS_CANVAS) && (!BR_LOAD_MP || MAPBOX_MAPS_CANVAS) && (!BR_LOAD_MAPY || MAPY_MAPS_CANVAS))
     {
@@ -5533,14 +5567,14 @@ function canvasSwitch()
         BAIDU_MAPS_CANVAS.style.position = "absolute";
         BAIDU_MAPS_CANVAS.className = "inactive";
         BAIDU_MAPS_CANVAS.visibility = "hidden";
- 
+
         if (BR_LOAD_MAPILLARY)
         {
             MAPILLARY_MAPS_CANVAS.style.visibility = "hidden";
             MAPILLARY_MAPS_CANVAS.style.position = "absolute";
             MAPILLARY_MAPS_CANVAS.className = "inactive";
         }
- 
+
         if (BR_LOAD_KAKAO)
         {
             KAKAO_MAPS_CANVAS.style.visibility = "hidden";
@@ -5558,7 +5592,7 @@ function canvasSwitch()
             BING_MAPS_CANVAS.style.position = "absolute";
             BING_MAPS_CANVAS.className = "inactive";
         }
- 
+
         if (BR_LOAD_MP)
         {
             MAPBOX_MAPS_CANVAS.style.visibility = "hidden";
@@ -5566,17 +5600,17 @@ function canvasSwitch()
             MAPBOX_MAPS_CANVAS.classList.remove("game-panorama_panorama__rdhFg")
             MAPBOX_MAPS_CANVAS.classList.add("inactive");
         }
- 
+
         if (BR_LOAD_MAPY)
         {
             MAPY_MAPS_CANVAS.style.visibility = "hidden";
             MAPY_MAPS_CANVAS.style.position = "absolute";
             MAPY_MAPS_CANVAS.className = "inactive";
         }
- 
+
         teleportMenu.google = false;
         switchCovergeButton.useGoogle = false;
- 
+
         if (nextPlayer === "Google") {
             document.getElementById("default_player").className = "game-panorama_panoramaCanvas__PNKve";
             if (BR_LOAD_KAKAO)
@@ -5665,9 +5699,9 @@ function canvasSwitch()
         setTimeout(canvasSwitch(), 1000);
     }
 }
- 
+
 // for Battle Royale and classic (change visibility)
- 
+
 function gCanvas()
 {
     let GOOGLE_MAPS_CANVAS = ""
@@ -5694,14 +5728,14 @@ function gCanvas()
     }
     return GOOGLE_MAPS_CANVAS;
 }
- 
+
 function Google() {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let teleportMenu = document.getElementById("Teleport Button");
     let switchCovergeButton = document.getElementById("switch");
- 
+
     let GOOGLE_MAPS_CANVAS = gCanvas();
- 
+
     if (GOOGLE_MAPS_CANVAS !== null)
     {
         if (nextPlayer === "Google") {
@@ -5719,7 +5753,7 @@ function Google() {
         setTimeout(Google, 250);
     }
 }
- 
+
 function Baidu() {
     let BAIDU_MAPS_CANVAS = document.getElementById("i_container");
     let switchCovergeButton = document.getElementById("switch");
@@ -5742,9 +5776,9 @@ function Baidu() {
     {
         setTimeout(Baidu, 250);
     }
- 
+
 }
- 
+
 function Kakao() {
     let KAKAO_MAPS_CANVAS = document.getElementById("roadview");
     let switchCovergeButton = document.getElementById("switch");
@@ -5767,9 +5801,9 @@ function Kakao() {
     {
         setTimeout(Kakao, 250);
     }
- 
+
 }
- 
+
 function Yandex() {
     let YANDEX_MAPS_CANVAS = document.querySelector(".ymaps-2-1-79-panorama-screen");
     let switchCovergeButton = document.getElementById("switch");
@@ -5806,9 +5840,9 @@ function Yandex() {
     {
         setTimeout(Yandex, 250);
     }
- 
+
 }
- 
+
 function Mapillary()
 {
     let MAPILLARY_MAPS_CANVAS = document.getElementById("mapillary-player");
@@ -5822,7 +5856,7 @@ function Mapillary()
             MAPILLARY_MAPS_CANVAS.style.visibility = "";
             switchCovergeButton.useGoogle = false;
             console.log("Mapillary Canvas loaded");
- 
+
         }
         else {
             MAPILLARY_MAPS_CANVAS.style.visibility = "hidden";
@@ -5833,9 +5867,9 @@ function Mapillary()
     {
         setTimeout(Mapillary, 250);
     }
- 
+
 }
- 
+
 function Bing() {
     let BING_MAPS_CANVAS = document.getElementById("ms-player");
     let switchCovergeButton = document.getElementById("switch");
@@ -5860,7 +5894,7 @@ function Bing() {
         setTimeout(Bing, 500)
     }
 }
- 
+
 function Mapbox()
 {
     let MAPBOX_CANVAS = document.getElementById("mapbox-player");
@@ -5874,7 +5908,7 @@ function Mapbox()
             MAPBOX_CANVAS.style.visibility = "";
             switchCovergeButton.useGoogle = false;
             console.log("Mapbox Satellite Canvas loaded");
- 
+
         }
         else {
             MAPBOX_CANVAS.style.visibility = "hidden";
@@ -5885,9 +5919,9 @@ function Mapbox()
     {
         setTimeout(Mapbox, 250);
     }
- 
+
 }
- 
+
 function Mapy() {
     let MAPY_MAPS_CANVAS = document.getElementById("mapy-player");
     let switchCovergeButton = document.getElementById("switch");
@@ -5910,14 +5944,14 @@ function Mapy() {
     {
         setTimeout(Mapy, 250);
     }
- 
+
 }
- 
- 
+
+
 /**
  * Adjust button placement
  */
- 
+
 function ZoomControls() {
     let style = `
 	.ymaps-2-1-79-panorama-gotoymaps {display: none !important;}
@@ -5931,7 +5965,7 @@ function ZoomControls() {
     .NavBarButton_Container {visibility: hidden !important;}
     .mapboxgl-ctrl-top-left {z-Index: 999}
 	`;
- 
+
     //         let nav = document.querySelector('.NavBar_MapTypeButtonContainerWrapper');
     //     let locate = document.getElementById("LocateMeButton");
     //     let navAll = document.getElementById("MicrosoftNav");
@@ -5947,13 +5981,13 @@ function ZoomControls() {
     //     {
     //         navAll.style.top = "15em"
     //     }
- 
+
     let style_element = document.createElement("style");
     style_element.innerHTML = style;
     document.body.appendChild(style_element);
     // document.getElementById("mapillary-bearing-indicator-container").style.top = "20em"
 }
- 
+
 /**
  * Updates the compass to match Yandex Panorama facing
  */
@@ -5971,11 +6005,11 @@ function updateCompass() {
         COMPASS.setAttribute("style", `transform: rotate(${direction}deg);`);
     }
 }
- 
+
 /**
  * Open next location in streetview player given next player and next coordinate
  */
- 
+
 function wiki(cc, iframe, teleportMenu)
 {
     let url = `https://${cc}.wikipedia.org/w/api.php`;
@@ -5985,7 +6019,7 @@ function wiki(cc, iframe, teleportMenu)
     //     {
     //         widthRight = 1200;
     //     }
- 
+
     let params = {
         action: "query",
         list: "geosearch",
@@ -5994,11 +6028,11 @@ function wiki(cc, iframe, teleportMenu)
         gslimit: "1",
         format: "json"
     };
- 
+
     url = url + "?origin=*";
     Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
     let GOOGLE_MAPS_CANVAS = gCanvas();
- 
+
     fetch(url)
         .then(function(response){return response.json();})
         .then(function(response) {
@@ -6013,7 +6047,7 @@ function wiki(cc, iframe, teleportMenu)
             iframe.style.visibility = "";
             iframe.style.right = `-${widthRight}px`;
             iframe.style.width = (window.innerWidth + widthRight) + 'px';
- 
+
             // console.log(iframe.style.width);
             // iframe.style.visibility = "";
         }
@@ -6026,7 +6060,7 @@ function wiki(cc, iframe, teleportMenu)
         }
     }).catch(function(error){console.log(error);});
 }
- 
+
 function handleSpecialColor()
 {
     document.getElementById("Circus Sky").style.background = skySpecial ? "#ff1493" : "#ff69b4";
@@ -6036,13 +6070,13 @@ function handleSpecialColor()
     document.getElementById("Circus Random").style.background = randomSpecial ? "#ff1493" : "#ff69b4";
     document.getElementById("Circus NMPZ").style.background = nmpzSpecial ? "#ff1493" : "#ff69b4";
 }
- 
- 
+
+
 function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     console.log("Going to location");
     console.log(nextPlayer);
- 
+
     let mosaicBtn = document.getElementById("Mosaic Enable");
     if (mosaicPre)
     {
@@ -6057,7 +6091,7 @@ function goToLocation(cond) {
         }
         loadGridBtn(mosaicBtn.grid);
     }
- 
+
     if (restrictMovement)
     {
         //         if (teleportMenu.style.visibility == "hidden")
@@ -6070,7 +6104,7 @@ function goToLocation(cond) {
             RestrictBoundsBtn.innerHTML = "No Escape Mode Enabled";
         }
     }
- 
+
     if (skySpecial || soilSpecial || skewedSpecial || zoomSpecial || randomSpecial || nmpzSpecial)
     {
         if (nmpzSpecial && !document.getElementById("specialNMPZ"))
@@ -6079,13 +6113,13 @@ function goToLocation(cond) {
         }
         handleSpecialColor();
     }
- 
+
     let OverlayBtn = document.getElementById("Overlay Button");
     if (nextPlayer !== "Planets" && (spaceList.some(className => OverlayBtn.current.includes(className))))
     {
         document.getElementById("Earth").click();
     }
- 
+
     if (nextPlayer === "Yandex") {
         let options = {};
         YandexPlayer.moveTo([global_lat, global_lng], options);
@@ -6096,7 +6130,7 @@ function goToLocation(cond) {
         if (document.getElementById("i_container") !== null)
         {
             let iframe = document.getElementById("i_container");
- 
+
             if (nextPlayer === "Baidu")
             {
                 if (!isFirefox)
@@ -6109,7 +6143,7 @@ function goToLocation(cond) {
                     iframe.style.top = '-60px';
                     iframe.style.height = (window.innerHeight + 219) + 'px';
                 }
- 
+
                 if (!isFirefox)
                 {
                     iframe.style.right = '-55px';
@@ -6214,7 +6248,7 @@ function goToLocation(cond) {
                 iframe.src = corsString + carteCity;
             }
         }
- 
+
         else
         {
             setTimeout(goToLocation(true), 250);
@@ -6266,14 +6300,14 @@ function goToLocation(cond) {
     }
     else if (nextPlayer === "Planets") {
         // console.log("Bing Satellite Player")
- 
+
         if (randomPlanets)
         {
             let tempSL = spaceList.slice(0, -1);
             planetType = tempSL[Math.floor(Math.random() * tempSL.length)];
             setMapstylePlanet(planetType);
         }
- 
+
         let mTId = MSStreetPlayer.getMapTypeId();
         if (mTId !== Microsoft.Maps.MapTypeId.aerial && mTId !== Microsoft.Maps.MapTypeId.road)
         {
@@ -6290,7 +6324,7 @@ function goToLocation(cond) {
             }
         }
         // console.log("Satellite radius: " + (ms_radius / 1000).toString() + "km");
- 
+
         let maxZoomNum = 20;
         if (planetType == "Mars")
         {
@@ -6300,25 +6334,24 @@ function goToLocation(cond) {
         {
             maxZoomNum = 6;
         }
- 
+
         if (ms_radius < 1500000)
         {
             ms_radius = 1500000;
         }
- 
+
         if (ms_radius > 6000000)
         {
             ms_radius = 6000000;
         }
- 
+
         // console.log(ms_radius);
- 
+
         let latlngBounds = getBBox2(loc_centre, ms_radius);
         // console.log(latlngBounds)
         let bounds = Microsoft.Maps.LocationRect.fromLocations(new Microsoft.Maps.Location(latlngBounds[0], latlngBounds[1]), new Microsoft.Maps.Location(latlngBounds[2], latlngBounds[3]));
- 
         MSStreetPlayer.setOptions({maxBounds: bounds, maxZoom: maxZoomNum})
- 
+
         MSStreetPlayer.setOptions({disableStreetside: true});
         MSStreetPlayer.setView({mapTypeId: Microsoft.Maps.MapTypeId.mercator,
                                 labelOverlay: Microsoft.Maps.LabelOverlay.hidden,
@@ -6346,10 +6379,10 @@ function goToLocation(cond) {
             document.getElementById(planetType).click();
         }
         MSStreetPlayer.layers.insert(weatherTileLayer);
- 
+
         var pin = new Microsoft.Maps.Pushpin(ctr, {});
         MSStreetPlayer.entities.push(pin);
- 
+
         // FixLink(); // DOM BASED SOLUTION
     }
     else if (nextPlayer === "Mapbox Satellite") {
@@ -6413,7 +6446,7 @@ function goToLocation(cond) {
         }
         fire1 = false;
     }
- 
+
     if (cond)
     {
         switchCovergeButton.lat = global_lat;
@@ -6421,14 +6454,14 @@ function goToLocation(cond) {
         RestrictBoundsBtn.lat = global_lat;
         RestrictBoundsBtn.lng = global_lng;
     }
- 
+
 }
- 
- 
+
+
 /**
  * Handle undo using the location history of the current round
  */
- 
+
 function goToUndoMove(data) {
     /*   console.log(global_lat);
       console.log(global_lng); */
@@ -6469,7 +6502,7 @@ function goToUndoMove(data) {
     }
     else if (nextPlayer === "Mapillary" ) {
         // console.log(prevStep[1]);
- 
+
         MapillaryPlayer.moveTo(prevStep[2]).then(
             image => {
                 //console.log(image);
@@ -6501,9 +6534,9 @@ function goToUndoMove(data) {
         switchCovergeButton.lng = prevStep[1];
         switchCovergeButton.heading = prevStep[2];
     }
- 
+
 }
- 
+
 function handleTeleport()
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -6527,7 +6560,7 @@ function handleTeleport()
                         return (heading + 180) % 360;
                     }
                 }
- 
+
                 let prevStep = null;
                 if (locHistory.length === 1) {
                     prevStep = locHistory[0];
@@ -6536,11 +6569,11 @@ function handleTeleport()
                     prevStep = locHistory[locHistory.length - 1];
                 }
                 // console.log(locHistory);
- 
+
                 let options = {};
                 let place, position, pID;
                 if (nextPlayer === "Yandex") {
- 
+
                     place = FindPointAtDistanceFrom(prevStep[0], prevStep[1], DegreesToRadians(forwardReverse(prevStep[2])), teleportMenu.distance * 0.001);
                     YandexPlayer.setDirection([prevStep[2], prevStep[3]]);
                     YandexPlayer.moveTo([place.lat, place.lng], options);
@@ -6592,7 +6625,7 @@ function handleTeleport()
                         alert("Panorama se nepodařilo zobrazit !");
                     });
                 }
- 
+
                 if (teleportMenu.distance > 150)
                 {
                     teleportMenu.distance = 100;
@@ -6602,15 +6635,15 @@ function handleTeleport()
         }
         document.getElementById("Teleport Forward").addEventListener("click", () => {
             tpt(true);
- 
+
         });
         document.getElementById("Teleport Reverse").addEventListener("click", () => {
             tpt(false);
- 
+
         });
     }
 }
- 
+
 function SyncListener()
 {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -6623,7 +6656,7 @@ function SyncListener()
                 let options = {};
                 YandexPlayer.moveTo([switchCovergeButton.lat, switchCovergeButton.lng], options);
                 YandexPlayer.setDirection([switchCovergeButton.heading, 0]);
- 
+
                 // nextPlayer = "Yandex";
             }
             else if (nextPlayer === "Kakao") {
@@ -6668,9 +6701,9 @@ function SyncListener()
             }
         }
     });
- 
+
 }
- 
+
 /**
  * Gets the seed data for the current game
  *
@@ -6683,9 +6716,9 @@ function getSeed() {
         let token = getToken();
         let URL;
         let cred = ""
- 
+
         const PATHNAME = window.location.pathname;
- 
+
         if (PATHNAME.startsWith("/game/")) {
             URL = `https://www.geoguessr.com/api/v3/games/${token}`;
         }
@@ -6729,7 +6762,7 @@ function getSeed() {
         }
     });
 }
- 
+
 /**
  * Gets the token from the current URL
  *
@@ -6759,7 +6792,7 @@ function getToken() {
         return PATHNAME.replace("/live-challenge/", "");
     }
 }
- 
+
 /**
  * Gets the round number from the ongoing game from the page itself
  *
@@ -6780,8 +6813,8 @@ function getRoundFromPage() {
         return ROUND;
     }
 }
- 
- 
+
+
 /**
  * Injects Yandex Script
  */
@@ -6820,7 +6853,7 @@ function injectYandexScript() {
         }
     });
 }
- 
+
 /**
  * Injects Yandex Player and calls handleReturnToStart
  */
@@ -6829,7 +6862,7 @@ function injectYandexPlayer() {
     let switchCovergeButton = document.getElementById("switch");
     let lat = 41.321861;
     let lng = 69.212920;
- 
+
     let options = {
         "direction": [0, 16],
         "span": [10, 67],
@@ -6867,18 +6900,18 @@ function injectYandexPlayer() {
                 // console.log(locHistory);
             }
             defaultPanoIdChange = true;
- 
+
         });
         console.log("Yandex Player injected");
     });
- 
+
 }
- 
- 
+
+
 /**
  * Injects Baidu script
  */
- 
+
 function reportWindowSize() {
     // console.log("report window size");
     let iframeC = document.getElementById("i_container");
@@ -6934,15 +6967,15 @@ function reportWindowSize() {
             iframeC.style.visibility = "";
             iframeC.src = carteCity;
         }
- 
- 
+
+
     }
 }
- 
+
 window.onresize = reportWindowSize;
- 
- 
- 
+
+
+
 function injectContainer() {
     myHighlight("iframe container loaded")
     const iframe = document.createElement('iframe');
@@ -6983,13 +7016,13 @@ function injectContainer() {
             div.appendChild(iframe);
         }
     }
- 
+
 }
- 
+
 /**
  * Injects Kakao script
  */
- 
+
 function injectKakaoScript() {
     return new Promise((resolve, reject) => {
         // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -6999,7 +7032,7 @@ function injectKakaoScript() {
                 console.log("No Kakao Key")
             }
             else {
- 
+
                 let canvas = document.createElement("kmap");
                 if (isBattleRoyale) {
                     if (isDuel)
@@ -7032,8 +7065,8 @@ function injectKakaoScript() {
                  <div id="roadview" class="game-layout__panorama" style="zIndex: 99999,position: "absolute", top: 0, left: 0, width: '100%', height: '100%',"> </div>
             `;
                 }
- 
- 
+
+
                 var div = document.getElementById("player");
                 if (isBullseye || isLiveChallenge)
                 {
@@ -7043,7 +7076,7 @@ function injectKakaoScript() {
                 {
                     div.appendChild(canvas);
                 }
- 
+
                 let SCRIPT;
                 if (!partialCreateKakao)
                 {
@@ -7053,7 +7086,7 @@ function injectKakaoScript() {
                     SCRIPT.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
                     document.body.appendChild(SCRIPT);
                 }
- 
+
                 function drawmapKakao()
                 {
                     kakao.maps.load(function () {
@@ -7109,7 +7142,7 @@ function injectKakaoScript() {
                         })
                     });
                 }
- 
+
                 if (partialCreateKakao)
                 {
                     drawmapKakao();
@@ -7122,7 +7155,7 @@ function injectKakaoScript() {
                         resolve();
                     };
                 }
- 
+
             }
         }
         else {
@@ -7130,7 +7163,7 @@ function injectKakaoScript() {
         }
     });
 }
- 
+
 function getTMSTilePath(tile) {
     var yN = Math.pow(2, tile.zoom) - tile.y - 1;
     // console.log([tile.zoom,tile.x,yN]);
@@ -7159,7 +7192,7 @@ function getTMSTilePath(tile) {
     //         // "https://tiles.mapgenie.io/games/grand-theft-auto-san-andreas/san-andreas/atlas-v1/" + tile.zoom + "/" + tile.x + "/" + yN + ".png";
     //     }
 }
- 
+
 function injectMSPlayer() {
     return new Promise((resolve, reject) => {
         if (!MS_INJECTED) {
@@ -7168,7 +7201,7 @@ function injectMSPlayer() {
                 console.log("No MS Key")
             }
             else {
- 
+
                 // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
                 let switchCovergeButton = document.getElementById("switch");
                 let SCRIPT;
@@ -7202,7 +7235,7 @@ function injectMSPlayer() {
                 else {
                     canvas.innerHTML = `<div id="ms-player" class="game-layout__panorama" style="zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'"></div>`;
                 }
- 
+
                 var div = document.getElementById("player");
                 if (isBullseye || isLiveChallenge)
                 {
@@ -7248,9 +7281,9 @@ function injectMSPlayer() {
                         alert("Bing Maps API Loading Failed, please refresh");
                         // setTimeout(drawmapMS(), 1000);
                     }
- 
+
                 }
- 
+
                 if (partialCreateMS)
                 {
                     // drawmapMS();
@@ -7291,9 +7324,9 @@ function injectMSPlayer() {
         }
     });
 }
- 
- 
- 
+
+
+
 function injectMapillaryPlayer() {
     return new Promise((resolve, reject) => {
         if (!MAPILLARY_INJECTED) {
@@ -7318,7 +7351,7 @@ function injectMapillaryPlayer() {
                 if (isBattleRoyale) {
                     if (isDuel)
                     {
- 
+
                         canvas.innerHTML = `<div id="mapillary-player" class="inactive" style="zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'"></div>`;
                     }
                     else if (isBullseye)
@@ -7337,7 +7370,7 @@ function injectMapillaryPlayer() {
                 else {
                     canvas.innerHTML = `<div id="mapillary-player" class="game-layout__panorama" style="zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'"></div>`;
                 }
- 
+
                 var div = document.getElementById("player");
                 if (isBullseye || isLiveChallenge)
                 {
@@ -7348,16 +7381,16 @@ function injectMapillaryPlayer() {
                 {
                     div.appendChild(canvas);
                 }
- 
+
                 function drawMapML()
                 {
                     var {Viewer} = mapillary;
- 
+
                     MapillaryPlayer = new Viewer({
                         accessToken: MAPILLARY_API_KEY,
                         container: 'mapillary-player', // the ID of our container defined in the HTML body
                     });
- 
+
                     MapillaryPlayer.on('image', async (event) => {
                         // cnt = cnt + 1;
                         // console.log(cnt);
@@ -7385,7 +7418,7 @@ function injectMapillaryPlayer() {
                             btn.classList.remove('styles_disabled__2YdHD');
                         }
                     });
- 
+
                     MAPILLARY_INJECTED = true;
                 }
                 if (partialCreateMapillary)
@@ -7394,7 +7427,7 @@ function injectMapillaryPlayer() {
                 }
                 else
                 {
- 
+
                     SCRIPT.addEventListener('load', () => {
                         myHighlight("Mapillary API Loaded");
                         // resolve(BMap);
@@ -7409,7 +7442,7 @@ function injectMapillaryPlayer() {
         }
     });
 }
- 
+
 function changeInnerHTML(canvas1, init)
 {
     canvas1.style.display = "";
@@ -7422,13 +7455,19 @@ function changeInnerHTML(canvas1, init)
     {
         div.appendChild(canvas1);
     }
- 
+
     let canvas;
     if (init)
     {
         canvas = document.createElement("div");
         canvas.id = "mapbox-player";
-        canvas.style = `zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'`;
+        canvas.style.cssText = `overflow: visible; zIndex: 1; position: 'absolute'; top: 0; left: 0; width: 100%; height: 100%;`;
+        setTimeout(()=> {
+            canvas.style.overFlow = 'visible';
+           // canvas.style.width = '100%';
+           // canvas.style.height = '100%';
+        } 
+            , 1000);
         canvas1.appendChild(canvas);
     }
     else
@@ -7462,13 +7501,13 @@ function changeInnerHTML(canvas1, init)
         MapboxPlayer.resize();
     }
     // console.log(canvas);
- 
+
 }
- 
+
 function updateSunPosition(sunPos) {
     MapboxPlayer.setPaintProperty('sky', 'sky-atmosphere-sun', sunPos);
 }
- 
+
 function getSunPosition(date) {
     const center = MapboxPlayer.getCenter();
     const sunPos = SunCalc.getPosition(
@@ -7480,14 +7519,14 @@ function getSunPosition(date) {
     const sunAltitude = 90 - (sunPos.altitude * 180) / Math.PI;
     return [sunAzimuth, sunAltitude];
 }
- 
+
 // function handleRainLayer()
 // {
 //     if (typeof RainLayer !== typeof undefined)
 //     {
- 
+
 //         MapboxPlayer.addLayer(rainLayer);
- 
+
 //         console.log("Rain Layer loaded");
 //     }
 //     else
@@ -7495,7 +7534,7 @@ function getSunPosition(date) {
 //         setTimeout(handleRainLayer, 1000);
 //     }
 // }
- 
+
 function skyLayer(reset, time, style)
 {
     try
@@ -7529,15 +7568,15 @@ function skyLayer(reset, time, style)
                     'sky-atmosphere-sun-intensity': 5
                 }
             });
- 
+
             // handleRainLayer();
- 
- 
+
+
             // Reset Fog
         }
         let percentage;
         // console.log(time);
- 
+
         if (time[1] <= 75)
         {
             percentage = 0;
@@ -7550,9 +7589,9 @@ function skyLayer(reset, time, style)
         {
             percentage = 1;
         }
- 
+
         // console.log(MapboxPlayer.getStyle());
- 
+
         if (style)
         {
             MapboxPlayer.setPaintProperty(
@@ -7597,8 +7636,8 @@ function skyLayer(reset, time, style)
         // Note - error messages will vary depending on browser
     }
 }
- 
- 
+
+
 // function fetchTime(lat, lng)
 // {
 //     return new Promise((resolve, reject) => {
@@ -7608,7 +7647,7 @@ function skyLayer(reset, time, style)
 //     });
 // }
 // fetchTime(global_lat, global_lng).then((data) => {
- 
+
 function styleMapboxAll(changeAttr, attrVal)
 {
     let satelliteStyleBtn = document.getElementById("Satellite Type Button");
@@ -7617,7 +7656,7 @@ function styleMapboxAll(changeAttr, attrVal)
         global_lat,
         global_lng
     );
- 
+
     if (changeAttr === "Dimension" || changeAttr === "All" )
     {
         if (changeAttr === "All")
@@ -7625,16 +7664,21 @@ function styleMapboxAll(changeAttr, attrVal)
             attrVal = Dimension;
         }
         // console.log(["arrval", attrVal]);
- 
+
         let tempRadius;
         if (attrVal)
         {
-            tempRadius = ms_radius * 0.5;
+            // 3D mode = 1/2 radius + pitch.
+            // From Unity Script documentation: https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit#heading=h.wce3rggpxz7i
+            // "*In 3D, radius is reduced by 50% but maximum viewing area with pitch is ~110%."
+            tempRadius = ms_radius * 0.5; 
         }
         else
         {
+            // 2D mode = full radius.
             tempRadius = ms_radius;
         }
+
         let loc_centre = {lat: global_lat, lng: global_lng};
         let latlngBounds = getBBox2(loc_centre, tempRadius);
         // console.log([latlngBounds[0], latlngBounds[1]], [latlngBounds[2], latlngBounds[3]])
@@ -7642,9 +7686,25 @@ function styleMapboxAll(changeAttr, attrVal)
             [latlngBounds[1], latlngBounds[2]], // Southwest coordinates
             [latlngBounds[3], latlngBounds[0]] // Northeast coordinates
         ];
-        MapboxPlayer.flyTo({center: [global_lng, global_lat], zoom: 9});
-        MapboxMarker.setLngLat([global_lng, global_lat]);
+
+        MapboxPlayer.once("moveend", (x) => {
+           setTimeout(()=>{
+                // Wait for the map to load a bit and then reset the map.
+
+                MapboxMarker.setLngLat([global_lng, global_lat]);
+            
+                MapboxPlayer.easeTo({
+                    bearing: 0,
+                    pitch: 0,
+                    zoom: 0,
+                    duration: 1000,
+                });
+           }, 1000);
+        });
+
         MapboxPlayer.setMaxBounds(mpBounds);
+        MapboxPlayer.setCenter([global_lng, global_lat]);
+        
         if (attrVal)
         {
             MapboxPlayer.dragRotate.enable();
@@ -7677,7 +7737,7 @@ function styleMapboxAll(changeAttr, attrVal)
         {
             MapboxPlayer.setStyle("mapbox://styles/jupaoqq/cl0ro0tm0001l14nyi17a91rs");
         }
- 
+
         // MapboxPlayer.addLayer(rainLayer);
         setTimeout(() => {
             skyLayer("reset", getSunPosition(sunPositions[satelliteStyleBtn.currentTime]), mapSty);
@@ -7717,7 +7777,7 @@ function styleMapboxAll(changeAttr, attrVal)
                 0
             );
         }
- 
+
     }
     if (changeAttr === "Weather" || changeAttr === "All")
     {
@@ -7737,7 +7797,7 @@ function styleMapboxAll(changeAttr, attrVal)
         }
     }
 }
- 
+
 function injectMapboxPlayer() {
     return new Promise((resolve, reject) => {
         if (!MAPBOX_INJECTED) {
@@ -7748,16 +7808,17 @@ function injectMapboxPlayer() {
             else {
                 // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
                 let switchCovergeButton = document.getElementById("switch");
- 
+
                 let canvas = document.createElement("sat-map");
                 canvas.id = "sat_map";
+                canvas.style.cssText = `z-index: 1; position: absolute; top: 0px; left: 0px; height: 100%; width: 100%;`;
                 canvas.classList.add("sat_map");
                 changeInnerHTML(canvas, true);
- 
- 
+
+
                 // mapbox://styles/jupaoqq/cl0rnlwp9001914mz2vpinynt
                 // mapbox://styles/jupaoqq/cl0ro0tm0001l14nyi17a91rs
- 
+
                 let SCRIPT;
                 if (!partialCreateMapbox)
                 {
@@ -7766,7 +7827,7 @@ function injectMapboxPlayer() {
                     SCRIPT2.async = true;
                     SCRIPT2.src = `https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js`;
                     document.body.appendChild(SCRIPT2);
- 
+
                     SCRIPT = document.createElement("script");
                     SCRIPT.type = "text/javascript";
                     SCRIPT.async = true;
@@ -7806,6 +7867,11 @@ function injectMapboxPlayer() {
                                 });
                                 // add the DEM source as a terrain layer with exaggerated height
                                 MapboxPlayer.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+                             //   MapboxPlayer.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': [
+                             //                                                      `interpolate`, ['exponential', 1.5],
+                             //                                                          //['zoom'], 0, 0.2, 7, 1
+                             //                                                          ['zoom'], 3, 3, 7, 3
+                             //                                                      ] });
                                 rainLayer = new RainLayer({
                                     id: 'rain',
                                     source: 'rainviewer',
@@ -7814,21 +7880,18 @@ function injectMapboxPlayer() {
                                 MapboxPlayer.addLayer(rainLayer);
                                 // TODO
                                 // MapboxPlayer.setFog({'range': [-1, 1.5], 'color': `rgba(255, 255, 255, 1.0)`,'horizon-blend': 0.1});
-                                styleMapboxAll("All", true);
+                                //styleMapboxAll("All", true);
                                 skyLayer("reset", "", true);
- 
- 
- 
- 
+
                             });
- 
+
                         });
                     });
- 
- 
+
+
                     MAPBOX_INJECTED = true;
                     resolve();
- 
+
                 }
                 else
                 {
@@ -7841,9 +7904,9 @@ function injectMapboxPlayer() {
         }
     });
 }
- 
- 
- 
+
+
+
 function handleMapillary(latlng, options)
 {
     console.log("handleMapillary")
@@ -7878,7 +7941,7 @@ function handleMapillary(latlng, options)
         console.log(error);
     });
 }
- 
+
 function handleMapillaryHelper(latlng, options)
 {
     return new Promise((resolve, reject) => {
@@ -7891,7 +7954,7 @@ function handleMapillaryHelper(latlng, options)
             .catch((error) => {console.log(error);});
     });
 }
- 
+
 function injectMapyPlayer() {
     return new Promise((resolve, reject) => {
         if (!MAPY_INJECTED) {
@@ -7901,7 +7964,7 @@ function injectMapyPlayer() {
                 console.log("No Mapy Key")
             }
             else {
- 
+
                 // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
                 let switchCovergeButton = document.getElementById("switch");
                 let SCRIPT;
@@ -7917,7 +7980,7 @@ function injectMapyPlayer() {
                 if (isBattleRoyale) {
                     if (isDuel)
                     {
- 
+
                         canvas.innerHTML = `<div id="mapy-player" class="inactive" style="zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'"></div>`;
                     }
                     else if (isBullseye)
@@ -7936,7 +7999,7 @@ function injectMapyPlayer() {
                 else {
                     canvas.innerHTML = `<div id="mapy-player" class="game-layout__panorama" style="zIndex: 99999, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'"></div>`;
                 }
- 
+
                 var div = document.getElementById("player");
                 if (isBullseye || isLiveChallenge)
                 {
@@ -7947,7 +8010,7 @@ function injectMapyPlayer() {
                 {
                     div.appendChild(canvas);
                 }
- 
+
                 var mapyPanoChange = function (signal) {
                     if (defaultPanoIdChange) {
                         let mapyLat = MapyPlayer.getPlace()._data.mark.lat;
@@ -7956,7 +8019,7 @@ function injectMapyPlayer() {
                         switchCovergeButton.lat = mapyLat;
                         switchCovergeButton.lng = mapyLng;
                         switchCovergeButton.heading = mapyHeading;
- 
+
                         if (locHistory.length > 0)
                         {
                             let toPush = true;
@@ -7987,7 +8050,7 @@ function injectMapyPlayer() {
                         defaultPanoIdChange = true;
                     }
                 }
- 
+
                 function crMap()
                 {
                     MapyPlayer = new SMap.Pano.Scene(document.getElementById("mapy-player"));
@@ -8016,12 +8079,12 @@ function injectMapyPlayer() {
         }
     });
 }
- 
- 
+
+
 /**
  * Minimap presets
  */
- 
+
 let water_name_only =
     [
         {
@@ -8141,7 +8204,7 @@ let country_name_only =
             ]
         }
     ]
- 
+
 let no_label_or_terrain =
     [
         {
@@ -8210,7 +8273,7 @@ let no_label_or_terrain =
             ]
         }
     ]
- 
+
 let no_label =
     [
         {
@@ -8230,9 +8293,9 @@ let no_label =
             ]
         }
     ]
- 
+
 let blank =
- 
+
     [
         {
             "stylers": [
@@ -8242,9 +8305,9 @@ let blank =
             ]
         }
     ]
- 
+
 let thick_border =
- 
+
     [
         {
             "featureType": "administrative.country",
@@ -8265,7 +8328,7 @@ let thick_border =
             ]
         }
     ]
- 
+
 let Indonesia =
     [
         {
@@ -8322,7 +8385,7 @@ let Indonesia =
             ]
         }
     ]
- 
+
 let dark = [
     {
         "elementType": "geometry",
@@ -8509,9 +8572,9 @@ let dark = [
         ]
     }
 ]
- 
+
 let default_preset = []
- 
+
 let presetMinimap = [[default_preset, "Default"],
                      [blank, "Blank"],
                      [water_name_only, "Oceanman"],
@@ -8525,14 +8588,14 @@ let presetMinimap = [[default_preset, "Default"],
                      [default_preset, "Terrain"],
                      [default_preset, "Hybrid"],
                      [custom, "Custom", customMode]]
- 
+
 let GEOJSON_INVISIBLE =
     {
         strokeOpacity: 0,
         fillOpacity: 0,
         clickable: false,
     }
- 
+
 let presetOverlay = [["Clear",""],
                      ["Coverage",""],
                      ["Official",""],
@@ -8548,7 +8611,7 @@ let presetOverlay = [["Clear",""],
                      ["Time Zone", "https://raw.githubusercontent.com/treyerl/timezones/master/timezones_wVVG8.geojson"],
                      ["UK Parliament", "https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json"],
                      ["Custom", YOUR_URL]]
- 
+
 let spaceMinimap = [["Earth",""],
                     ["Moon", "https://s3.amazonaws.com/opmbuilder/301_moon/tiles/w/hillshaded-albedo/"],
                     ["Moon (Labels)", "https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/"],
@@ -8556,7 +8619,7 @@ let spaceMinimap = [["Earth",""],
                     ["Mars (Labels)", "https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/all/"],
                     ["Mars-Viking", "http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/viking_mdim21_global/"],
                    ]
- 
+
 let spaceMinimap2 = [["Mercury", "mercury/mercury_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=MESSENGER_May2013"],
                      ["Venus", "venus/venus_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=MAGELLAN_color"],
                      ["Phobos", "mars/phobos_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=VIKING"],
@@ -8569,7 +8632,7 @@ let spaceMinimap2 = [["Mercury", "mercury/mercury_simp_cyl.map&SERVICE=WMS&VERSI
                      ["Ganymede", "jupiter/ganymede_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=GALILEO_VOYAGER"],
                      ["Io", "jupiter/io_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=SSI_VGR_color"]
                     ]
- 
+
 let spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI"],
                      ["Dione", "saturn/dione_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI_VOYAGER"],
                      ["Enceladus", "saturn/enceladus_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI"],
@@ -8582,10 +8645,10 @@ let spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=
                      ["Neptune", "neptune/neptune_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=JHT_VOYAGER"],
                      ["Pluto", "pluto/pluto_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=NEWHORIZONS_PLUTO_MOSAIC"],
                     ]
- 
+
 let spaceList = ["Moon", "Mars", "Mercury", "Venus", "Phobos", "Deimos", "Ceres", "Vesta", "Jupiter", "Callisto", "Europa", "Ganymede", "Io",
                  "Saturn", "Dione", "Enceladus", "Iapetus", "Mimas", "Rhea", "Tethys", "Titan", "Uranus", "Neptune", "Pluto", "Solar System"];
- 
+
 function handleSpURL(url, x1, y1, z1)
 {
     function tile2long(x,z) {
@@ -8595,17 +8658,17 @@ function handleSpURL(url, x1, y1, z1)
         var n=Math.PI-2*Math.PI*y/Math.pow(2,z);
         return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
     }
- 
+
     let NWlon = tile2long(x1,z1)
     let NWlat = tile2lat(y1,z1)
     let SElon = tile2long(x1 + 1,z1)
     let SElat = tile2lat(y1 + 1,z1)
     return "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/" + url + "&WIDTH=256&HEIGHT=256&CRS=EPSG%3A4326&STYLES=&BBOX=" + `${SElat}%2C${NWlon}%2C${NWlat}%2C${SElon}`;
 }
- 
+
 // return `https://tiles.mapgenie.io/games/gta5/los-santos/satellite/${z}/${x}/${y}.png`
 // return `https://mapsv0.bdimg.com/tile/?udt=20200825&qt=tile&styles=pl&x=${x}&y=${y}&z=${z+2}`
- 
+
 let langDict = {
     "sn": ["fr"],
     "za": ["af"],
@@ -8685,9 +8748,9 @@ let langDict = {
     "pe": ["es"],
     "uy": ["es"]
 };
- 
+
 // ch, lu, be, ad
- 
+
 let carteDict = {
     "AG": "agadir",
     "AS": "asilah",
@@ -8700,12 +8763,12 @@ let carteDict = {
     "ME": "meknes",
     "RA": "rabat",
 };
- 
+
 let satType = [["Weather", "Weather: On", "Weather: Off"],
                ["Building", "Building: On", "Building: Off"],
                ["Dimension", "3D", "2D"],
                ["mapSty", "Satellite", "Road"]];
- 
+
 let satStyle = [["solarNoon","Noon"],
                 ["sunriseEnd","Sunrise"],
                 ["goldenHourEnd","Morning"],
@@ -8714,3 +8777,53 @@ let satStyle = [["solarNoon","Noon"],
                 ["nadir","Midnight"],
                 ["getlocal","Local Time"],
                ];
+
+
+
+let HUD_ZINDEX_UPDATER = setInterval(()=>{
+    // Added by EC
+    let huds = document.querySelectorAll(`div[class*="Hud"i]`);
+
+    huds.forEach((hudEl)=>{
+        if (hudEl._zindexSet) return;
+        hudEl.style.zIndex = '2';
+        hudEl._zindexSet = true;
+    })
+
+}, 2000);
+
+
+setInterval(function () {
+         const guessmap = document.querySelector("div[data-qa='guess-map']");
+             //const canvas = document.querySelector("#satMapContainer");
+             const canvass = document.querySelectorAll("canvas");
+             
+             if (guessmap && !guessmap.__n) {
+                     // Sometimes the guess map doesn't open back up.
+                 
+                 guessmap.addEventListener("mouseover", function (e) {
+                 if (!guessmap.activeClass) {
+                     setTimeout(()=>{
+                         guessmap.activeClass = Array.from(guessmap.classList).reduce( (x, a) => x + (/active/i.test(a) ? a : ""), "",);
+                     }, 100);
+                     return;
+                 }
+                 guessmap.classList.add(guessmap.activeClass);
+                 });
+                 guessmap.__n = true;
+             }
+             
+             canvass.forEach(canvas =>{
+                 if (canvas && canvas.__n) return;
+                 
+                 canvas.addEventListener("mousedown", function () {
+                     const guessmap = document.querySelector("div[data-qa='guess-map']");
+                     if (!guessmap.activeClass) {
+                         guessmap.activeClass = Array.from(guessmap.classList).reduce( (x, a) => x + (/active/i.test(a) ? a : ""), "",);
+                     }
+                     guessmap.classList.remove(guessmap.activeClass);
+                 });
+                 
+                 canvas.__n = true;
+             });
+  }, 2000);
