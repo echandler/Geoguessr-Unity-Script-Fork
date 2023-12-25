@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.4
+// @version       7.0.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -297,7 +297,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.0.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.0.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -1125,7 +1125,7 @@ function handleStyles()
         opacity: 0.8;
     height:2em;
     position:fixed;
-    z-index:99999;
+    z-index:99990;
     background-color: #ba55d3;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
     border: none;
@@ -1242,7 +1242,19 @@ function hideOtherBtn()
     for (let element of document.getElementsByClassName("unity-btn")){
         if (element.id !== "Show Buttons")
         {
-            element.style.visibility = "hidden";
+           if (!element.styleTop){
+               element.styleTop = element.style.top;
+           }
+           clearTimeout(element._timer);
+
+           element.style.transition = "0.2s top ease";
+           element.style.top = "calc(6em)";
+           element._timer = setTimeout(()=>{
+               element.style.visibility = "hidden";
+               element.style.transition = "";
+           }, 950)
+
+           if (!element.classList.contains("menu-btn")) { debugger;element.style.visibility = "hidden"; }
         }
         if (nextPlayer == "Youtube" && element.classList.contains("youtube-btn"))
         {
@@ -1868,9 +1880,9 @@ function UnityInitiate() {
     var mainMenuBtn = document.createElement("Button");
     mainMenuBtn.classList.add("unity-btn", "main-btn");
     mainMenuBtn.id = "Show Buttons";
-    mainMenuBtn.hide = true;
+    mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.4EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.5EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1878,11 +1890,24 @@ function UnityInitiate() {
     mainMenuBtn.addEventListener("click", () => {
         if (mainMenuBtn.hide) {
             for (let element of document.getElementsByClassName("unity-btn")){
-                if (element.classList.contains("menu-btn"))
-                {
-                    element.style.visibility = "";
+                
+                    if (!element.styleTop){
+                        if (element.classList.contains("menu-btn")) {    element.style.visibility = "";}
+                        //element.styleTop = element.style.top;
+                       continue;
+                    }
+                    clearTimeout(element._timer);
+
+                    if (element.classList.contains("menu-btn")) {    element.style.visibility = "";}
+
+                   element.style.transition = "0.2s all ease";
+                   element.style.top = element.styleTop;
+
+                   element._timer = setTimeout(()=>{
+                      element.style.transition = "";
+                   }, 950)
                 }
-            }
+            
             mainMenuBtn.menuBtnCache = true;
             mainMenuBtn.hide = false;
         }
@@ -1897,7 +1922,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -3741,7 +3766,7 @@ function setHidden(cond)
     if (mainMenuBtn != null)
     {
         mainMenuBtn.style.visibility = "";
-        mainMenuBtn.hide = true;
+        mainMenuBtn.hide = cond;
         // console.log(["cache", mainMenuBtn.menuBtnCache]);
         if (cond)
         {
@@ -4818,6 +4843,7 @@ function loaderChecker(map_name)
     }
 
     setHidden(false);
+
     if (map_name.includes("China Tips for each province"))
     {
         guaranteeUI();
