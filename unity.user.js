@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.6
+// @version       7.0.7
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -297,7 +297,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.0.6 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.0.7 by Jupaoqq");
 
 
 // Store each player instance
@@ -399,7 +399,7 @@ let partialCreateMapy = false;
 // Geoguessr Canvas String Names
 
 let GENERAL_LAYOUT = `[class*="game_canvas"]`;//`[aria-label="Street View"] > canvas`;//".game-layout__canvas";
-let GENERAL_CANVAS = ".game-layout__panorama-canvas";
+let GENERAL_CANVAS = `[data-qa*="panorama-canvas"]`; //".game-layout__panorama-canvas";
 let BR_CANVAS = ".br-game-layout__panorama-canvas";
 let BR_WRAPPER = ".br-game-layout__panorama-wrapper";
 let BR_LAYOUT = ".br-game-layout";
@@ -1882,7 +1882,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.6EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.7EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1922,7 +1922,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.6</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.7</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2563,7 +2563,7 @@ function UnityInitiate() {
                 }
                 else if (nextPlayer == "Mapillary" || nextPlayer == "Google")
                 {
-                    MAPILLARY_MAPS_CANVAS.style.visibility = "hidden";
+                    //MAPILLARY_MAPS_CANVAS.style.visibility = "hidden";
                 }
                 else if (nextPlayer == "Bing Streetside" || nextPlayer == "Planets")
                 {
@@ -2658,7 +2658,7 @@ function UnityInitiate() {
                 }
                 else if (nextPlayer == "Mapillary" || nextPlayer == "Google" )
                 {
-                    MAPILLARY_MAPS_CANVAS.style.visibility = "";
+                    //MAPILLARY_MAPS_CANVAS.style.visibility = "";
                 }
                 else if (nextPlayer == "Bing Streetside" || nextPlayer == "Planets")
                 {
@@ -5216,7 +5216,6 @@ function locationCheck(data) {
         round = data.rounds[data.round - 1];
         global_cc = round.streakLocationCode;
     }
-
     global_lat = round.lat;
     global_lng = round.lng;
     global_panoID = round.panoId;
@@ -7008,7 +7007,9 @@ function injectContainer() {
     const iframe = document.createElement('iframe');
     iframe.frameBorder = 0;
     iframe.style.position = "absolute";
+    iframe.style.zIndex = "2";
     iframe.id = "i_container";
+
     if (isBattleRoyale) {
         if (isDuel)
         {
