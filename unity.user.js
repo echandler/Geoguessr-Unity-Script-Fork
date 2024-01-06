@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.7
+// @version       7.0.8 
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -297,7 +297,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.0.7 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.0.8 by Jupaoqq");
 
 
 // Store each player instance
@@ -1254,7 +1254,7 @@ function hideOtherBtn()
                element.style.transition = "";
            }, 950)
 
-           if (!element.classList.contains("menu-btn")) { debugger;element.style.visibility = "hidden"; }
+           if (!element.classList.contains("menu-btn")) { element.style.visibility = "hidden"; }
         }
         if (nextPlayer == "Youtube" && element.classList.contains("youtube-btn"))
         {
@@ -1882,7 +1882,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.7EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.8EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1922,7 +1922,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.7</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.8</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -3985,6 +3985,8 @@ function launchObserver() {
                     {
                         let sat = m.getElementsByTagName('sat-map');
                         let sat0 = null;
+                        let minimap = m.querySelector('.game_guessMap__MTlQ_');
+
                         if (sat.length !== 0)
                         {
                             sat0 = sat[0];
@@ -3992,7 +3994,8 @@ function launchObserver() {
                             // console.log(sat0)
                             //sat0.querySelector('.mapboxgl-map').classList.remove("inactive", "game-panorama_panorama__ncMwh", "game-panorama_panorama__IuPsO", "br-game-layout__panorama", "game-layout__panorama", "game-panorama_panorama__rdhFg")
                             document.body.appendChild(sat0);
-                            
+                            document.body.appendChild(minimap);
+                              
                             let t = setInterval(()=>{
 
                                 let GAME_CANVAS = document.querySelector(GENERAL_LAYOUT);
@@ -4003,6 +4006,7 @@ function launchObserver() {
                                 GAME_CANVAS.id = "player";
                                 GAME_CANVAS.appendChild(sat0)
 
+                                GAME_CANVAS.appendChild(minimap)
                                 sat0.style.display = "";
 
                                 detectGamePage();
@@ -4025,7 +4029,9 @@ function launchObserver() {
                         let PATHNAME = window.location.pathname;
                         // let sat4 = m.getElementsByClassName('fullscreen-spinner_square__mwMfl');
                         // console.log(m.classList.contains('round-starting_wrapper__1G_FC'));
-                        if (m.classList.contains("game-layout__panorama-message"))
+
+                        //if (m.classList.contains("game-layout__panorama-message"))
+                        if (document.body.querySelector(`[class*="game_panoramaMessage"]`))
                         {
                             console.log("Fail to load canvas message")
                             if (allowDetect)
@@ -4696,7 +4702,6 @@ function loaderChecker(map_name)
         {
             bing_map = false;
         }
-        debugger;
         injectMSPlayer();
         // initBing = true;
         BR_LOAD_MS = true;
@@ -5189,6 +5194,7 @@ function handleButtons() {
 
 function locationCheck(data) {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
+    console.log(data)
     let round;
     let switchCovergeButton = document.getElementById("switch");
     let satelliteSwitchButton = document.getElementById("Satellite Switch");
@@ -6180,8 +6186,15 @@ function goToLocation(cond) {
                     iframe.style.right = '-15px';
                     iframe.style.width = (window.innerWidth + 15) + 'px';
                 }
+
                 let urlStr2 = "https://map.baidu.com/?panotype=street&pid=" + global_BDID + "&panoid=" + global_BDID + "&from=api";
                 let urlStr = "https://map.baidu.com/@" + global_BDAh + "," + global_BDBh + "#panoid=" + global_BDID + "&panotype=street&l=12&tn=B_NORMAL_MAP&sc=0&newmap=1&shareurl=1&pid=" + global_BDID;
+                
+                // Hack to change status bar z index
+                const statusBar = document.querySelector(`[class*="game_status"]`);
+                statusBar.style.zIndex = 3;
+                 makeBaiduGuessMapHack();
+                
                 // console.log(urlStr)
                 if (global_BDAh != null)
                 {
@@ -8850,3 +8863,73 @@ setInterval(function () {
                  canvas.__n = true;
              });
   }, 2000);
+
+  function makeBaiduGuessMapHack(){
+      const guessMap = document.querySelector(`[class*="game_guessMap"]`);
+      guessMap.style.flexDirection = "column";
+
+      const mapContainer = document.createElement("div");
+      mapContainer.style.width = "23vw";
+      mapContainer.style.height = "18vw";
+      mapContainer.classList.add("hi");
+      guessMap.appendChild(mapContainer);
+
+      let map = new google.maps.Map(mapContainer, {
+        center: { lat: 0, lng: 0 },
+        zoom: 0,
+        disableDefaultUI: true,
+      });
+      
+      let marker =new google.maps.Marker({
+        map,
+        title: "Hello World!",
+    }); 
+
+      let latLng = null;
+
+      map.addListener("click", (evt) => {
+        console.log(evt);
+        latLng = evt.latLng.toJSON();
+        guessBtn.disabled = false;
+        marker.setPosition(evt.latLng);
+      });
+
+      const guessBtnContainer = document.createElement("div");
+      const guessBtn = document.createElement("button");
+      guessBtn.innerHTML = "Baidu Guess Button";
+      guessBtn.style.cssText = "background: #526b7e; border-radius: 10px; width: 100%; padding: 1em;"
+      guessBtn.disabled = true;
+      guessBtn.addEventListener('click', (evt)=>{
+            const mapId = location.href.replace(/.*\/(.*)/, "$1");
+
+            fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
+                headers: {
+                accept: "*/*",
+                "accept-language": "en-US,en;q=0.9",
+                "cache-control": "no-cache",
+                "content-type": "application/json",
+                pragma: "no-cache",
+                "sec-ch-ua":
+                    '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Linux"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "x-client": "web",
+                },
+                referrer: "https://www.geoguessr.com/game/rks2XFcZOIQlZQg9",
+                referrerPolicy: "strict-origin-when-cross-origin",
+                body: `{"token":"${mapId}","lat\":${latLng.lat},"lng\":${latLng.lng},"timedOut":false}`,
+                method: "POST",
+                mode: "cors",
+                credentials: "include",
+            });
+            guessBtn.innerHTML = "Reloading screen in 1 second!"; 
+            setTimeout(()=> location.reload(), 1000);
+      });
+
+      guessBtnContainer.appendChild(guessBtn);
+
+      guessMap.appendChild(guessBtnContainer);
+  }
