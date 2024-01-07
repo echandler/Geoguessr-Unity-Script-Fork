@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.8 
+// @version       7.0.9 
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -297,7 +297,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.0.8 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.0.9 by Jupaoqq");
 
 
 // Store each player instance
@@ -1882,7 +1882,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.8EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.9EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1922,7 +1922,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.8</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.9</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -8868,10 +8868,16 @@ setInterval(function () {
       const guessMap = document.querySelector(`[class*="game_guessMap"]`);
       guessMap.style.flexDirection = "column";
 
+      const iContainer = document.getElementById("i_container");
+      iContainer.addEventListener("mouseover", () =>
+        mapContainer.classList.remove(`baidu_guess_map_active`)
+      );
+
       const mapContainer = document.createElement("div");
-      mapContainer.style.width = "23vw";
-      mapContainer.style.height = "18vw";
-      mapContainer.classList.add("hi");
+      mapContainer.classList.add("baidu_guess_map");
+      mapContainer.addEventListener("mouseover", () =>
+        mapContainer.classList.add(`baidu_guess_map_active`)
+      );
       guessMap.appendChild(mapContainer);
 
       let map = new google.maps.Map(mapContainer, {
@@ -8879,11 +8885,11 @@ setInterval(function () {
         zoom: 0,
         disableDefaultUI: true,
       });
-      
-      let marker =new google.maps.Marker({
+
+      let marker = new google.maps.Marker({
         map,
         title: "Hello World!",
-    }); 
+      });
 
       let latLng = null;
 
@@ -8897,39 +8903,58 @@ setInterval(function () {
       const guessBtnContainer = document.createElement("div");
       const guessBtn = document.createElement("button");
       guessBtn.innerHTML = "Baidu Guess Button";
-      guessBtn.style.cssText = "background: #526b7e; border-radius: 10px; width: 100%; padding: 1em;"
+      guessBtn.style.cssText =
+        "background: #526b7e; border-radius: 10px; width: 100%; padding: 1em;";
       guessBtn.disabled = true;
-      guessBtn.addEventListener('click', (evt)=>{
-            const mapId = location.href.replace(/.*\/(.*)/, "$1");
+      guessBtn.addEventListener("click", (evt) => {
+        const mapId = location.href.replace(/.*\/(.*)/, "$1");
 
-            fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
-                headers: {
-                accept: "*/*",
-                "accept-language": "en-US,en;q=0.9",
-                "cache-control": "no-cache",
-                "content-type": "application/json",
-                pragma: "no-cache",
-                "sec-ch-ua":
-                    '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": '"Linux"',
-                "sec-fetch-dest": "empty",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "same-origin",
-                "x-client": "web",
-                },
-                referrer: "https://www.geoguessr.com/game/rks2XFcZOIQlZQg9",
-                referrerPolicy: "strict-origin-when-cross-origin",
-                body: `{"token":"${mapId}","lat\":${latLng.lat},"lng\":${latLng.lng},"timedOut":false}`,
-                method: "POST",
-                mode: "cors",
-                credentials: "include",
-            });
-            guessBtn.innerHTML = "Reloading screen in 1 second!"; 
-            setTimeout(()=> location.reload(), 1000);
+        fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
+          headers: {
+            accept: "*/*",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            pragma: "no-cache",
+            "sec-ch-ua":
+              '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Linux"',
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-client": "web",
+          },
+          referrer: "https://www.geoguessr.com/game/rks2XFcZOIQlZQg9",
+          referrerPolicy: "strict-origin-when-cross-origin",
+          body: `{"token":"${mapId}","lat\":${latLng.lat},"lng\":${latLng.lng},"timedOut":false}`,
+          method: "POST",
+          mode: "cors",
+          credentials: "include",
+        });
+        guessBtn.innerHTML = "Reloading screen in 1 second!";
+        setTimeout(() => location.reload(), 1000);
       });
 
       guessBtnContainer.appendChild(guessBtn);
 
       guessMap.appendChild(guessBtnContainer);
+
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `<style> 
+          .baidu_guess_map {
+              --active-height: 4vh;
+              --active-width: 4vw;
+              width: max(15vw, var(--active-width));
+              height: max(20vh, var(--active-height));
+              position: relative;
+              overflow: hidden;
+          }
+
+          .baidu_guess_map_active {
+              --active-height: 70vh !important;
+              --active-width: 50vw !important;
+          } 
+      </style>`);
   }
