@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script 
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.0.9 
+// @version       7.1.0 
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
 // @license       MIT
+// @namespace     Unity script 
 // @namespace     https://greasyfork.org/users/838374
 // @grant         none
 // @downloadURL   https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.user.js 
@@ -297,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.0.9 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.0 by Jupaoqq");
 
 
 // Store each player instance
@@ -1882,7 +1883,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.0.9EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.0EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1922,7 +1923,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.0.9</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.0</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4629,6 +4630,14 @@ function loaderChecker(map_name)
         BR_LOAD_MAPILLARY = true;
         injectMapillaryPlayer();
     }
+     
+    const unityNerdNoob = /unity nerd|noob/i.test(map_name);
+    
+    if (!unityNerdNoob){
+        deactivateUnityNerd();        
+    } else {
+        activateUnityNerd();
+    }
 
     if (map_name.includes("A United World") || map_name.includes("A Unity World") || map_name.includes("Unity Test") || map_name.includes("Unity Special Edition"))
     {
@@ -5195,6 +5204,30 @@ function handleButtons() {
 function locationCheck(data) {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     console.log(data)
+    let curRound = data.rounds[data.rounds.length -1];
+    
+    //
+    // Start of Unity Nerd stuff
+    //
+    let t = window.theArray;
+    let lat = curRound.lat.toFixed(14);
+    let lng = curRound.lng.toFixed(14);
+
+    t[3] = +(lat[lat.length-1-1] + lat[lat.length-1-0]) / 100;
+    t[2] = +(lat[lat.length-1-3] + lat[lat.length-1-2]) / 100;
+    t[1] = +(lat[lat.length-1-5] + lat[lat.length-1-4]) / 100;
+    t[0] = +(lat[lat.length-1-7] + lat[lat.length-1-6]) / 100;
+
+    t[7] = +(lng[lng.length-1-1] + lng[lng.length-1-0]) / 100; 
+    t[6] = +(lng[lng.length-1-3] + lng[lng.length-1-2]) / 100;
+    t[5] = +(lng[lng.length-1-5] + lng[lng.length-1-4]) / 100;
+    t[4] = +(lng[lng.length-1-7] + lng[lng.length-1-6]) / 100;
+
+    console.log(t);
+    //
+    // End of Unity Nerd stuff
+    //
+
     let round;
     let switchCovergeButton = document.getElementById("switch");
     let satelliteSwitchButton = document.getElementById("Satellite Switch");
@@ -5222,6 +5255,7 @@ function locationCheck(data) {
         round = data.rounds[data.round - 1];
         global_cc = round.streakLocationCode;
     }
+
     global_lat = round.lat;
     global_lng = round.lng;
     global_panoID = round.panoId;
@@ -5406,6 +5440,17 @@ function locationCheck(data) {
             NM = data.movementOptions.forbidMoving;
             NP = data.movementOptions.forbidRotating;
             NZ = data.movementOptions.forbidZooming;
+            let canvas = document.getElementById("sat_map");
+            if (!canvas)
+            {
+                injectMapboxPlayer();
+            }
+            else
+            {
+                changeInnerHTML(canvas, false);
+                MAPBOX_INJECTED = true;
+            }
+            nextPlayer = "Mapbox Satellite";
         }
     }
     if (NM || NP || NZ)
@@ -8958,3 +9003,229 @@ setInterval(function () {
           } 
       </style>`);
   }
+
+
+
+// ==UserScript==
+// @name         GeoNoCar test
+// @description  Redacts the car from geoguessr. Shift-K to toggle compass.
+// @namespace    GeoNoCar
+// @version      0.1.9
+// @author       drparse
+// @match        https://www.geoguessr.com/*
+// @grant        unsafeWindow
+// @run-at       document-start
+// @updateURL    https://openuserjs.org/meta/drparse/GeoNoCar.meta.js
+// @copyright 2020, drparse
+// @license GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @noframes
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+function injected() {
+    let globalGL = null;
+
+    const OPTIONS = {
+        colorR: 0.5,
+        colorG: 0.5,
+        colorB: 0.5,
+    };
+
+    // If the script breaks, search devtools for "BINTULU" and replace these lines with the new one
+    const vertexOld = "const float f=3.1415926;varying vec3 a;uniform vec4 b;attribute vec3 c;attribute vec2 d;uniform mat4 e;void main(){vec4 g=vec4(c,1);gl_Position=e*g;a=vec3(d.xy*b.xy+b.zw,1);a*=length(c);}";
+    const fragOld = "precision highp float;const float h=3.1415926;varying vec3 a;uniform vec4 b;uniform float f;uniform sampler2D g;void main(){vec4 i=vec4(texture2DProj(g,a).rgb,f);gl_FragColor=i;}";
+
+    const vertexNew = `
+const float f=3.1415926;
+varying vec3 a;
+varying vec3 potato;
+uniform vec4 b;
+attribute vec3 c;
+attribute vec2 d;
+uniform mat4 e;
+void main(){
+    vec4 g=vec4(c,1);
+    gl_Position=e*g;
+    a = vec3(d.xy * b.xy + b.zw,1);
+    a *= length(c);
+
+    potato = vec3(d.xy, 1.0) * length(c);
+}`;
+    const fragNew = `precision highp float;
+const float h=3.1415926;
+varying vec3 a;
+varying vec3 potato;
+uniform vec4 b;
+uniform float f;
+uniform sampler2D g;
+
+uniform float theArray1[4];
+uniform float theArray2[4];
+
+uniform float theArray[8];
+
+void main(){
+
+vec2 aD = potato.xy / a.z;
+float thetaD = aD.y;
+
+float thresholdD1 = 0.6;
+float thresholdD2 = 0.7;
+
+float x = aD.x;
+float y = abs(4.0*x - 2.0);
+float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
+
+if (aD.x > theArray[0] && aD.y > theArray[1] && aD.x < theArray[2] && aD.y < theArray[3]){
+    gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+    return;
+}
+
+if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < theArray[7]){
+    gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+    return;
+}
+
+//vec4 i = vec4(
+//  thetaD > mix(thresholdD1, thresholdD2, phiD)
+//  ? vec3(float(${OPTIONS.colorR}), float(${OPTIONS.colorG}), float(${OPTIONS.colorB})) // texture2DProj(g,a).rgb * 0.25
+//  : texture2DProj(g,a).rgb
+//,f);
+//gl_FragColor=i;
+
+    gl_FragColor=vec4(texture2DProj(g,a).rgb,f);
+}`;
+
+    function installShaderSource(ctx) {
+        const g = ctx.shaderSource;
+        function shaderSource() {
+            if (typeof arguments[1] === 'string') {
+                let glsl = arguments[1];
+             //   console.log('BINTULU shader', glsl);
+                if (glsl === vertexOld){
+                     glsl = vertexNew;
+
+                        globalGL = ctx;
+
+                        let oldCtx = ctx.linkProgram;
+                        ctx.linkProgram = function(...args){
+                            let p = oldCtx.call(this, args[0]);
+
+                            initWebGl(args[0]);
+
+                            return p;
+                        }
+                }
+                else if (glsl === fragOld) glsl = fragNew;
+                return g.call(this, arguments[0], glsl);
+            }
+            return g.apply(this, arguments);
+        }
+        shaderSource.bestcity = 'bintulu';
+        ctx.shaderSource = shaderSource;
+    }
+
+    function installGetContext(el) {
+        const g = el.getContext;
+        el.getContext = function() {
+            if (arguments[0] === 'webgl' || arguments[0] === 'webgl2') {
+                const ctx = g.apply(this, arguments);
+                if (ctx && ctx.shaderSource && ctx.shaderSource.bestcity !== 'bintulu') {
+                    installShaderSource(ctx);
+                }
+                return ctx;
+            }
+            return g.apply(this, arguments);
+        };
+    }
+
+    const f = document.createElement;
+
+    document.createElement = function() {
+        if (arguments[0] === 'canvas' || arguments[0] === 'CANVAS') {
+            const el = f.apply(this, arguments);
+            installGetContext(el);
+            return el;
+        }
+        return f.apply(this, arguments);
+    };
+
+    function addCompassStyle() {
+        let style = document.createElement('style');
+        style.id = 'bintulu_nocompass';
+        style.innerHTML = '.compass { display: none } .game-layout__compass { display: none }';
+        document.head.appendChild(style);
+    }
+
+    addCompassStyle();
+
+    document.addEventListener('keydown', (evt) => {
+      if (!evt.repeat && evt.code === 'KeyK' && evt.shiftKey && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {
+          let style = document.getElementById('bintulu_nocompass');
+          if (!style) {
+              addCompassStyle();
+          } else {
+              style.remove();
+          }
+      }
+   });
+
+    window.theArray = []; 
+    window.unityNerdTimer = null;
+    window.ignoreUnityNerd = false;
+
+        async function initWebGl(program){
+            let ell = document.querySelector('[aria-label="Street View"]');
+            let eventt;
+
+            triggerEvent(ell, "mouseup", eventt);
+            
+            window.unityNerdTimer = setInterval(function(){
+                if (window.ignoreUnityNerd) return;
+
+                let theArray1 = globalGL.getUniformLocation(program, 'theArray');
+
+                if (!theArray1) return;
+
+                globalGL.uniform1fv(theArray1, new Float32Array(window.theArray));
+                
+                triggerEvent(ell, "mouseout", eventt);
+
+                globalGL.flush();
+            }, 100);
+
+            return;
+
+        }
+
+        function triggerRefresh(){
+            let el = document.querySelector('[aria-label="Street View"]');
+            let event;
+            triggerEvent(el, "mouseout", event);
+        }
+
+        function triggerEvent( elem, type, event ) {
+            // From stack overflow can't remember where.
+            event = document.createEvent("MouseEvents");
+            event.initMouseEvent(type, true, true, elem.ownerDocument.defaultView,
+                                 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            elem.dispatchEvent( event );
+        }
+}
+
+  eval(`(${injected.toString()})()`);
+
+})();
+
+function activateUnityNerd(){
+    window.ignoreUnityNerd = false;
+}
+
+function deactivateUnityNerd(){
+     window.theArray = [];
+     setTimeout(()=>{
+        window.ignoreUnityNerd = true;
+     }, 500);
+}
