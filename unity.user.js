@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script 
+// @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.0 
+// @version       7.1.1 
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.0 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -1883,7 +1883,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.0EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.1EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1923,7 +1923,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.0</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4631,12 +4631,19 @@ function loaderChecker(map_name)
         injectMapillaryPlayer();
     }
      
-    const unityNerdNoob = /unity nerd|noob/i.test(map_name);
+    const unityNerd = /unity nerd/i.test(map_name);
+    const unityNoob = /unity noob/i.test(map_name);
     
-    if (!unityNerdNoob){
+    if (!unityNerd){
         deactivateUnityNerd();        
     } else {
         activateUnityNerd();
+    }
+
+    if (!unityNoob){
+        deactivateUnityNoob();        
+    } else {
+        activateUnityNoob();
     }
 
     if (map_name.includes("A United World") || map_name.includes("A Unity World") || map_name.includes("Unity Test") || map_name.includes("Unity Special Edition"))
@@ -9038,65 +9045,89 @@ function injected() {
     const fragOld = "precision highp float;const float h=3.1415926;varying vec3 a;uniform vec4 b;uniform float f;uniform sampler2D g;void main(){vec4 i=vec4(texture2DProj(g,a).rgb,f);gl_FragColor=i;}";
 
     const vertexNew = `
-const float f=3.1415926;
-varying vec3 a;
-varying vec3 potato;
-uniform vec4 b;
-attribute vec3 c;
-attribute vec2 d;
-uniform mat4 e;
-void main(){
-    vec4 g=vec4(c,1);
-    gl_Position=e*g;
-    a = vec3(d.xy * b.xy + b.zw,1);
-    a *= length(c);
+        const float f=3.1415926;
+        varying vec3 a;
+        varying vec3 potato;
+        uniform vec4 b;
+        attribute vec3 c;
+        attribute vec2 d;
+        uniform mat4 e;
+        void main(){
+            vec4 g=vec4(c,1);
+            gl_Position=e*g;
+            a = vec3(d.xy * b.xy + b.zw,1);
+            a *= length(c);
 
-    potato = vec3(d.xy, 1.0) * length(c);
+            potato = vec3(d.xy, 1.0) * length(c);
 }`;
     const fragNew = `precision highp float;
-const float h=3.1415926;
-varying vec3 a;
-varying vec3 potato;
-uniform vec4 b;
-uniform float f;
-uniform sampler2D g;
+        const float h=3.1415926;
+        varying vec3 a;
+        varying vec3 potato;
+        uniform vec4 b;
+        uniform float f;
+        uniform sampler2D g;
+        
+        uniform float theArray1[4];
+        uniform float theArray2[4];
+        
 
-uniform float theArray1[4];
-uniform float theArray2[4];
-
-uniform float theArray[8];
-
-void main(){
-
-vec2 aD = potato.xy / a.z;
-float thetaD = aD.y;
-
-float thresholdD1 = 0.6;
-float thresholdD2 = 0.7;
-
-float x = aD.x;
-float y = abs(4.0*x - 2.0);
-float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
-
-if (aD.x > theArray[0] && aD.y > theArray[1] && aD.x < theArray[2] && aD.y < theArray[3]){
-    gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
-    return;
-}
-
-if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < theArray[7]){
-    gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
-    return;
-}
-
-//vec4 i = vec4(
-//  thetaD > mix(thresholdD1, thresholdD2, phiD)
-//  ? vec3(float(${OPTIONS.colorR}), float(${OPTIONS.colorG}), float(${OPTIONS.colorB})) // texture2DProj(g,a).rgb * 0.25
-//  : texture2DProj(g,a).rgb
-//,f);
-//gl_FragColor=i;
-
-    gl_FragColor=vec4(texture2DProj(g,a).rgb,f);
-}`;
+        uniform float isNoob;
+        uniform float theArray[8];
+        
+        void main(){
+        
+        vec2 aD = potato.xy / a.z;
+        float thetaD = aD.y;
+        
+        float thresholdD1 = 0.6;
+        float thresholdD2 = 0.7;
+        
+        float x = aD.x;
+        float y = abs(4.0*x - 2.0);
+        float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
+        
+        if (aD.x > theArray[0] && aD.y > theArray[1] && aD.x < theArray[2] && aD.y < theArray[3]){
+            if (isNoob == 1.0){
+                float lineWidth = 0.0015;
+                if ((aD.x < theArray[0]+lineWidth) 
+                || (aD.y < theArray[1]+lineWidth)
+                || (aD.x > theArray[2]-lineWidth) 
+                || (aD.y > theArray[3]-lineWidth)){
+                    gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                    return;
+                }
+            } else { 
+                gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                return;
+            }
+        }
+        
+        if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < theArray[7]){
+            if (isNoob == 1.0){
+                float lineWidth = 0.0015;
+                if ((aD.x < theArray[4]+lineWidth) 
+                || (aD.y < theArray[5]+lineWidth)
+                || (aD.x > theArray[6]-lineWidth) 
+                || (aD.y > theArray[7]-lineWidth)){
+                    gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                    return;
+                }
+            } else { 
+                gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                return;
+            }
+        }
+        
+        //vec4 i = vec4(
+        //  thetaD > mix(thresholdD1, thresholdD2, phiD)
+        //  ? vec3(float(${OPTIONS.colorR}), float(${OPTIONS.colorG}), float(${OPTIONS.colorB})) // texture2DProj(g,a).rgb * 0.25
+        //  : texture2DProj(g,a).rgb
+        //,f);
+        //gl_FragColor=i;
+    
+        gl_FragColor=vec4(texture2DProj(g,a).rgb,f);
+    }`;
 
     function installShaderSource(ctx) {
         const g = ctx.shaderSource;
@@ -9174,7 +9205,8 @@ if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < the
 
     window.theArray = []; 
     window.unityNerdTimer = null;
-    window.ignoreUnityNerd = false;
+    window.ignoreUnityNerd = true;
+    window.ignoreUnityNoob = true;
 
         async function initWebGl(program){
             let ell = document.querySelector('[aria-label="Street View"]');
@@ -9183,13 +9215,16 @@ if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < the
             triggerEvent(ell, "mouseup", eventt);
             
             window.unityNerdTimer = setInterval(function(){
-                if (window.ignoreUnityNerd) return;
+                if (window.ignoreUnityNerd && window.ignoreUnityNoob) return;
 
-                let theArray1 = globalGL.getUniformLocation(program, 'theArray');
+                let theArray = globalGL.getUniformLocation(program, 'theArray');
 
-                if (!theArray1) return;
+                if (!theArray) return;
 
-                globalGL.uniform1fv(theArray1, new Float32Array(window.theArray));
+                let isNoob = globalGL.getUniformLocation(program, 'isNoob');
+
+                globalGL.uniform1fv(theArray, new Float32Array(window.theArray));
+                globalGL.uniform1f(isNoob, window.ignoreUnityNoob ? 0.0 : 1.0);
                 
                 triggerEvent(ell, "mouseout", eventt);
 
@@ -9227,5 +9262,16 @@ function deactivateUnityNerd(){
      window.theArray = [];
      setTimeout(()=>{
         window.ignoreUnityNerd = true;
+     }, 500);
+}
+
+function activateUnityNoob(){
+    window.ignoreUnityNoob = false;
+}
+
+function deactivateUnityNoob(){
+     window.theArray = [];
+     setTimeout(()=>{
+        window.ignoreUnityNoob = true;
      }, 500);
 }
