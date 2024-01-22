@@ -7,7 +7,7 @@
 // @match        https://map-making.app/maps/*
 // @grant        unsafeWindow
 // @run-at       document-start
-// @updateURL     
+// @updateURL    https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/Nerd-Noob%20Map%20Making%20Script/unityNerdScript.user.js
 // @copyright    2024 echandler 
 // @license      MIT 
 // @noframes
