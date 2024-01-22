@@ -2,7 +2,7 @@
 // @name         map-making.app nerd/noob script for Unity script
 // @description  Customize locations for Geoguessr maps that work with the Unity script. 
 // @namespace    Unity script 
-// @version      0.1
+// @version      0.2
 // @author       echandler 
 // @match        https://map-making.app/maps/*
 // @grant        unsafeWindow
@@ -68,35 +68,87 @@ float x = aD.x;
 float y = abs(4.0*x - 2.0);
 float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
 
-        if (aD.x > theArray[0] && aD.y > theArray[1] && aD.x < theArray[2] && aD.y < theArray[3]){
-            if (isNoob == 1.0){
-                float lineWidth = 0.0025;
-                if ((aD.x < theArray[0]+lineWidth) 
-                || (aD.y < theArray[1]+lineWidth)
-                || (aD.x > theArray[2]-lineWidth) 
-                || (aD.y > theArray[3]-lineWidth)){
+        float x1 = theArray[0]; 
+        float y1 = theArray[1]; 
+        float x2 = theArray[2]; 
+        float y2 = theArray[3];  
+        
+        if (x2 > x1){
+            if (aD.x > x1 && aD.y > y1 && aD.x < x2 && aD.y < y2){
+                if (isNoob == 1.0){
+                    float lineWidth = 0.0025;
+                    if ((aD.x < x1 + lineWidth) 
+                    || (aD.y < y1 + lineWidth)
+                    || (aD.x > x2 - lineWidth) 
+                    || (aD.y > y2 - lineWidth)){
+                        gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                        return;
+                    }
+                } else { 
                     gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
                     return;
                 }
-            } else { 
-                gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
-                return;
+            }
+        }  else {
+            // x1 is greater than x2.  
+            if ((aD.y > y1 && aD.y < y2) && (aD.x > x1 || aD.x < x2)){ 
+                if (isNoob == 1.0){
+                    float lineWidth = 0.0025;
+                    if (((aD.x < x1+lineWidth) && (aD.x > x1))
+                       || (aD.x < x2 && aD.x > x2-lineWidth)
+                       || (x2 == 0.0 && aD.x > 1.0-lineWidth) 
+                       || (aD.y < y1 + lineWidth)
+                       || (aD.y > y2 - lineWidth)
+                    ){
+                        gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                        return;
+                    }
+                } else { 
+                    gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                    return;
+                }
             }
         }
-        
-        if (aD.x > theArray[4] && aD.y > theArray[5] && aD.x < theArray[6] && aD.y < theArray[7]){
-            if (isNoob == 1.0){
-                float lineWidth = 0.0025;
-                if ((aD.x < theArray[4]+lineWidth) 
-                || (aD.y < theArray[5]+lineWidth)
-                || (aD.x > theArray[6]-lineWidth) 
-                || (aD.y > theArray[7]-lineWidth)){
+
+        x1 = theArray[4]; 
+        y1 = theArray[5]; 
+        x2 = theArray[6]; 
+        y2 = theArray[7];  
+       
+        if (x2 > x1){
+            if (aD.x > x1 && aD.y > y1 && aD.x < x2 && aD.y < y2){
+                if (isNoob == 1.0){
+                    float lineWidth = 0.0025;
+                    if ((aD.x < x1 + lineWidth) 
+                    || (aD.y < y1 + lineWidth)
+                    || (aD.x > x2 - lineWidth) 
+                    || (aD.y > y2 - lineWidth)){
+                        gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                        return;
+                    }
+                } else { 
                     gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
                     return;
                 }
-            } else { 
-                gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
-                return;
+            }
+        } else {
+            // x1 is greater than x2.  
+            if ((aD.y > y1 && aD.y < y2) && (aD.x > x1 || aD.x < x2)){ 
+                if (isNoob == 1.0){
+                    float lineWidth = 0.0025;
+                    if (((aD.x < x1+lineWidth) && (aD.x > x1))
+                       || (aD.x < x2 && aD.x > x2-lineWidth)
+                       || (x2 == 0.0 && aD.x > 1.0-lineWidth) 
+                       || (aD.y < y1 + lineWidth)
+                       || (aD.y > y2 - lineWidth)
+                    ){
+                        gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                        return;
+                    }
+                } else { 
+                    gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                    return;
+                }
             }
         }
 
@@ -374,14 +426,17 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnLeft.style.cssText = "position:absolute; right: 14.5em; bottom: 5em; width: 4em;"
         //btnLeft.addEventListener('click', (evt)=>{
         btnEvents(btnLeft, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[0] -= 0.01;
-                unsafeWindow.theArray[2] -= 0.01;
-            }else {
-                unsafeWindow.theArray[4] -= 0.01;
-                unsafeWindow.theArray[6] -= 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 0 : 4;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] -= 0.01;
+            if (ta[idx] < 0)unsafeWindow.theArray[idx] = 0.99;
+
+            ta[idx+2] -= 0.01;
+            if (ta[idx+2] < 0)unsafeWindow.theArray[idx+2] = 0.99;
+
             updateCurrentTag(); 
         });
 
@@ -392,14 +447,17 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnRight.style.cssText = "position:absolute; right: 10em; bottom: 5em; width: 4em;"
         //btnRight.addEventListener('click', (evt)=>{
         btnEvents(btnRight, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[0] += 0.01;
-                unsafeWindow.theArray[2] += 0.01;
-            } else {
-                unsafeWindow.theArray[4] += 0.01;
-                unsafeWindow.theArray[6] += 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 0 : 4;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] += 0.01;
+            if (ta[idx] >= 1.0) unsafeWindow.theArray[idx] = 0.0;
+
+            ta[idx+2] += 0.01;
+            if (ta[idx+2] >= 1.0) unsafeWindow.theArray[idx+2] = 0.00;
+
             updateCurrentTag(); 
         });
 
@@ -410,14 +468,14 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnUp.style.cssText = "position:absolute; right: 5.5em; bottom: 5em; width: 4em;"
         //btnUp.addEventListener('click', (evt)=>{
         btnEvents(btnUp, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[1] -= 0.01;
-                unsafeWindow.theArray[3] -= 0.01;
-            } else {
-                unsafeWindow.theArray[5] -= 0.01;
-                unsafeWindow.theArray[7] -= 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 1 : 5;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] -= 0.01;
+            ta[idx+2] -= 0.01;
+
             updateCurrentTag(); 
         });
 
@@ -428,14 +486,14 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnDown.style.cssText = "position:absolute; right: 1em; bottom: 5em; width: 4em;"
         //btnDown.addEventListener('click', 
         btnEvents(btnDown, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[1] += 0.01;
-                unsafeWindow.theArray[3] += 0.01;
-            } else {
-                unsafeWindow.theArray[5] += 0.01;
-                unsafeWindow.theArray[7] += 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 1 : 5;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] += 0.01;
+            ta[idx+2] += 0.01;
+
             updateCurrentTag(); 
         });
 
@@ -446,12 +504,13 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnHeightUp.style.cssText = "position:absolute; right: 10em; bottom: 3em; width: 6em;"
         //btnHeightUp.addEventListener('click', (evt)=>{
         btnEvents(btnHeightUp, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if(el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[1] -= 0.01;
-            } else {
-                unsafeWindow.theArray[5] -= 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 1 : 5;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] -= 0.01;
+
             updateCurrentTag(); 
         });
 
@@ -462,12 +521,13 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnHeightDown.style.cssText = "position:absolute; right: 3em; bottom: 3em; width: 6em;"
         //btnHeightDown.addEventListener('click', (evt)=>{
         btnEvents(btnHeightDown, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if(el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[1] += 0.01;
-            } else {
-                unsafeWindow.theArray[5] += 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 1 : 5;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] += 0.01;
+
             updateCurrentTag(); 
         });
 
@@ -478,12 +538,13 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnWidthUp.style.cssText = "position:absolute; right: 10em; bottom: 1em; width: 6em;"
         //btnWidthUp.addEventListener('click', (evt)=>{
         btnEvents(btnWidthUp, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[2] -= 0.01;
-            } else {
-                unsafeWindow.theArray[6] -= 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 2 : 6;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] -= 0.01;
+            if(ta[idx] < 0) ta[idx] = 0.99;
             updateCurrentTag(); 
         });
 
@@ -494,12 +555,14 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
         btnWidthDown.style.cssText = "position:absolute; right: 3em; bottom: 1em; width: 6em;"
         //btnWidthDown.addEventListener('click', (evt)=>{
         btnEvents(btnWidthDown, (evt)=>{
-            unsafeWindow.theArray.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
-            if (dropDown.value === '1'){
-                unsafeWindow.theArray[2] += 0.01;
-            } else {
-                unsafeWindow.theArray[6] += 0.01;
-            }
+            const ta = unsafeWindow.theArray;
+            const idx = dropDown.value === '1'? 2 : 6;
+
+            ta.forEach((el,idx,arr) => { if (el !== "nerd") arr[idx] = parseFloat(el); });
+
+            ta[idx] += 0.01;
+            if(ta[idx] >= 1.0) ta[idx] = 0.0;
+
             updateCurrentTag(); 
         });
 
