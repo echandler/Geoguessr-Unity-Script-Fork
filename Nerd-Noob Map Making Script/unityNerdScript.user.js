@@ -2,7 +2,7 @@
 // @name         map-making.app nerd/noob script for Unity script
 // @description  Customize locations for Geoguessr maps that work with the Unity script. 
 // @namespace    Unity script 
-// @version      0.2
+// @version      0.3
 // @author       echandler 
 // @match        https://map-making.app/maps/*
 // @grant        unsafeWindow
@@ -55,6 +55,7 @@ uniform sampler2D g;
 
 uniform float theArray[8];
 uniform float isNoob;
+uniform float transition;
 
 void main(){
 
@@ -72,7 +73,14 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         float y1 = theArray[1]; 
         float x2 = theArray[2]; 
         float y2 = theArray[3];  
-        
+
+        vec4 gold = vec4(1.0,0.8431,0.0,1.0);
+        vec4 blue = vec4(0.0,0.3412,0.7176,1.0);
+
+        float r = smoothstep(-1.0, 1.0, transition);
+        vec4 _theColor = mix(gold, blue, r); 
+        vec4 theColor = mix(vec4(texture2DProj(g,a).rgb,f), _theColor, 0.5);
+
         if (x2 > x1){
             if (aD.x > x1 && aD.y > y1 && aD.x < x2 && aD.y < y2){
                 if (isNoob == 1.0){
@@ -81,7 +89,9 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                     || (aD.y < y1 + lineWidth)
                     || (aD.x > x2 - lineWidth) 
                     || (aD.y > y2 - lineWidth)){
-                        gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+
+                        gl_FragColor = theColor; 
+                        //gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
                         return;
                     }
                 } else { 
@@ -100,7 +110,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                        || (aD.y < y1 + lineWidth)
                        || (aD.y > y2 - lineWidth)
                     ){
-                        gl_FragColor = vec4(0.0,0.3412,0.7176,1.0);
+                        gl_FragColor = theColor; //vec4(0.0,0.3412,0.7176,1.0);
                         return;
                     }
                 } else { 
@@ -123,7 +133,8 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                     || (aD.y < y1 + lineWidth)
                     || (aD.x > x2 - lineWidth) 
                     || (aD.y > y2 - lineWidth)){
-                        gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                        gl_FragColor = theColor; //mix(gold, blue, r); 
+                        //gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
                         return;
                     }
                 } else { 
@@ -142,7 +153,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                        || (aD.y < y1 + lineWidth)
                        || (aD.y > y2 - lineWidth)
                     ){
-                        gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+                        gl_FragColor = theColor; //vec4(1.0,0.8431,0.0,1.0);
                         return;
                     }
                 } else { 
@@ -242,7 +253,7 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
             let ell = document.querySelector('[aria-label="Street View"]');
             let eventt;
  //           triggerEvent(ell, "mouseup", eventt);
-
+let _trans = 0;
 
             let p = setInterval(function(){
                 let _theArray = globalGL.getUniformLocation(program, 'theArray');
@@ -250,9 +261,14 @@ window.theArray = "[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]";
                 if (!_theArray) return;
 
                 let isNoob = globalGL.getUniformLocation(program, 'isNoob');
+                let transition = globalGL.getUniformLocation(program, 'transition');
 
                 globalGL.uniform1fv(_theArray, new Float32Array(window.theArray.slice(0,8)));//[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]));
                 globalGL.uniform1f(isNoob, window.ignoreUnityNoob ? 0.0 : 1.0);
+                
+                _trans += 0.1;
+
+                globalGL.uniform1f(transition, Math.sin(_trans));
 
                 //console.log('initwebgl', theArray);
 
