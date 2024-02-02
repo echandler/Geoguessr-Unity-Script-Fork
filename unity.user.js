@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script test
+// @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.2 
+// @version       7.1.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.2 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.3 by Jupaoqq");
 
 
 // Store each player instance
@@ -1883,7 +1883,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.2EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.3EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1923,7 +1923,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.2</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.3</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -5216,21 +5216,7 @@ function locationCheck(data) {
     //
     // Start of Unity Nerd stuff
     //
-    let t = window.theArray;
-    let lat = curRound.lat.toFixed(14);
-    let lng = curRound.lng.toFixed(14);
-
-    t[3] = +(lat[lat.length-1-1] + lat[lat.length-1-0]) / 100;
-    t[2] = +(lat[lat.length-1-3] + lat[lat.length-1-2]) / 100;
-    t[1] = +(lat[lat.length-1-5] + lat[lat.length-1-4]) / 100;
-    t[0] = +(lat[lat.length-1-7] + lat[lat.length-1-6]) / 100;
-
-    t[7] = +(lng[lng.length-1-1] + lng[lng.length-1-0]) / 100; 
-    t[6] = +(lng[lng.length-1-3] + lng[lng.length-1-2]) / 100;
-    t[5] = +(lng[lng.length-1-5] + lng[lng.length-1-4]) / 100;
-    t[4] = +(lng[lng.length-1-7] + lng[lng.length-1-6]) / 100;
-
-    console.log(t);
+    unityNerdFn(data);
     //
     // End of Unity Nerd stuff
     //
@@ -9323,6 +9309,78 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
   eval(`(${injected.toString()})()`);
 
 })();
+    
+    function unityNerdFn(data){
+        
+        // Reset theArray to hide rectangles.
+        window.theArray = [0.1, 0.4, 0.3, 0.2, 0.5, 0.8, 0.7, 0.6];
+
+        const isNerd =  (/\[unity nerd/i.test(data.mapName));
+        const isNoob = (/\[unity noob/i.test(data.mapName));
+        const isTimed = (/\[unity nerd timed/i.test(data.mapName));
+
+        if (!isNerd && !isNoob) return;
+
+        if (isTimed){
+            let p = setInterval(function () {
+                const el = document.elementFromPoint(2, 2);
+                const ariaLabel = el.parentElement.getAttribute("aria-label");
+
+                if (!ariaLabel || ariaLabel !== "Street View") {
+                    return;
+                }
+
+                clearInterval(p);
+
+                const timedWait = +data.mapName.replace(/.*\[unity nerd timed (\d+.?\d*)s.*/i, "$1");
+                
+                if (!timedWait){
+                    doUnityNerd(data, 0);
+                } else {
+                    console.log('timed wait', timedWait);
+                    doUnityNerd(data, timedWait);
+                }
+
+            }, 10);
+            return;
+        } 
+
+        doUnityNerd(data, 0);
+    }
+    let unityNerdTimer = null;
+
+    function doUnityNerd(data, waitTimeSeconds){
+
+        let curRound = data.rounds[data.rounds.length -1];
+
+                    console.log('timed wait', waitTimeSeconds);
+        console.time('timer');
+
+        clearTimeout(unityNerdTimer);
+
+        unityNerdTimer = setTimeout(() => {
+          //console.log.bind(console, "1 second"), 1000);
+          let t = []; 
+          let lat = curRound.lat.toFixed(14);
+          let lng = curRound.lng.toFixed(14);
+
+          t[3] = +(lat[lat.length - 1 - 1] + lat[lat.length - 1 - 0]) / 100;
+          t[2] = +(lat[lat.length - 1 - 3] + lat[lat.length - 1 - 2]) / 100;
+          t[1] = +(lat[lat.length - 1 - 5] + lat[lat.length - 1 - 4]) / 100;
+          t[0] = +(lat[lat.length - 1 - 7] + lat[lat.length - 1 - 6]) / 100;
+
+          t[7] = +(lng[lng.length - 1 - 1] + lng[lng.length - 1 - 0]) / 100;
+          t[6] = +(lng[lng.length - 1 - 3] + lng[lng.length - 1 - 2]) / 100;
+          t[5] = +(lng[lng.length - 1 - 5] + lng[lng.length - 1 - 4]) / 100;
+          t[4] = +(lng[lng.length - 1 - 7] + lng[lng.length - 1 - 6]) / 100;
+
+
+          window.theArray = t.map(el => el === 0? 1.0: el);
+
+          console.log(t, window.theArray);
+ console.timeEnd('timer');
+        }, waitTimeSeconds * 1000);
+    }
 
 function activateUnityNerd(){
     window.ignoreUnityNerd = false;
