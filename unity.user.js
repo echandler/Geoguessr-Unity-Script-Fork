@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.3
+// @version       7.1.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.3 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.4 by Jupaoqq");
 
 
 // Store each player instance
@@ -1509,7 +1509,6 @@ function UnityInitiate() {
 
             for (let mapDiv of document.getElementsByClassName("preset-minimap")){
                 google.maps.event.addDomListener(mapDiv, "click", () => {
-
                     MinimapBtn.current = mapDiv.id;
                     if (mapDiv.id == "Hybrid")
                     {
@@ -1536,7 +1535,26 @@ function UnityInitiate() {
                     {
                         if (ar[1] == mapDiv.id)
                         {
-                            this.set('styles', ar[0]);
+
+                            if (!this.set.alreadySet){
+
+                                this.set.alreadySet = true;
+                                let p = this.set;
+                                this.set = function(...args){
+                                    // Total hack by EC, because I can't be bothered with this
+                                    // unpaid "job".
+                                    if (args[0] === 'styles'){
+                                        if (args[2] !== "unity" && this.unity_is_blocking_style_changes){
+                                            return;
+                                        }
+                                    }
+                                    p.apply(this, args);
+                                }
+                            }
+
+                            this.unity_is_blocking_style_changes = ar[1] === 'Default'? false: true;
+
+                            this.set('styles', ar[0], "unity");
                         }
                     }
                     for (let element of document.getElementsByClassName("preset-minimap")){
@@ -1883,7 +1901,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.3EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.4EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1923,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.3</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.4</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
