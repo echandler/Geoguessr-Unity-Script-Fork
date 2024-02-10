@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.4
+// @version       7.1.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -1901,7 +1901,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.4EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.5EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4184,6 +4184,7 @@ function detectGamePage() {
         waitLoad();
 
     }
+
     let toLoad = !playerLoaded && !YANDEX_INJECTED && !KAKAO_INJECTED && !MAPILLARY_INJECTED && !MS_INJECTED && !MAPBOX_INJECTED && !MAPY_INJECTED;
     const PATHNAME = window.location.pathname;
     // console.log(PATHNAME)
@@ -6081,7 +6082,8 @@ function ZoomControls() {
  */
 function updateCompass() {
     if (!COMPASS) {
-        let compass = document.querySelector("img.compass__indicator");
+        //let compass = document.querySelector("img.compass__indicator");
+        let compass = document.querySelector('[alt="compass" i]'); // EC made this
         if (compass != null) {
             COMPASS = compass;
             let direction = YandexPlayer.getDirection()[0] * -1;
@@ -6164,6 +6166,11 @@ function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     console.log("Going to location");
     console.log(nextPlayer);
+    
+//    if (nextPlayer === "Yandex" && !document.querySelector("ymaps")){
+//        // Hack by EC to fix yandex not showing when starting a new game.
+//        location.reload();
+//    }
 
     let mosaicBtn = document.getElementById("Mosaic Enable");
     if (mosaicPre)
@@ -6209,10 +6216,21 @@ function goToLocation(cond) {
     }
 
     if (nextPlayer === "Yandex") {
+        if (!document.querySelector("ymaps")){
+            // Hack by EC to fix yandex not showing when starting a new game.
+            location.reload();
+            return;
+        }
         let options = {};
         YandexPlayer.moveTo([global_lat, global_lng], options);
         YandexPlayer.setDirection([0, 16]);
         YandexPlayer.setSpan([10, 67]);
+        
+        let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
+        if(failedToLoadRoundMsg){
+            failedToLoadRoundMsg.style.display = 'none';
+            makeGuessMapHack({guessBtnText:"Yandex Guess Button"});
+        }
     }
     else if (nextPlayer === "Baidu" || nextPlayer === "Youtube" || nextPlayer === "Image" || nextPlayer === "Wikipedia" || nextPlayer === "Minecraft" || nextPlayer === "Carte") {
         if (document.getElementById("i_container") !== null)
@@ -6249,7 +6267,8 @@ function goToLocation(cond) {
                 // Hack to change status bar z index
                 const statusBar = document.querySelector(`[class*="game_status"]`);
                 statusBar.style.zIndex = 3;
-                 makeBaiduGuessMapHack();
+
+                 makeGuessMapHack({guessBtnText:"Baidu Guess Button"});
                 
                 // console.log(urlStr)
                 if (global_BDAh != null)
@@ -6931,6 +6950,7 @@ function injectYandexScript() {
                     SCRIPT.onload = () => {
                         ymaps.ready(() => {
                             YANDEX_INJECTED = true;
+                            debugger;
                             myHighlight("Yandex API Loaded");
                             resolve();
                         });
@@ -6954,6 +6974,7 @@ function injectYandexScript() {
  */
 function injectYandexPlayer() {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
+    debugger;
     let switchCovergeButton = document.getElementById("switch");
     let lat = 41.321861;
     let lng = 69.212920;
@@ -6963,6 +6984,7 @@ function injectYandexPlayer() {
         "span": [10, 67],
         "controls": ["zoomControl"]
     };
+
     ymaps.panorama.createPlayer("player", [lat, lng], options)
         .done((player) => {
         YandexPlayer = player;
@@ -8920,7 +8942,19 @@ setInterval(function () {
              });
   }, 2000);
 
-  function makeBaiduGuessMapHack(){
+function makeGuessMapHack(options){
+      if (document.querySelector('.baidu_guess_map')){
+          // Remove duplicate or old guess map and button. 
+          // Timing out is one issue that could cause duplicate guess map and button.
+          let baiduGuessMap = document.querySelector('.baidu_guess_map');
+          baiduGuessMap.parentElement.removeChild(baiduGuessMap);
+
+          let baiduGuessButton = document.querySelector('.baidu_guess_button');
+          if (baiduGuessButton){
+              baiduGuessButton.parentElement.removeChild(baiduGuessButton);
+          }
+      }
+
       const guessMap = document.querySelector(`[class*="game_guessMap"]`);
       guessMap.style.flexDirection = "column";
 
@@ -8958,7 +8992,8 @@ setInterval(function () {
 
       const guessBtnContainer = document.createElement("div");
       const guessBtn = document.createElement("button");
-      guessBtn.innerHTML = "Baidu Guess Button";
+      guessBtn.classList.add('baidu_guess_button');
+      guessBtn.innerHTML = options.guessBtnText; //"Baidu Guess Button";
       guessBtn.style.cssText =
         "background: #526b7e; border-radius: 10px; width: 100%; padding: 1em;";
       guessBtn.disabled = true;
@@ -9013,7 +9048,7 @@ setInterval(function () {
               --active-width: 50vw !important;
           } 
       </style>`);
-  }
+}
 
 
 
