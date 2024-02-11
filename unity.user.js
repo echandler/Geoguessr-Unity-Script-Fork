@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.6
+// @version       7.1.7
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.6 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.7 by Jupaoqq");
 
 
 // Store each player instance
@@ -1901,7 +1901,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.6EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.7EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.6</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.7</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4135,7 +4135,7 @@ var oldHref = document.location.href;
 
 window.addEventListener('DOMContentLoaded', (event) => {
 
-    if (!document.getElementById("Show Buttons"))
+   if (!document.getElementById("Show Buttons"))
     {
         injecter(() => {
             launchObserver();
@@ -6081,21 +6081,51 @@ function ZoomControls() {
  * Updates the compass to match Yandex Panorama facing
  */
 function updateCompass() {
+    let direction = YandexPlayer.getDirection()[0] * -1;
     if (!COMPASS) {
         //let compass = document.querySelector("img.compass__indicator");
         let compass = document.querySelector('[alt="compass" i]'); // EC made this
         if (compass != null) {
             COMPASS = compass;
-            let direction = YandexPlayer.getDirection()[0] * -1;
-            COMPASS.setAttribute("style", `transform: rotate(${direction}deg);`);
+    //        let direction = YandexPlayer.getDirection()[0] * -1;
+           // COMPASS.setAttribute("style", `transform: rotate(${direction}deg);`);
+            COMPASS.style.transform = `rotate(${direction}deg)`;
+            return;
         }
+        setTimeout(function(){
+            addCustomYandexCompass();
+            updateCompass();
+        }, 2000);
     }
     else {
-        let direction = YandexPlayer.getDirection()[0] * -1;
-        COMPASS.setAttribute("style", `transform: rotate(${direction}deg);`);
+     //   let direction = YandexPlayer.getDirection()[0] * -1;
+       // COMPASS.setAttribute("style", `transform: rotate(${direction}deg);`);
+        COMPASS.style.transform = `rotate(${direction}deg)`;
     }
 }
+ 
+function addCustomYandexCompass(){
+    if (COMPASS || document.querySelector('[alt="compass" i]')){
+        return;
+    }
+    let arrow = document.createElement('div');
+    arrow.style.cssText = "width: 5px; height: 50px; border: 1px solid red; background-color:red; position: absolute; bottom: 22%; left: 3%;";
+    arrow.setAttribute('alt', "Compass");
+    arrow.title = "Custom Yandex compass.";
 
+    let tip = document.createElement('div');
+    tip.style.cssText = `width: 0;
+        height: 0;
+        border-left: 11px solid transparent;
+        border-right: 11px solid transparent;
+        border-bottom: 11px solid yellow;
+        position: relative;
+        left: -8px;
+        top: -10px;`; 
+
+    arrow.appendChild(tip);
+    document.body.appendChild(arrow)
+}
 /**
  * Open next location in streetview player given next player and next coordinate
  */
