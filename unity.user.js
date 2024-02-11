@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.1.5
+// @version       7.1.6
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.1.5 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.1.6 by Jupaoqq");
 
 
 // Store each player instance
@@ -1901,7 +1901,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.5EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.1.6EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.5</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.1.6</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -6229,7 +6229,7 @@ function goToLocation(cond) {
         let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
         if(failedToLoadRoundMsg){
             failedToLoadRoundMsg.style.display = 'none';
-            makeGuessMapHack({guessBtnText:"Yandex Guess Button"});
+            makeGuessMapHack({guessBtnText:"Yandex Guess Button", mapContainer: document.querySelector('ymaps')});
         }
     }
     else if (nextPlayer === "Baidu" || nextPlayer === "Youtube" || nextPlayer === "Image" || nextPlayer === "Wikipedia" || nextPlayer === "Minecraft" || nextPlayer === "Carte") {
@@ -6268,7 +6268,7 @@ function goToLocation(cond) {
                 const statusBar = document.querySelector(`[class*="game_status"]`);
                 statusBar.style.zIndex = 3;
 
-                 makeGuessMapHack({guessBtnText:"Baidu Guess Button"});
+                makeGuessMapHack({guessBtnText:"Baidu Guess Button", mapContainer: document.getElementById("i_container")});
                 
                 // console.log(urlStr)
                 if (global_BDAh != null)
@@ -6950,7 +6950,6 @@ function injectYandexScript() {
                     SCRIPT.onload = () => {
                         ymaps.ready(() => {
                             YANDEX_INJECTED = true;
-                            debugger;
                             myHighlight("Yandex API Loaded");
                             resolve();
                         });
@@ -6974,7 +6973,6 @@ function injectYandexScript() {
  */
 function injectYandexPlayer() {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
-    debugger;
     let switchCovergeButton = document.getElementById("switch");
     let lat = 41.321861;
     let lng = 69.212920;
@@ -8943,6 +8941,11 @@ setInterval(function () {
   }, 2000);
 
 function makeGuessMapHack(options){
+      if (document.querySelector('[data-qa="perform-guess"]')){
+        // Geoguessr guess map is loaded.
+        return;
+      }
+
       if (document.querySelector('.baidu_guess_map')){
           // Remove duplicate or old guess map and button. 
           // Timing out is one issue that could cause duplicate guess map and button.
@@ -8958,11 +8961,12 @@ function makeGuessMapHack(options){
       const guessMap = document.querySelector(`[class*="game_guessMap"]`);
       guessMap.style.flexDirection = "column";
 
-      const iContainer = document.getElementById("i_container");
-      iContainer.addEventListener("mouseover", () =>
+      //const iContainer = document.getElementById("i_container");
+      //iContainer.addEventListener("mouseover", () =>
+      options.mapContainer.addEventListener("mouseover", () =>
         mapContainer.classList.remove(`baidu_guess_map_active`)
       );
-
+      
       const mapContainer = document.createElement("div");
       mapContainer.classList.add("baidu_guess_map");
       mapContainer.addEventListener("mouseover", () =>
@@ -8987,6 +8991,7 @@ function makeGuessMapHack(options){
         console.log(evt);
         latLng = evt.latLng.toJSON();
         guessBtn.disabled = false;
+        guessBtn.classList.add('baidu_guess_button_enabled');
         marker.setPosition(evt.latLng);
       });
 
@@ -9047,7 +9052,18 @@ function makeGuessMapHack(options){
               --active-height: 70vh !important;
               --active-width: 50vw !important;
           } 
+
+          .baidu_guess_button_enabled:hover {
+              color: white;
+          }
       </style>`);
+      
+      setTimeout(function(){
+        let clockTimerEl = document.querySelector('[class*="clock-timer"]');
+        if (clockTimerEl){
+            clockTimerEl.parentElement.style.zIndex = '3';
+        }
+      }, 2000);
 }
 
 
