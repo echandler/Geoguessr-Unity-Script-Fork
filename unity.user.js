@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.0
+// @version       7.2.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.0 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -326,6 +326,7 @@ let nextPlayer = "Google";
 let nextPlayer_save = "Google";
 let global_lat = 0;
 let global_lng = 0;
+let global_bounds = {max : {lat: 50.387397, lng: 57.412767}, min : {lat: 50.181227, lng: 57.077273}};
 let global_cc = null;
 let global_panoID = null;
 let global_BDID, global_BDAh, global_BDBh;
@@ -1901,7 +1902,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.0EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.1EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1940,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.0</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4283,6 +4284,7 @@ function rstValues()
     nextPlayer_save = "Google";
     global_lat = 0;
     global_lng = 0;
+    global_bounds = {max : {lat: 50.387397, lng: 57.412767}, min : {lat: 50.181227, lng: 57.077273}};
     global_panoID = null;
     global_cc = null;
     global_BDAh = null;
@@ -5278,6 +5280,7 @@ function locationCheck(data) {
     global_lat = round.lat;
     global_lng = round.lng;
     global_panoID = round.panoId;
+    global_bounds = data.bounds;
 
     global_heading = round.heading;
     global_pitch = round.pitch;
@@ -6114,25 +6117,21 @@ function addCustomYandexCompass(){
     if (COMPASS || document.querySelector('[alt="compass" i]')){
         return;
     }
-    let arrow = document.createElement('div');
-    arrow.style.cssText = "width: 5px; height: 50px; border: 1px solid red; background-color:red; position: absolute; bottom: 22%; left: 3%;";
+
+    let arrow = document.createElement('img');
+    arrow.src = 'https://www.geoguessr.com/_next/static/media/compass.f79e0d30.svg';
+    arrow.style.cssText = "position: absolute; bottom: 22%; left: 3%; height: 3rem; width: 0.75rem;";
     arrow.setAttribute('alt', "Compass");
     arrow.title = "Custom Yandex compass.";
+    
+    let arrowBackground = document.createElement('img');
+    arrowBackground.src = "https://cdn.discordapp.com/attachments/1087972736485298276/1206196948965793882/Base2.png?ex=65db2172&is=65c8ac72&hm=9b05e064ed56c17b5d5c56ecaf8f41c91a72b711d6125e544339bc4b4290e728&";
+    arrowBackground.style.cssText = "position: absolute; bottom: 22%; left: 3%; width: calc(0.75rem * 5); translate: calc(-0.75rem *2) calc(0.4rem);";
 
-    let tip = document.createElement('div');
-    tip.style.cssText = `width: 0;
-        height: 0;
-        border-left: 11px solid transparent;
-        border-right: 11px solid transparent;
-        border-bottom: 11px solid yellow;
-        position: relative;
-        left: -8px;
-        top: -10px;`; 
-
-    arrow.appendChild(tip);
     let ymaps = document.querySelector('ymaps');
 
-   ymaps.parentElement.appendChild(arrow)
+    ymaps.parentElement.appendChild(arrowBackground)
+    ymaps.parentElement.appendChild(arrow)
 }
 /**
  * Open next location in streetview player given next player and next coordinate
@@ -8999,8 +8998,6 @@ function makeGuessMapHack(options){
       const geoGuessContainer = document.querySelector(`[class*="game_guessMap"]`);
       geoGuessContainer.style.flexDirection = "column";
 
-      //const iContainer = document.getElementById("i_container");
-      //iContainer.addEventListener("mouseover", () =>
       options.mapContainer.addEventListener("mouseover", () =>
         mapContainer.classList.remove(`baidu_guess_map_active`)
       );
@@ -9017,6 +9014,12 @@ function makeGuessMapHack(options){
         zoom: 0,
         disableDefaultUI: true,
       });
+
+      const bounds = new google.maps.LatLngBounds();
+      bounds.extend(global_bounds.min);
+      bounds.extend(global_bounds.max);
+
+      map.fitBounds(bounds,{x: 100, y: 100} )
 
       let marker = new google.maps.Marker({
         map,
@@ -9040,7 +9043,7 @@ function makeGuessMapHack(options){
       guessBtn.classList.add('baidu_guess_button');
       guessBtn.innerHTML = options.guessBtnText; //"Baidu Guess Button";
       guessBtn.style.cssText =
-        "background: #526b7e; border-radius: 10px; width: 100%; padding: 1em; cursor: pointer;";
+        "background: #526b7e; border-radius: 0px 0px 10px 10px; width: 100%; padding: 1em; cursor: pointer;";
       guessBtn.disabled = true;
       guessBtn.addEventListener("click", (evt) => {
           if (guessBtn._doReload){
@@ -9152,13 +9155,15 @@ function makeGuessMapHack(options){
               --active-width: 4vw;
               width: max(15vw, var(--active-width));
               height: max(20vh, var(--active-height));
+              border-radius: 10px 10px 0px 0px;
               position: relative;
               overflow: hidden;
+              transition: 0.1s all ease;
           }
 
           .baidu_guess_map_active {
-              --active-height: 70vh !important;
-              --active-width: 50vw !important;
+              --active-height: 75vh !important;
+              --active-width: 60vw !important;
           } 
 
           .baidu_guess_map_between_rounds {
