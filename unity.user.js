@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.1
+// @version       7.2.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.1 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.2 by Jupaoqq");
 
 
 // Store each player instance
@@ -1902,7 +1902,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.1EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.2EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.1</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.2</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -9095,7 +9095,22 @@ function makeGuessMapHack(options){
                 });
                 
                 locationMarker.setPosition({lat: global_lat, lng: global_lng});
-
+               var markerShadow = new google.maps.Marker({
+                    clickable: false,
+                    position: {lat: global_lat, lng: global_lng},
+                    map: map,
+                    icon:{
+                        url: 'http://maps.google.com/mapfiles/ms/micons/flag.shadow.png',
+                        //The size image file.
+                      //  size: new google.maps.Size(225, 120),
+                        //The point on the image to measure the anchor from. 0, 0 is the top left.
+                      //  origin: new google.maps.Point(150, 0),
+                        //The x y coordinates of the anchor point on the marker. e.g. If your map marker was a drawing pin then the anchor would be the tip of the pin.
+                        anchor: new google.maps.Point(15, 32)
+                    },
+                    zIndex: (Math.round(global_lat*-100000)<<5)-1
+                }); 
+//
                 mapContainer.classList.remove("baidu_guess_map_active");
                 mapContainer.classList.add("baidu_guess_map_between_rounds");
 
