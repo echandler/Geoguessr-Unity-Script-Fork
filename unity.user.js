@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.2
+// @version       7.2.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.2 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.3 by Jupaoqq");
 
 
 // Store each player instance
@@ -1902,7 +1902,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.2EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.3EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.2</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.3</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -6266,7 +6266,11 @@ function goToLocation(cond) {
         let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
         if(failedToLoadRoundMsg){
             failedToLoadRoundMsg.style.display = 'none';
-            makeGuessMapHack({guessBtnText:"Yandex Guess Button", mapContainer: document.querySelector('ymaps')});
+            makeGuessMapHack({
+                guessBtnText:"Yandex Guess Button", 
+                mapContainer: document.querySelector('ymaps'),
+                locationUrl: "https://yandex.com/maps/?&panorama%5Bdirection%5D=16%2C0&panorama%5Bpoint%5D=" + global_lng + "%2C" + global_lat
+            });
         }
     }
     else if (nextPlayer === "Baidu" || nextPlayer === "Youtube" || nextPlayer === "Image" || nextPlayer === "Wikipedia" || nextPlayer === "Minecraft" || nextPlayer === "Carte") {
@@ -6300,12 +6304,16 @@ function goToLocation(cond) {
 
                 let urlStr2 = "https://map.baidu.com/?panotype=street&pid=" + global_BDID + "&panoid=" + global_BDID + "&from=api";
                 let urlStr = "https://map.baidu.com/@" + global_BDAh + "," + global_BDBh + "#panoid=" + global_BDID + "&panotype=street&l=12&tn=B_NORMAL_MAP&sc=0&newmap=1&shareurl=1&pid=" + global_BDID;
-                
+
                 // Hack to change status bar z index
                 const statusBar = document.querySelector(`[class*="game_status"]`);
                 statusBar.style.zIndex = 3;
 
-                makeGuessMapHack({guessBtnText:"Baidu Guess Button", mapContainer: document.getElementById("i_container")});
+                makeGuessMapHack({
+                    guessBtnText:"Baidu Guess Button", 
+                    mapContainer: document.getElementById("i_container"),
+                    locationUrl: urlStr2, 
+                });
                 
                 // console.log(urlStr)
                 if (global_BDAh != null)
@@ -8998,21 +9006,30 @@ function makeGuessMapHack(options){
       const geoGuessContainer = document.querySelector(`[class*="game_guessMap"]`);
       geoGuessContainer.style.flexDirection = "column";
 
-      options.mapContainer.addEventListener("mouseover", () =>
-        mapContainer.classList.remove(`baidu_guess_map_active`)
-      );
+      let closeMiniMapTimer = null;
+
+      options.mapContainer.addEventListener("mouseover", () =>{
+        clearTimeout(closeMiniMapTimer);
+            closeMiniMapTimer = setTimeout(function(){
+            mapContainer.classList.remove(`baidu_guess_map_active`)
+        }, 500);
+    });
       
+
       const mapContainer = document.createElement("div");
       mapContainer.classList.add("baidu_guess_map");
-      mapContainer.addEventListener("mouseover", () =>
-        mapContainer.classList.add(`baidu_guess_map_active`)
-      );
+      mapContainer.addEventListener("mouseover", () =>{
+          clearTimeout(closeMiniMapTimer);
+          mapContainer.classList.add(`baidu_guess_map_active`)
+      });
       geoGuessContainer.appendChild(mapContainer);
-
+    
       let map = new google.maps.Map(mapContainer, {
-        center: { lat: 0, lng: 0 },
-        zoom: 0,
-        disableDefaultUI: true,
+          center: { lat: 0, lng: 0 },
+          zoom: 0,
+          disableDefaultUI: true,
+          clickableIcons: false,
+          draggableCursor: "crosshair",
       });
 
       const bounds = new google.maps.LatLngBounds();
@@ -9023,7 +9040,6 @@ function makeGuessMapHack(options){
 
       let marker = new google.maps.Marker({
         map,
-        title: "Hello World!",
       });
 
       let latLng = null;
@@ -9043,7 +9059,7 @@ function makeGuessMapHack(options){
       guessBtn.classList.add('baidu_guess_button');
       guessBtn.innerHTML = options.guessBtnText; //"Baidu Guess Button";
       guessBtn.style.cssText =
-        "background: #526b7e; border-radius: 0px 0px 10px 10px; width: 100%; padding: 1em; cursor: pointer;";
+        "background: #526b7e; border-radius: 0px 0px 10px 10px; width: 100%; padding: 1em; cursor: pointer; font-family: var(--default-font);";
       guessBtn.disabled = true;
       guessBtn.addEventListener("click", (evt) => {
           if (guessBtn._doReload){
@@ -9076,7 +9092,6 @@ function makeGuessMapHack(options){
               mode: "cors",
               credentials: "include",
           }).then(res => {
-
               return res.json();
           }).then(jSon => {
                 console.log("jSon", jSon);
@@ -9090,12 +9105,16 @@ function makeGuessMapHack(options){
 
                 const locationMarker = new google.maps.Marker({
                     map,
-                    title: "Hello World!",
+                    position: {lat: global_lat, lng: global_lng},
                     icon: 'http://maps.gstatic.com/mapfiles/ms2/micons/flag.png'
                 });
-                
-                locationMarker.setPosition({lat: global_lat, lng: global_lng});
-               var markerShadow = new google.maps.Marker({
+
+                locationMarker.addListener('click', (e)=>{
+                                 
+                    window.open(options.locationUrl,  '_blank');
+                }) ;
+
+                let markerShadow = new google.maps.Marker({
                     clickable: false,
                     position: {lat: global_lat, lng: global_lng},
                     map: map,
@@ -9116,9 +9135,9 @@ function makeGuessMapHack(options){
 
                 const interpolated = google.maps.geometry.spherical.interpolate({lat: global_lat, lng: global_lng}, marker.position, 0.5);
 
-                const contentString = `<div style="color: rgb(40, 40, 40); font-size: 1.5rem; font-family: var(--default-font);">
-                                       Points: ${jSon.player.guesses[len-1].roundScoreInPoints}</br>
-                                       Distance (km): ${jSon.player.guesses[len-1].distance.meters.amount}</br>
+                const contentString = `<div style="color: rgb(40, 40, 40); font-size: 1.3rem; font-family: var(--default-font); font-style:italic; padding: 1rem;">
+                                       <div><span style="font-size:1.1rem;">Points:</span> <span style="font-weight: 700">${jSon.player.guesses[len-1].roundScoreInPoints.toLocaleString()}</span></div>
+                                       <div><span style="font-size:1.1rem;">Distance (km):</span> <span style="font-weight: 700">${(+jSon.player.guesses[len-1].distance.meters.amount).toLocaleString()}</span></div>
                                        </div>`;
                 
 
@@ -9126,7 +9145,7 @@ function makeGuessMapHack(options){
                     content: contentString,
                     ariaLabel: "Uluru",
                     map: map, 
-                    position: interpolated
+                    position: interpolated,
                 });
 
                const line= new google.maps.Polyline({
@@ -9173,7 +9192,7 @@ function makeGuessMapHack(options){
               border-radius: 10px 10px 0px 0px;
               position: relative;
               overflow: hidden;
-              transition: 0.1s all ease;
+              transition: 0.08s all ease;
           }
 
           .baidu_guess_map_active {
