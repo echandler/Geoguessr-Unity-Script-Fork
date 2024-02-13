@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.3
+// @version       7.2.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.3 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.4 by Jupaoqq");
 
 
 // Store each player instance
@@ -1902,7 +1902,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.3EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.4EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1941,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.3</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.4</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -6987,13 +6987,24 @@ function injectYandexScript() {
             else {
                 if (!partialCreateYandex)
                 {
+                    let spacey = document.getElementById('SpOver Button');
+                    let _spacey = spacey.innerHTML;
+
                     const SCRIPT = document.createElement("script");
                     SCRIPT.type = "text/javascript";
                     SCRIPT.async = true;
                     SCRIPT.src = `https://api-maps.yandex.ru/2.1/?lang=en_US&apikey=${YANDEX_API_KEY}`;
                     document.body.appendChild(SCRIPT);
                     SCRIPT.onload = () => {
+                        let timer = setTimeout(function(){
+                            spacey.style.visibility = 'visible';
+                            spacey.innerHTML = "Initializing Yandex, This Could Take Awhile!";
+                        }, 2000);
                         ymaps.ready(() => {
+                            spacey.innerHTML = _spacey;
+                            spacey.style.visibility = 'hidden';
+                            clearTimeout(timer);
+
                             YANDEX_INJECTED = true;
                             myHighlight("Yandex API Loaded");
                             resolve();
@@ -9036,7 +9047,7 @@ function makeGuessMapHack(options){
       bounds.extend(global_bounds.min);
       bounds.extend(global_bounds.max);
 
-      map.fitBounds(bounds,{x: 100, y: 100} )
+      map.fitBounds(bounds)
 
       let marker = new google.maps.Marker({
         map,
@@ -9164,7 +9175,7 @@ function makeGuessMapHack(options){
                 bounds.extend( marker.position);
 
                 google.maps.event.addListenerOnce(map, 'idle', function() {
-                    map.fitBounds(bounds,{x: 100, y: 100} )
+                    map.fitBounds(bounds, 100)
                 });
                 
                 guessBtn.innerHTML = "Click to reload page for next round!";
