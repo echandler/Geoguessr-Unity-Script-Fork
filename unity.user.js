@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.4
+// @version       7.2.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -313,6 +313,8 @@ let MAPBOX_INJECTED = false;
 let MAPY_INJECTED = false;
 let rainLayer;
 
+let GoogleMapsObj = null;
+
 // Game mode detection
 
 let isBattleRoyale = false;
@@ -324,6 +326,7 @@ let isLiveChallenge = false;
 
 let nextPlayer = "Google";
 let nextPlayer_save = "Google";
+let global_data = {};
 let global_lat = 0;
 let global_lng = 0;
 let global_bounds = {max : {lat: 50.387397, lng: 57.412767}, min : {lat: 50.181227, lng: 57.077273}};
@@ -1492,6 +1495,9 @@ function UnityInitiate() {
     google.maps.Map = class extends google.maps.Map {
         constructor(...args) {
             super(...args);
+
+            GoogleMapsObj = this;
+
             if (GeoJsonCustomUser)
             {
                 if (GeoJsonCustomUser)
@@ -1902,7 +1908,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.4EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.5EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1941,7 +1947,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -1995,6 +2001,127 @@ function UnityInitiate() {
     menuDownBtn.addEventListener("click", () => {
         AdjustBtnPos("2em", "0em", false);
         menuLocCounter--;
+    });
+
+    var unhackableBtn = document.createElement("Button");
+    unhackableBtn.classList.add("unity-btn", "info-btn", "full", "vertical-5");
+    unhackableBtn.id = "Unhackable Button";
+    unhackableBtn.innerHTML = `Load Unhackable Answers`;
+    document.body.appendChild(unhackableBtn);
+    unhackableBtn.addEventListener("click", unhackableAnswers);
+
+    async function unhackableAnswers() {
+        console.log(global_data, GoogleMapsObj) 
+
+        let _prompt = prompt("Paste answer info. here:") 
+        if (!_prompt) return;
+
+        let data = null; 
+
+        const PATHNAME = window.location.pathname;
+        const token = getToken();
+        const bounds = new google.maps.LatLngBounds();
+
+        if (!global_data?.rounds || global_data.token !== token){
+            let URL = null;
+
+            if (PATHNAME.startsWith("/game/")) {
+                URL = `https://www.geoguessr.com/api/v3/games/${token}`;
+            }
+            else if (PATHNAME.startsWith("/results/" )) {
+                URL = `https://www.geoguessr.com/api/v3/challenges/${token}/game`;
+             //   URL = `https://www.geoguessr.com/api/v3/results/highscores/${token}"`;
+            }
+            
+            global_data = await fetch(URL).then((response) => response.json());
+            
+            if (!global_data){
+                alert('An unkown error happened.');
+                return;
+            }
+        }
+
+        try {
+            data = JSON.parse(_prompt);
+        } catch (e){
+             alert(e.message);
+             console.log(e.message);
+             return
+        }
+        
+        let t = getOverlayView(GoogleMapsObj);
+
+        window.__overlay = t;
+
+        // Remove dashed connecting lines.
+//        let overlayLayer = t.getPanes().overlayLayer;
+//        overlayLayer.remove();
+//        
+//        // Remove correct location overlays.
+//        document.querySelectorAll("[data-qa=\"correct-location-marker\"]").forEach(el=> el.remove())
+
+        let thisRoundData = {};
+
+        for (let n = 0; n < global_data.rounds.length; n++){
+            let panoId = global_data.rounds[n].panoId;
+
+            if (!panoId) continue;
+
+            let url = hex2a(panoId);
+
+            if (!data[url]) continue; 
+
+            let latLng = data[url].split(',');
+            latLng = {lat: +latLng[0], lng: +latLng[1]};
+            
+            thisRoundData[url] = data[url];
+
+            bounds.extend(latLng);
+
+            let marker = new google.maps.Marker({
+                position: latLng,
+                map: GoogleMapsObj,
+                label:{ 
+                    text: `${n+1}`,
+                    color: "#ffffff",
+                    fontSize: "20px",
+                    fontWeight: "bold"
+                }
+            });
+            
+            marker.addListener('click', function(){
+                window.open(`http://maps.google.com/maps?q=&layer=c&cbll=${latLng.lat},${latLng.lng}`, "_blank")
+            });
+        }
+        
+        if (Object.keys(thisRoundData).length === 0){
+            alert("No answers found for this game.");
+            return;
+        }
+        
+        GoogleMapsObj.fitBounds(bounds)
+
+        if (Object.keys(data).length <= 5) return;
+
+        let _confirm = confirm("Do you want to download the answers for this game only, filtering out all other answers?");
+
+        if (!_confirm) return;
+        
+        try {
+            thisRoundData = JSON.stringify(thisRoundData);
+        } catch(e){
+            alert("Couldn't convert this game's answers for some reason.");
+            console.log(e.message);
+        }
+
+        download("answers.json", thisRoundData);
+    };
+
+    document.body.addEventListener('keydown', function(e){
+        console.log(e)
+        if (e.altKey && e.key === 'u'){
+            unhackableAnswers();
+        }
     });
 
     var infoMenu = document.createElement("Button");
@@ -4282,6 +4409,8 @@ function rstValues()
 
     nextPlayer = "Google";
     nextPlayer_save = "Google";
+
+    global_data = {};
     global_lat = 0;
     global_lng = 0;
     global_bounds = {max : {lat: 50.387397, lng: 57.412767}, min : {lat: 50.181227, lng: 57.077273}};
@@ -5241,13 +5370,6 @@ function locationCheck(data) {
     console.log(data)
     let curRound = data.rounds[data.rounds.length -1];
     
-    //
-    // Start of Unity Nerd stuff
-    //
-    unityNerdFn(data);
-    //
-    // End of Unity Nerd stuff
-    //
 
     let round;
     let switchCovergeButton = document.getElementById("switch");
@@ -5277,6 +5399,7 @@ function locationCheck(data) {
         global_cc = round.streakLocationCode;
     }
 
+    global_data = data;
     global_lat = round.lat;
     global_lng = round.lng;
     global_panoID = round.panoId;
@@ -5284,11 +5407,15 @@ function locationCheck(data) {
 
     global_heading = round.heading;
     global_pitch = round.pitch;
-    //     console.log(data);
-
-    // console.log(global_panoID);
 
     nextPlayer = "Google";
+    //
+    // Start of Unity Nerd stuff
+    //
+    unityNerdFn(data);
+    //
+    // End of Unity Nerd stuff
+    //
 
     function runCheck()
     {
@@ -6881,6 +7008,9 @@ function getSeed() {
         if (PATHNAME.startsWith("/game/")) {
             URL = `https://www.geoguessr.com/api/v3/games/${token}`;
         }
+        else if (PATHNAME.startsWith("/results/")) {
+            URL = `https://www.geoguessr.com/api/v3/challenges/${token}/game`;
+        }
         else if (PATHNAME.startsWith("/challenge/")) {
             URL = `https://www.geoguessr.com/api/v3/challenges/${token}/game`;
         }
@@ -6931,6 +7061,9 @@ function getToken() {
     const PATHNAME = window.location.pathname;
     if (PATHNAME.startsWith("/game/")) {
         return PATHNAME.replace("/game/", "");
+    }
+    else if (PATHNAME.startsWith("/results/")) {
+        return PATHNAME.replace("/results/", "");
     }
     else if (PATHNAME.startsWith("/challenge/")) {
         return PATHNAME.replace("/challenge/", "");
@@ -6992,6 +7125,7 @@ function injectYandexScript() {
 
                     const SCRIPT = document.createElement("script");
                     SCRIPT.type = "text/javascript";
+                    
                     SCRIPT.async = true;
                     SCRIPT.src = `https://api-maps.yandex.ru/2.1/?lang=en_US&apikey=${YANDEX_API_KEY}`;
                     document.body.appendChild(SCRIPT);
@@ -7000,11 +7134,11 @@ function injectYandexScript() {
                             spacey.style.visibility = 'visible';
                             spacey.innerHTML = "Initializing Yandex, This Could Take Awhile!";
                         }, 2000);
+                        console.log(ymaps);
                         ymaps.ready(() => {
                             spacey.innerHTML = _spacey;
                             spacey.style.visibility = 'hidden';
                             clearTimeout(timer);
-
                             YANDEX_INJECTED = true;
                             myHighlight("Yandex API Loaded");
                             resolve();
@@ -7041,6 +7175,25 @@ function injectYandexPlayer() {
 
     ymaps.panorama.createPlayer("player", [lat, lng], options)
         .done((player) => {
+
+        // Remove markers and arrows then check for forbidmoving.
+        player.getPanorama().__proto__.getMarkers = function(){}
+        
+        let trys = 0;
+        let t = setInterval(function(){
+           if (trys++ < 20 && !global_data?.token) return;
+
+           clearInterval(t);
+
+           if (global_data?.forbidMoving){
+               // Don't do anything because the arrows are alread removed.
+               return; 
+           } 
+           
+           // Remove pesky markers
+           player.getPanorama().__proto__.getMarkers = function(){ return []; }
+        }, 100);
+
         YandexPlayer = player;
         YandexPlayer.events.add("directionchange", (e) => {
             updateCompass();
@@ -9051,7 +9204,13 @@ function makeGuessMapHack(options){
 
       let marker = new google.maps.Marker({
         map,
-      });
+      //  label:{ 
+      //          text: "5",
+      //          color: "#ffffff",
+      //          fontSize: "20px",
+      //          fontWeight: "bold"
+      //      }
+        });
 
       let latLng = null;
 
@@ -9079,7 +9238,8 @@ function makeGuessMapHack(options){
           }
 
           const mapId = location.href.replace(/.*\/(.*)/, "$1");
-
+          
+          // Currently can't do challenges because everyone recieves 0 points for the round.
           fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
               headers: {
                 accept: "*/*",
@@ -9294,6 +9454,9 @@ function injected() {
         uniform float isNoob;
         uniform float theArray[8];
         uniform float transition; 
+
+uniform sampler2D sampler2d_logoImg;
+uniform float u_showCustomPano;
         
         void main(){
 
@@ -9406,8 +9569,17 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
 //  : texture2DProj(g,a).rgb
 //,f);
 //gl_FragColor=i;
+    vec4 t = texture2DProj(g,a).rgba;
 
-    gl_FragColor=vec4(texture2DProj(g,a).rgb,f);
+    if (u_showCustomPano == 1.0){
+        vec4 logo = texture2DProj(sampler2d_logoImg, potato).rgba;
+        //t = mix(t, logo, 1.0);
+        t = logo; // mix(t, logo, 1.0);
+    }
+
+    //gl_FragColor=vec4(t.rgb,f);
+
+    gl_FragColor=vec4(t.rgb,f);
 
     }`;
 
@@ -9489,7 +9661,8 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
     window.unityNerdTimer = null;
     window.ignoreUnityNerd = true;
     window.ignoreUnityNoob = true;
-
+    window.isOkToShowCustomPano = false;
+    
         async function initWebGl(program){
             let ell = document.querySelector('[aria-label="Street View"]');
             let eventt;
@@ -9499,18 +9672,27 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
             let _trans = 0;
 
             window.unityNerdTimer = setInterval(function(){
+                // webgl main loop
                 if (window.ignoreUnityNerd && window.ignoreUnityNoob) return;
 
                 let _theArray = globalGL.getUniformLocation(program, 'theArray');
 
-                if (!_theArray) return;
+                if (!_theArray) {
+                    clearInterval(window.unityNerdTimer)
+                    return;
+                }
+
+                let location = globalGL.getUniformLocation(program, "sampler2d_logoImg");
+                globalGL.uniform1i(location, 1);
 
                 let isNoob = globalGL.getUniformLocation(program, 'isNoob');
                 let transition = globalGL.getUniformLocation(program, 'transition');
+                let uu_showCustomPano = globalGL.getUniformLocation(program, 'u_showCustomPano');
 
                 globalGL.uniform1fv(_theArray, new Float32Array(window.theArray.slice(0,8)));//[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]));
                 globalGL.uniform1f(isNoob, window.ignoreUnityNoob ? 0.0 : 1.0);
-                
+                globalGL.uniform1f(uu_showCustomPano, window.isOkToShowCustomPano ? 1.0 : 0.0);
+
                 _trans += 0.1;
 
                 globalGL.uniform1f(transition, Math.sin(_trans));
@@ -9537,6 +9719,73 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                                  0, 0, 0, 0, 0, false, false, false, false, 0, null);
             elem.dispatchEvent( event );
         }
+
+        function loadImg(_src, maskBool, callback){
+            // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+            const gl = globalGL;
+
+            const level = 0;
+            const internalFormat = gl.RGBA;
+            const width = 1;
+            const height = 1;
+            const border = 0;
+            const srcFormat = gl.RGBA;
+            const srcType = gl.UNSIGNED_BYTE;
+            const pixel = new Uint8Array([0, 0, 255, 255]); // opaque blue
+
+            const image = new Image();
+
+            image.onload = () => {
+                const texture = gl.createTexture();
+
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    level,
+                    internalFormat,
+                    srcFormat,
+                    srcType,
+                    image
+                );
+
+                // WebGL1 has different requirements for power of 2 images
+                // vs. non power of 2 images so check if the image is a
+                // power of 2 in both dimensions.
+                if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                    // Yes, it's a power of 2. Generate mips.
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                } else {
+                    // No, it's not a power of 2. Turn off mips and set
+                    // wrapping to clamp to edge
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                }
+                // Tell WebGL we want to affect texture unit 1
+                //gl.activeTexture(gl.TEXTURE1);
+                gl.activeTexture(maskBool? gl.TEXTURE2: gl.TEXTURE1);
+
+               // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+                // Bind the texture to texture unit 1
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+
+                gl.activeTexture(gl.TEXTURE0);
+
+                callback();
+            };
+
+            image.src = _src;
+          //  image.src = "https://c7.alamy.com/360/WKMJE4/full-seamless-spherical-panorama-360-degrees-angle-view-on-bank-of-wide-river-in-front-of-bridge-in-city-center-360-panorama-in-equirectangular-proje-WKMJE4.jpg";
+           // image.src = "https://i.imgur.com/ZONu5JU.jpeg";
+            //image.src = "https://streetviewpixels-pa.googleapis.com/v1/tile?cb_client=apiv3&panoid=NK_fhzsEFds-fZW3pyKjzg&output=tile&x=2&y=1&zoom=3&nbt=1&fover=2";
+
+            function isPowerOf2(value) {
+                // Might not be necessary
+                return (value & (value - 1)) === 0;
+            }
+        }
+        window.loadImg = loadImg;
 }
 
   eval(`(${injected.toString()})()`);
@@ -9547,10 +9796,30 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         
         // Reset theArray to hide rectangles.
         window.theArray = [0.1, 0.4, 0.3, 0.2, 0.5, 0.8, 0.7, 0.6];
+        window.isOkToShowCustomPano = false;
 
         const isNerd =  (/\[unity nerd/i.test(data.mapName));
         const isNoob = (/\[unity noob/i.test(data.mapName));
-        const isTimed = (/\[unity nerd timed/i.test(data.mapName));
+        const isTimed = (/\[.*timed/i.test(data.mapName));
+        const isUnhackable = (/\[.*unhackable/i.test(data.mapName));
+        
+        if (isUnhackable){
+            let _url = hex2a(global_panoID);
+            //let _url = `https://c7.alamy.com/360/WKMJE4/full-seamless-spherical-panorama-360-degrees-angle-view-on-bank-of-wide-river-in-front-of-bridge-in-city-center-360-panorama-in-equirectangular-proje-WKMJE4.jpg`; 
+             if (/http/i.test(_url) === false){
+                deactivateUnityNerd();
+                return 
+             }
+                window.isOkToShowCustomPano = true;
+                let p = fetch(_url).then( r => r.blob())
+                .then( blob => {
+                    console.log(blob, URL.createObjectURL(blob));
+                    let p =  URL.createObjectURL(blob);
+                    window.loadImg(p, false, ()=>{console.log('callback called')});
+                })
+            //window.loadImg(hex2a(global_panoID), false, (e)=> console.log("loadImg"));
+            activateUnityNerd();
+        }
 
         if (!isNerd && !isNoob) return;
 
@@ -9565,7 +9834,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
 
                 clearInterval(p);
 
-                const timedWait = +data.mapName.replace(/.*\[unity nerd timed (\d+.?\d*)s.*/i, "$1");
+                const timedWait = +data.mapName.replace(/.*\[.*timed.*?(\d+.?\d*)s.*/i, "$1");
                 
                 if (!timedWait){
                     doUnityNerd(data, 0);
@@ -9580,6 +9849,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
 
         doUnityNerd(data, 0);
     }
+
     let unityNerdTimer = null;
 
     function doUnityNerd(data, waitTimeSeconds){
@@ -9611,7 +9881,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
           window.theArray = t.map(el => el === 0? 1.0: el);
 
           console.log(t, window.theArray);
- console.timeEnd('timer');
+            console.timeEnd('timer');
         }, waitTimeSeconds * 1000);
     }
 
@@ -9636,3 +9906,23 @@ function deactivateUnityNoob(){
         window.ignoreUnityNoob = true;
      }, 500);
 }
+
+function download(filename, text) {
+    // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+function getOverlayView(map){
+    var ov = new google.maps.OverlayView();
+    ov.onAdd = function(){};
+    ov.draw = function(){};
+    ov.onRemove = function(){};
+    ov.setMap(map);
+    return ov;
+} 
