@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.5
+// @version       7.2.6
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.5 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.6 by Jupaoqq");
 
 
 // Store each player instance
@@ -1908,7 +1908,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.5EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.6EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1947,7 +1947,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.5</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.6</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -9238,9 +9238,10 @@ function makeGuessMapHack(options){
           }
 
           const mapId = location.href.replace(/.*\/(.*)/, "$1");
-          
+           
           // Currently can't do challenges because everyone recieves 0 points for the round.
-          fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
+         // fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
+          fetch(`https://www.geoguessr.com/api/v3/games/${global_data.token}`, {
               headers: {
                 accept: "*/*",
                 "accept-language": "en-US,en;q=0.9",
@@ -9256,9 +9257,9 @@ function makeGuessMapHack(options){
                 "sec-fetch-site": "same-origin",
                 "x-client": "web",
               },
-              referrer: "https://www.geoguessr.com/game/rks2XFcZOIQlZQg9",
+              referrer: location.href, // "https://www.geoguessr.com/game/rks2XFcZOIQlZQg9",
               referrerPolicy: "strict-origin-when-cross-origin",
-              body: `{"token":"${mapId}","lat\":${latLng.lat},"lng\":${latLng.lng},"timedOut":false}`,
+              body: `{"token":"${mapId}","lat\":${latLng.lat},"lng\":${latLng.lng},"timedOut":false, "skipRound": false}`,
               method: "POST",
               mode: "cors",
               credentials: "include",
@@ -9266,7 +9267,7 @@ function makeGuessMapHack(options){
               return res.json();
           }).then(jSon => {
                 console.log("jSon", jSon);
-
+		  
                 const len = jSon.round;
                 
                 if (len === 5){
