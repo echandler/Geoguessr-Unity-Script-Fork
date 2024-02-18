@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.6
+// @version       7.2.7
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.6 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.7 by Jupaoqq");
 
 
 // Store each player instance
@@ -704,6 +704,7 @@ function hex2a(hexx) {
     }
     return str;
 }
+window._hex2a = hex2a;
 
 // Coordinate computation given heading, distance and current coordinates for teleport
 
@@ -1908,7 +1909,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.6EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.7EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1947,7 +1948,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.6</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.7</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2031,6 +2032,7 @@ function UnityInitiate() {
             else if (PATHNAME.startsWith("/results/" )) {
                 URL = `https://www.geoguessr.com/api/v3/challenges/${token}/game`;
              //   URL = `https://www.geoguessr.com/api/v3/results/highscores/${token}"`;
+             //   URL = `https://www.geoguessr.com/api/v3/results/highscores/${token}?friends=false&limit=26&minRounds=5`;
             }
             
             global_data = await fetch(URL).then((response) => response.json());
@@ -2076,6 +2078,8 @@ function UnityInitiate() {
             
             thisRoundData[url] = data[url];
 
+            global_data.rounds[n]._unhackable_answer = latLng;
+
             bounds.extend(latLng);
 
             let marker = new google.maps.Marker({
@@ -2100,6 +2104,8 @@ function UnityInitiate() {
         }
         
         GoogleMapsObj.fitBounds(bounds)
+
+        makeChallengeResultRowsClickableForUnhackable(global_data.rounds);
 
         if (Object.keys(data).length <= 5) return;
 
@@ -4260,9 +4266,10 @@ function launchObserver() {
 
 var oldHref = document.location.href;
 
-let immediateLoad = localStorage['unity_immediate_load'];
-
-if (immediateLoad === "true"){
+const immediateLoad = localStorage['unity_immediate_load']; // EC
+const _pathName = location.pathname; // EC
+if (_pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || immediateLoad === "true"){
+        // EC made this to fix not loading during game.
         injecter(() => {
             launchObserver();
         })
@@ -6390,15 +6397,23 @@ function goToLocation(cond) {
         YandexPlayer.setDirection([0, 16]);
         YandexPlayer.setSpan([10, 67]);
         
-        let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
-        if(failedToLoadRoundMsg){
-            failedToLoadRoundMsg.style.display = 'none';
-            makeGuessMapHack({
-                guessBtnText:"Yandex Guess Button", 
-                mapContainer: document.querySelector('ymaps'),
-                locationUrl: "https://yandex.com/maps/?&panorama%5Bdirection%5D=16%2C0&panorama%5Bpoint%5D=" + global_lng + "%2C" + global_lat
-            });
-        }
+        let __t = 0;
+        let q = setInterval(function(){
+            if (__t++ > 50) {
+                clearInterval(q);
+            }
+
+            let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
+            if(failedToLoadRoundMsg){
+                clearInterval(q);
+                failedToLoadRoundMsg.style.display = 'none';
+                makeGuessMapHack({
+                    guessBtnText:"Yandex Guess Button", 
+                    mapContainer: document.querySelector('ymaps'),
+                    locationUrl: "https://yandex.com/maps/?&panorama%5Bdirection%5D=16%2C0&panorama%5Bpoint%5D=" + global_lng + "%2C" + global_lat
+                });
+            }
+        }, 500);
     }
     else if (nextPlayer === "Baidu" || nextPlayer === "Youtube" || nextPlayer === "Image" || nextPlayer === "Wikipedia" || nextPlayer === "Minecraft" || nextPlayer === "Carte") {
         if (document.getElementById("i_container") !== null)
@@ -7170,7 +7185,8 @@ function injectYandexPlayer() {
     let options = {
         "direction": [0, 16],
         "span": [10, 67],
-        "controls": ["zoomControl"]
+        "controls": ["zoomControl"],
+        //"scrollZoomBehavior": scrollZoom,
     };
 
     ymaps.panorama.createPlayer("player", [lat, lng], options)
@@ -7182,9 +7198,17 @@ function injectYandexPlayer() {
         let trys = 0;
         let t = setInterval(function(){
            if (trys++ < 20 && !global_data?.token) return;
+            
+           let _ymaps = document.querySelector('ymaps');
 
            clearInterval(t);
 
+           if (_ymaps && global_data?.forbidZooming && global_data?.forbidMoving && global_data?.forbidRotating){
+               // NMPZ
+               _ymaps.style.pointerEvents = 'none';               
+               return;
+           } 
+           
            if (global_data?.forbidMoving){
                // Don't do anything because the arrows are alread removed.
                return; 
@@ -9150,7 +9174,10 @@ setInterval(function () {
   }, 2000);
 
 function makeGuessMapHack(options){
-      if (document.querySelector('[data-qa="perform-guess"]')){
+      const guessButton = document.querySelector('[data-qa="perform-guess"]');
+      if (guessButton){
+        console.log(guessButton);
+
         // Geoguessr guess map is loaded.
         return;
       }
@@ -9239,8 +9266,6 @@ function makeGuessMapHack(options){
 
           const mapId = location.href.replace(/.*\/(.*)/, "$1");
            
-          // Currently can't do challenges because everyone recieves 0 points for the round.
-         // fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`, {
           fetch(`https://www.geoguessr.com/api/v3/games/${global_data.token}`, {
               headers: {
                 accept: "*/*",
@@ -9267,10 +9292,10 @@ function makeGuessMapHack(options){
               return res.json();
           }).then(jSon => {
                 console.log("jSon", jSon);
-		  
+
                 const len = jSon.round;
-                
-                if (len === 5){
+
+                if (location.pathname.startsWith("/challenge/") || len === 5){
                     location.reload();
                     return;
                 }
@@ -9803,22 +9828,30 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         const isNoob = (/\[unity noob/i.test(data.mapName));
         const isTimed = (/\[.*timed/i.test(data.mapName));
         const isUnhackable = (/\[.*unhackable/i.test(data.mapName));
-        
+       console.log("isunhackable", isUnhackable);
         if (isUnhackable){
             let _url = hex2a(global_panoID);
-            //let _url = `https://c7.alamy.com/360/WKMJE4/full-seamless-spherical-panorama-360-degrees-angle-view-on-bank-of-wide-river-in-front-of-bridge-in-city-center-360-panorama-in-equirectangular-proje-WKMJE4.jpg`; 
-             if (/http/i.test(_url) === false){
+
+            if (/http/i.test(_url) === false) {
+                console.log("didn't find url");
                 deactivateUnityNerd();
-                return 
-             }
-                window.isOkToShowCustomPano = true;
-                let p = fetch(_url).then( r => r.blob())
-                .then( blob => {
+                return;
+            }
+
+            window.isOkToShowCustomPano = true;
+
+            fetch(_url)
+              .then((r) => r.blob())
+              .then((blob) => {
                     console.log(blob, URL.createObjectURL(blob));
-                    let p =  URL.createObjectURL(blob);
-                    window.loadImg(p, false, ()=>{console.log('callback called')});
-                })
-            //window.loadImg(hex2a(global_panoID), false, (e)=> console.log("loadImg"));
+
+                    let _url = URL.createObjectURL(blob);
+
+                    window.loadImg(_url, false, () => {
+                        console.log("loadImg callback called");
+                    });
+              });
+
             activateUnityNerd();
         }
 
@@ -9926,4 +9959,61 @@ function getOverlayView(map){
     ov.onRemove = function(){};
     ov.setMap(map);
     return ov;
-} 
+}
+
+async function makeChallengeResultRowsClickableForUnhackable(_rounds){
+    const token = getToken();
+    const URL = `https://www.geoguessr.com/api/v3/results/highscores/${token}?friends=false&limit=26&minRounds=5`;
+    let challengeInfo = await fetch(URL).then((response) => response.json());
+    
+    console.log(challengeInfo);
+    const rows = document.querySelectorAll('[class*="results_row_"]');
+    
+    rows.forEach(el => {
+        el.polyLines = [];
+
+        el.addEventListener('click', function(){
+            const isSelected = el.classList.value.lastIndexOf('selected');
+    
+            if (isSelected !== -1){
+                if (el.polyLines){
+                    el.polyLines.forEach(line => line.setMap(null));
+                }
+                
+                el.polyLines = [];
+
+                return;
+            }
+
+            createPolyLines();
+        });
+
+        const isSelected = el.classList.value.lastIndexOf('selected');
+        if (isSelected !== -1) createPolyLines();
+
+        function createPolyLines(){
+            const idx = +el.textContent.replace(/^(\d+).*/, "$1");
+            console.log(el.textContent, ",", idx);
+            console.log(_rounds);
+            
+            challengeInfo.items[idx-1].game.player.guesses.forEach((round,index,array) =>{
+               if (!_rounds[index]._unhackable_answer) return;
+
+               const pos = {lat: round.lat, lng: round.lng};
+               
+               const line = new google.maps.Polyline({
+                    path: [pos, _rounds[index]._unhackable_answer],
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                    //geodesic: false, // If true infowindow won't be in middle of line.
+                });
+
+                line.setMap(GoogleMapsObj);
+
+                el.polyLines.push(line);
+            });
+        }
+    })
+}
