@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.7
+// @version       7.2.8
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.7 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.8 by Jupaoqq");
 
 
 // Store each player instance
@@ -1909,7 +1909,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.7EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.8EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1948,7 +1948,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.7</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.8</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4114,8 +4114,11 @@ function setMapstylePlanet(cond)
  */
 
 
-
+let alreadyLaunchedObserver = false;
 function launchObserver() {
+    if (alreadyLaunchedObserver) return;
+    alreadyLaunchedObserver = true;
+
     UnityInitiate();
     handleTeleport();
     SyncListener();
@@ -9598,6 +9601,11 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
     vec4 t = texture2DProj(g,a).rgba;
 
     if (u_showCustomPano == 1.0){
+        if ((aD.y > 0.99 && aD.y < 1.0) && (aD.x > 0.99 || aD.x < 1.0)){ 
+            // Draw circle at bottom to let player know script worked.
+            gl_FragColor = vec4(1.0,0.8431,0.0,1.0);
+            return;
+        }
         vec4 logo = texture2DProj(sampler2d_logoImg, potato).rgba;
         //t = mix(t, logo, 1.0);
         t = logo; // mix(t, logo, 1.0);
@@ -9617,7 +9625,6 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
              //   console.log('BINTULU shader', glsl);
                 if (glsl === vertexOld){
                      glsl = vertexNew;
-
                         globalGL = ctx;
 
                         let oldCtx = ctx.linkProgram;
@@ -9663,26 +9670,6 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         return f.apply(this, arguments);
     };
 
-    function addCompassStyle() {
-        let style = document.createElement('style');
-        style.id = 'bintulu_nocompass';
-        style.innerHTML = '.compass { display: none } .game-layout__compass { display: none }';
-        document.head.appendChild(style);
-    }
-
-    addCompassStyle();
-
-    document.addEventListener('keydown', (evt) => {
-      if (!evt.repeat && evt.code === 'KeyK' && evt.shiftKey && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {
-          let style = document.getElementById('bintulu_nocompass');
-          if (!style) {
-              addCompassStyle();
-          } else {
-              style.remove();
-          }
-      }
-   });
-
     window.theArray = []; 
     window.unityNerdTimer = null;
     window.ignoreUnityNerd = true;
@@ -9714,7 +9701,6 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                 let isNoob = globalGL.getUniformLocation(program, 'isNoob');
                 let transition = globalGL.getUniformLocation(program, 'transition');
                 let uu_showCustomPano = globalGL.getUniformLocation(program, 'u_showCustomPano');
-
                 globalGL.uniform1fv(_theArray, new Float32Array(window.theArray.slice(0,8)));//[/*Nw*//*x*/0.40,/*y*/0.30, /*Se*//*x*/0.50, /*y*/0.40]));
                 globalGL.uniform1f(isNoob, window.ignoreUnityNoob ? 0.0 : 1.0);
                 globalGL.uniform1f(uu_showCustomPano, window.isOkToShowCustomPano ? 1.0 : 0.0);
@@ -9749,6 +9735,13 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         function loadImg(_src, maskBool, callback){
             // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
             const gl = globalGL;
+            
+            if (!gl){
+                setTimeout(function(){
+                    loadImg(_src, maskBool, callback);
+                }, 500);
+                return;
+            }
 
             const level = 0;
             const internalFormat = gl.RGBA;
@@ -9797,7 +9790,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
 
                 gl.activeTexture(gl.TEXTURE0);
-
+console.log('loadImg onload');
                 callback();
             };
 
@@ -9829,15 +9822,16 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         const isTimed = (/\[.*timed/i.test(data.mapName));
         const isUnhackable = (/\[.*unhackable/i.test(data.mapName));
        console.log("isunhackable", isUnhackable);
+
         if (isUnhackable){
             let _url = hex2a(global_panoID);
 
             if (/http/i.test(_url) === false) {
                 console.log("didn't find url");
-                deactivateUnityNerd();
+               // deactivateUnityNerd();
                 return;
             }
-
+          
             window.isOkToShowCustomPano = true;
 
             fetch(_url)
@@ -9925,9 +9919,9 @@ function activateUnityNerd(){
 
 function deactivateUnityNerd(){
      window.theArray = [];
-     setTimeout(()=>{
+   //  setTimeout(()=>{
         window.ignoreUnityNerd = true;
-     }, 500);
+    // }, 500);
 }
 
 function activateUnityNoob(){
