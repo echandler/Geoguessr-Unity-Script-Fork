@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.2.8
+// @version       7.2.9
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.2.8 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.2.9 by Jupaoqq");
 
 
 // Store each player instance
@@ -1266,7 +1266,7 @@ function hideOtherBtn()
         {
             element.style.visibility = "";
         }
-        if (nextPlayer == "Wikipedia" && element.id == "local language")
+        if (nextPlaye == "Wikipedia" && element.id == "local language")
         {
             element.style.visibility = "";
         }
@@ -1909,7 +1909,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.8EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.2.9EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1948,7 +1948,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.8</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.2.9</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2047,7 +2047,7 @@ function UnityInitiate() {
             data = JSON.parse(_prompt);
         } catch (e){
              alert(e.message);
-             console.log(e.message);
+             console.log("From prompt", e.message);
              return
         }
         
@@ -2056,11 +2056,17 @@ function UnityInitiate() {
         window.__overlay = t;
 
         // Remove dashed connecting lines.
-//        let overlayLayer = t.getPanes().overlayLayer;
-//        overlayLayer.remove();
-//        
+        let overlayLayer = t.getPanes().overlayLayer;
+        window._overlay = overlayLayer;
+
+        Array.from(overlayLayer.children).forEach((el, idx, array)=>{
+            el.style.opacity = 0.1;
+        });
+
+        //overlayLayer.remove();
+        
 //        // Remove correct location overlays.
-//        document.querySelectorAll("[data-qa=\"correct-location-marker\"]").forEach(el=> el.remove())
+        document.querySelectorAll("[data-qa=\"correct-location-marker\"]").forEach(el=> el.style.opacity = 0.2);
 
         let thisRoundData = {};
 
@@ -4782,8 +4788,9 @@ function guessButtonCallback()
 
 function loaderChecker(map_name)
 {
+    console.warn(map_name)
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
-    let substrings = ["Yandex", "Bing Streetside", "Kakao", "Mapbox", "Bing Satellite", "Planets"]
+    let substrings = ["Yangle", "Goodex", "Yandex", "Bing Streetside", "Kakao", "Mapbox", "Bing Satellite", "Planets"]
     bullseyeMapillary = ((isBullseye || isLiveChallenge) && !["Mapillary", "A United World", "A Unity World", "Unity Test","Unity Special Edition"].some(v => map_name.includes(v)));
     if (substrings.some(v => map_name.includes(v)) || rtded || bullseyeMapillary)
     {
@@ -4819,9 +4826,9 @@ function loaderChecker(map_name)
         map_name = "Yandex Bing Streetside Kakao Mapbox Mapy";
     }
 
-    if (map_name.includes("Yandex"))
+    if (map_name.includes("Yandex") || map_name.includes('Goodex') || map_name.includes('Yangle'))
     {
-        console.log("Yandex Map");
+        console.log("Yandex Map or Goodex Map or Yangle Map");
         if (map_name == "Yandex Bing Streetside Kakao Mapbox Mapy")
         {
             yandex_map = false;
@@ -6061,6 +6068,9 @@ function Yandex() {
         // console.log("Yandex canvas");
         /*   console.log(YANDEX_MAPS_CANVAS); */
         if (nextPlayer === "Yandex") {
+            // Make google street view visible so it doesn't blink.
+            gCanvas().style.visibility = "";
+
             YANDEX_MAPS_CANVAS.style.visibility = "";
             switchCovergeButton.useGoogle = false;
             console.log("Yandex Canvas loaded");
@@ -6336,7 +6346,7 @@ function handleSpecialColor()
 }
 
 
-function goToLocation(cond) {
+async function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     console.log("Going to location");
     console.log(nextPlayer);
@@ -6390,18 +6400,59 @@ function goToLocation(cond) {
     }
 
     if (nextPlayer === "Yandex") {
+        const _ymaps = document.querySelector("ymaps");
+
         if (!document.querySelector("ymaps")){
             // Hack by EC to fix yandex not showing when starting a new game.
             location.reload();
             return;
         }
+
+        const map_name = global_data.mapName;
+        if (map_name.includes('Goodex') || map_name.includes('Yangle')){
+            // Apparently if the panoid is not length 22 then it isn't official?
+            const pano = GooglePlayer.getPano();
+            let unofficial = pano? pano.length !== 22 : true;
+            let panosAtThisLocation = await ymaps.panorama.locate([global_lat, global_lng]).then(ret => ret);
+
+            if (!unofficial || panosAtThisLocation.length == 0){
+                if (panosAtThisLocation.length === 0){
+                    let spacey = document.getElementById('SpOver Button');
+                    let _spacey = spacey.innerHTML;
+                    spacey.innerHTML = "Couldn't find any panoramas for Yandex here!";
+                    spacey.style.visibility = 'visible';
+                    setTimeout(()=> {
+                        spacey.style.visibility = 'hidden';
+                        spacey.innerHTML = _spacey;
+                    }, 5000);
+                }
+
+                const GOOGLE_MAPS_CANVAS = gCanvas();
+                GOOGLE_MAPS_CANVAS.style.visibility = "visible";
+
+                _ymaps.style.display = "none";
+                return;
+            }
+        }
+        
+        const showYmapsTimer = setTimeout(function(){
+            _ymaps.style.display = "";
+            // Hide google streetview that was un-hidden so it wouldn't blink,
+            // but now can be hidden again.
+            gCanvas().style.visibility = "hidden";
+
+        }, 750);
+        
         let options = {};
         YandexPlayer.moveTo([global_lat, global_lng], options);
         YandexPlayer.setDirection([0, 16]);
         YandexPlayer.setSpan([10, 67]);
-        
+
+        window._yplayer = YandexPlayer;
+        console.log(YandexPlayer.getPanorama().metadata._data.Data.panoramaId);
+
         let __t = 0;
-        let q = setInterval(function(){
+        let q = setInterval(async function(){
             if (__t++ > 50) {
                 clearInterval(q);
             }
@@ -6409,6 +6460,25 @@ function goToLocation(cond) {
             let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
             if(failedToLoadRoundMsg){
                 clearInterval(q);
+
+                let panosAtThisLocation = await ymaps.panorama.locate([global_lat, global_lng]).then(ret => ret);
+                if (panosAtThisLocation.length == 0){
+                    let spacey = document.getElementById('SpOver Button');
+                    let _spacey = spacey.innerHTML;
+                    spacey.innerHTML = "Couldn't find any panoramas for Yandex here!";
+                    spacey.style.visibility = 'visible';
+                    setTimeout(()=> {
+                        spacey.style.visibility = 'hidden';
+                        spacey.innerHTML = _spacey;
+                    }, 5000);
+
+                    clearTimeout(showYmapsTimer);
+
+                    _ymaps.style.display = "none";
+
+                    return;
+                }
+
                 failedToLoadRoundMsg.style.display = 'none';
                 makeGuessMapHack({
                     guessBtnText:"Yandex Guess Button", 
@@ -7014,6 +7084,7 @@ function SyncListener()
  * @returns Promise with seed data as object
  */
 function getSeed() {
+
     console.log("get seed");
     // myHighlight("Get Seed");
     return new Promise((resolve, reject) => {
@@ -7129,6 +7200,7 @@ function getRoundFromPage() {
  * Injects Yandex Script
  */
 function injectYandexScript() {
+
     return new Promise((resolve, reject) => {
         if (!YANDEX_INJECTED) {
             if (YANDEX_API_KEY === "") {
@@ -7191,9 +7263,11 @@ function injectYandexPlayer() {
         "controls": ["zoomControl"],
         //"scrollZoomBehavior": scrollZoom,
     };
-
+    
     ymaps.panorama.createPlayer("player", [lat, lng], options)
         .done((player) => {
+        let __ymaps = document.querySelector('ymaps');
+        __ymaps.style.display = "none";
 
         // Remove markers and arrows then check for forbidmoving.
         player.getPanorama().__proto__.getMarkers = function(){}
@@ -7201,9 +7275,8 @@ function injectYandexPlayer() {
         let trys = 0;
         let t = setInterval(function(){
            if (trys++ < 20 && !global_data?.token) return;
-            
            let _ymaps = document.querySelector('ymaps');
-
+            
            clearInterval(t);
 
            if (_ymaps && global_data?.forbidZooming && global_data?.forbidMoving && global_data?.forbidRotating){
@@ -7252,6 +7325,10 @@ function injectYandexPlayer() {
             }
             defaultPanoIdChange = true;
 
+        });
+
+        YandexPlayer.events.add("error", (e) => {
+            console.error("Yandex error:", e);
         });
         console.log("Yandex Player injected");
     });
