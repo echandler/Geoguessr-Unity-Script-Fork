@@ -1268,7 +1268,7 @@ function hideOtherBtn()
         {
             element.style.visibility = "";
         }
-        if (nextPlaye == "Wikipedia" && element.id == "local language")
+        if (nextPlayer == "Wikipedia" && element.id == "local language")
         {
             element.style.visibility = "";
         }
