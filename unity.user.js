@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.0
+// @version       7.3.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.0 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -1911,7 +1911,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.0EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.1EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1950,7 +1950,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.0</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4014,11 +4014,18 @@ function setMapstylePlanet(cond)
  * This observer stays alive while the script is running
  */
 
-
 let alreadyLaunchedObserver = false;
 function launchObserver() {
     if (alreadyLaunchedObserver) return;
     alreadyLaunchedObserver = true;
+
+    //let sat4 = document.body.querySelector(".fullscreen-spinner_square__mwMfl");
+    let sat4 = document.body.querySelector(`div[class*="spinner"]`);
+    if (sat4) {
+        // Added by EC.
+        const svCanvas = document.body.querySelector(GENERAL_CANVAS);
+        if (svCanvas) svCanvas.style.visibility = "hidden";
+    }
 
     UnityInitiate();
     handleTeleport();
@@ -4083,7 +4090,7 @@ function launchObserver() {
                         // console.log(m)
                         // let sat3 = m.getElementsByClassName("tooltip_tooltip__CHe2s");
                         let PATHNAME = window.location.pathname;
-                        // let sat4 = m.getElementsByClassName('fullscreen-spinner_square__mwMfl');
+                         //let sat4 = m.getElementsByClassName('fullscreen-spinner_square__mwMfl');
                         // console.log(m.classList.contains('round-starting_wrapper__1G_FC'));
 
                         //if (m.classList.contains("game-layout__panorama-message"))
@@ -7044,6 +7051,12 @@ function getSeed() {
         else if (PATHNAME.startsWith("/live-challenge/")) {
             URL = `https://game-server.geoguessr.com/api/live-challenge/${token}`;
         }
+
+        if (getSeed.prevReqURL === URL && Date.now() - getSeed.prevReqDate < 1000){
+            // Added by EC.
+            return resolve(getSeed.prevReq);
+        }
+
         if (isBattleRoyale) {
             fetch(URL, {
                 // Include credentials to GET from the endpoint
@@ -7051,6 +7064,9 @@ function getSeed() {
             })
                 .then((response) => response.json())
                 .then((data) => {
+                getSeed.prevReqURL = URL
+                getSeed.prevReq = data;
+                getSeed.prevReqDate = Date.now();
                 resolve(data);
             })
                 .catch((error) => {
@@ -7061,6 +7077,10 @@ function getSeed() {
             fetch(URL)
                 .then((response) => response.json())
                 .then((data) => {
+                getSeed.prevReqURL = URL
+                getSeed.prevReq = data;
+                getSeed.prevReqDate = Date.now();
+            
                 resolve(data);
             })
                 .catch((error) => {
@@ -7069,6 +7089,8 @@ function getSeed() {
         }
     });
 }
+getSeed.prevReq = null;
+getSeed.prevReqDate = null;
 
 /**
  * Gets the token from the current URL
