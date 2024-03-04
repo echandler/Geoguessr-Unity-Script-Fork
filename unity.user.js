@@ -8241,8 +8241,9 @@ function injectMapboxPlayer() {
                                 // Using this style appears to cause flickering when used with the mapbox-dem source below. 
                                 style: 'mapbox://styles/jupaoqq/cl0xjs63k003a15ml3essawbk', // style URL
                                 center: [0, 0], // starting position [lng, lat]
-                                zoom: 15, // starting zoom
-                                pitch: 0
+				zoom: 13, // starting zoom
+                                pitch: 90,
+                                bearing: 200 
                             });
 
                             console.log("New Mapbox API Call");
