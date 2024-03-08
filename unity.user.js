@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.1
+// @version       7.3.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.1 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.2 by Jupaoqq");
 
 
 // Store each player instance
@@ -953,7 +953,7 @@ function setButtons2()
             document.getElementById("Space Menu Button"),
             document.getElementById("Time Machine Button"),
             document.getElementById("Circus Menu"),
-           ]
+           ];
 }
 
 // Store default position for the button elements
@@ -1494,7 +1494,7 @@ function UnityInitiate() {
             teleportMain.innerHTML = "Teleport: " + teleportMain.distance + " m";
         }
     }
-
+    
     google.maps.Map = class extends google.maps.Map {
         constructor(...args) {
             super(...args);
@@ -1911,7 +1911,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.1EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.2EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1950,7 +1950,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.1</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.2</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2006,21 +2006,15 @@ function UnityInitiate() {
         menuLocCounter--;
     });
 
-    var unhackableBtn = document.createElement("Button");
-    unhackableBtn.classList.add("unity-btn", "info-btn", "full", "vertical-5");
-    unhackableBtn.id = "Unhackable Button";
-    unhackableBtn.innerHTML = `Load Unhackable Answers`;
-    document.body.appendChild(unhackableBtn);
-    unhackableBtn.addEventListener("click", unhackableAnsswersShowPrompt);
+    var unity_alert = document.createElement("Button");
+    unity_alert.classList.add("unity-btn", "unity_alert", "extra-full", "vertical-0");
+    unity_alert.id = "Unhackable Button";
+    unity_alert.innerHTML = `Unity Alert Message`;
+    document.body.appendChild(unity_alert);
+    unity_alert.addEventListener("click", unhackableAnsswersShowPrompt);
 
     function unhackableAnsswersShowPrompt() {
-        console.log(global_data, GoogleMapsObj) 
-
-        let _prompt = prompt("Paste answer info. here:") 
-
-        if (!_prompt) return;
-
-        unhackableAnswers(_prompt);
+        
     }
 
     document.body.addEventListener('keydown', function(e){
@@ -4094,7 +4088,8 @@ function launchObserver() {
                         // console.log(m.classList.contains('round-starting_wrapper__1G_FC'));
 
                         //if (m.classList.contains("game-layout__panorama-message"))
-                        if (document.body.querySelector(`[class*="game_panoramaMessage"]`))
+                       // if (document.body.querySelector(`[class*="game_panoramaMessage"]`))
+                        if (checkFailedToLoadRoundMsg())
                         {
                             console.log("Fail to load canvas message")
                             if (allowDetect)
@@ -4172,18 +4167,26 @@ function launchObserver() {
                                 .then((res) => res.json())
                                 .then((json)=> {
                                     // TODO EC: Do something here.
-                                    console.log(json)
-                                    if (!/UAC/.test(json.name)) return;
+                                    if (!/UAC/.test(json.name)){
+                                        return;
+                                    }
                                     
-                                    let answerHref = json.description.replace(/\[\[(http.*?)\]\]/, "$1");
+                                    if (!json?.description){
+                                        showUnhackableBtn(null);
+                                        return;
+                                    }
                                     
-                                    fetch(answerHref)
+                                    const answerHref = json.description?.replace(/\[\[(http.*?)\]\]/, "$1");
+                                    let t = fetch(answerHref)
                                     .then((res) => res.json())
                                     .then((json) => {
-                                        unhackableAnswers(JSON.stringify(json));
-                                    })
+                                        showUnhackableBtn(JSON.stringify(json));
+                                        //unhackableAnswers(JSON.stringify(json));
+                                    }).catch(()=>{
+                                        showUnhackableBtn(null);
+                                    });
                                 })
-                                .catch(function(e){ console.warn("fetchOnce called more than once.")});
+                                .catch(function(e){ console.warn("FetchOnce called more than once.")});
                             }
                         }
                     }
@@ -4212,7 +4215,7 @@ var oldHref = document.location.href;
 
 const immediateLoad = localStorage['unity_immediate_load']; // EC
 const _pathName = location.pathname; // EC
-if (_pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || immediateLoad === "true"){
+if (_pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || _pathName.startsWith("/results/") || immediateLoad === "true"){
         // EC made this to fix not loading during game.
         injecter(() => {
             launchObserver();
@@ -6284,6 +6287,8 @@ function handleSpecialColor()
     document.getElementById("Circus NMPZ").style.background = nmpzSpecial ? "#ff1493" : "#ff69b4";
 }
 
+let yandexIntervalFailedToLoadMessage = null;
+let __t = 0;
 
 async function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -6339,42 +6344,70 @@ async function goToLocation(cond) {
     }
 
     if (nextPlayer === "Yandex") {
-        const _ymaps = document.querySelector("ymaps");
+        // Everything between these curly braces is just stupid.
 
+        const _ymaps = document.querySelector("ymaps");
+console.log("yandex 1")
         if (!document.querySelector("ymaps")){
             // Hack by EC to fix yandex not showing when starting a new game.
             location.reload();
             return;
         }
+         
+        clearInterval(yandexIntervalFailedToLoadMessage);
+        __t = 100;// For a wierd bug.
 
         const map_name = global_data.mapName;
+        let panosAtThisLocation = null; 
+
         if (map_name.includes('Goodex') || map_name.includes('Yangle')){
             // Apparently if the panoid is not length 22 then it isn't official?
-            const pano = GooglePlayer.getPano();
+            console.log('includes goodex')
+            let pano = GooglePlayer.getPano();
+
+            // TODO EC: check if global_data pano is same as GooglePlayer.getPano().
+            pano = !checkFailedToLoadRoundMsg() ? pano : "Failed Pano message";
+                       
+
             let unofficial = pano? pano.length !== 22 : true;
-            let panosAtThisLocation = await ymaps.panorama.locate([global_lat, global_lng]).then(ret => ret);
+            panosAtThisLocation = await ymaps.panorama.locate([global_lat, global_lng]).then(ret => ret);
 
             if (!unofficial || panosAtThisLocation.length == 0){
+
                 if (panosAtThisLocation.length === 0){
-                    let spacey = document.getElementById('SpOver Button');
-                    let _spacey = spacey.innerHTML;
-                    spacey.innerHTML = "Couldn't find any panoramas for Yandex here!";
-                    spacey.style.visibility = 'visible';
+                    console.log("No yandex panos, panos == 0")
+                    //let spacey = document.getElementById('SpOver Button');
+                    let unityAlert = document.querySelector('.unity_alert');
+                    let _unityAlert = unityAlert.innerHTML;
+                    unityAlert.innerHTML = "Couldn't find any panoramas for Yandex here!";
+                    unityAlert.style.visibility = 'visible';
                     setTimeout(()=> {
-                        spacey.style.visibility = 'hidden';
-                        spacey.innerHTML = _spacey;
+                        unityAlert.style.visibility = 'hidden';
+                        unityAlert.innerHTML = _unityAlert;
                     }, 5000);
                 }
-
+                
+                 console.log("official coverage or no yandex, resorting back to google sv - ", pano, pano?.length)
                 const GOOGLE_MAPS_CANVAS = gCanvas();
                 GOOGLE_MAPS_CANVAS.style.visibility = "visible";
 
                 _ymaps.style.display = "none";
+
                 return;
             }
         }
-        
+
+       console.log("here is yandex") 
+
         const showYmapsTimer = setTimeout(function(){
+            const pano = GooglePlayer.getPano();
+            let unofficial = pano? pano.length !== 22 : true;
+            let failedToLoadRoundMsg = checkFailedToLoadRoundMsg();
+            console.log("showYmapsTimer: Checking if official coverage or failed round before hidding ymaps")
+            console.log("showYmapsTimer:", unofficial, failedToLoadRoundMsg, panosAtThisLocation?.length);
+            if (!failedToLoadRoundMsg && !unofficial && panosAtThisLocation?.length) return;
+            console.log("show maps timer hidden")
+
             _ymaps.style.display = "";
             // Hide google streetview that was un-hidden so it wouldn't blink,
             // but now can be hidden again.
@@ -6384,24 +6417,31 @@ async function goToLocation(cond) {
         
         let options = {};
         YandexPlayer.moveTo([global_lat, global_lng], options);
-        YandexPlayer.setDirection([0, 16]);
-        YandexPlayer.setSpan([10, 67]);
+        //YandexPlayer.setDirection([0, 16]);
+        //YandexPlayer.setDirection([-55, 0]); // Hopefully points down the road.
+        YandexPlayer.setDirection("auto"); // Hopefully points down the road.
+       // YandexPlayer.setSpan([10, 67]);
+        YandexPlayer.setSpan([-10, 67]);
+        console.log("yandex moveto location", [global_lat, global_lng]) 
 
-        let __t = 0;
-        let q = setInterval(async function(){
+        __t = 0;
+        clearInterval(yandexIntervalFailedToLoadMessage); // Double make sure it's cleared
+        yandexIntervalFailedToLoadMessage = setInterval(async function(){
+            console.log("yandex interval", __t)
             if (__t++ > 50) {
-                clearInterval(q);
+                clearInterval(yandexIntervalFailedToLoadMessage);
+                return;
             }
 
-            let failedToLoadRoundMsg = document.body.querySelector(`[class*="game_panoramaMessage"]`);
+            let failedToLoadRoundMsg = checkFailedToLoadRoundMsg(); 
             if(failedToLoadRoundMsg){
-                clearInterval(q);
+                clearInterval(yandexIntervalFailedToLoadMessage);
 
                 let panosAtThisLocation = await ymaps.panorama.locate([global_lat, global_lng]).then(ret => ret);
                 if (panosAtThisLocation.length == 0){
                     let spacey = document.getElementById('SpOver Button');
                     let _spacey = spacey.innerHTML;
-                    spacey.innerHTML = "Couldn't find any panoramas for Yandex here!";
+                    spacey.innerHTML = "Couldn't find any panoramas for Yandex here spacey!";
                     spacey.style.visibility = 'visible';
                     setTimeout(()=> {
                         spacey.style.visibility = 'hidden';
@@ -6416,7 +6456,18 @@ async function goToLocation(cond) {
                 }
 
                 failedToLoadRoundMsg.style.display = 'none';
+                console.log("failed to load display none");
                 makeGuessMapHack({
+                    markerIcon: {
+                        // Path is just a filler for a 0 opacity marker.
+                        path: "M49.07 0c.524.405.262.88.095 1.333l-6.643 18.095-8.047 22.12a4.21 4.21 0 0 0-.262 1.429v19.81c0 1.2-.024 1.2-1.214 1.2-1.238 0-2.476-.048-3.714.024-.786.024-1.07-.238-1.048-1.024l.024-7.333V42.928c0-.5-.07-1.048-.262-1.524L14.976 7.333c-.095-.262-.238-.476-.357-.714v-.5c.38-.12.762-.3 1.143-.3l4.12-.024s1.357 0 1.81 1.286l9.7 27.31.405.976.333-1.095 1.905-6.976 8.5-26.31c.12-.333.405-.62.62-.93L49.07 0z", 
+                        fillColor: "#e52620",
+                        scale: 0.5,
+                        fillOpacity: 1,
+                        strokeColor: "#e52620",
+                        strokeOpacity: 1,
+                        anchor: new google.maps.Point(29, 64), 
+                    },
                     guessBtnText:"Yandex Guess Button", 
                     mapContainer: document.querySelector('ymaps'),
                     locationUrl: "https://yandex.com/maps/?&panorama%5Bdirection%5D=16%2C0&panorama%5Bpoint%5D=" + global_lng + "%2C" + global_lat
@@ -6767,6 +6818,9 @@ async function goToLocation(cond) {
 
 }
 
+function checkFailedToLoadRoundMsg(){
+    return document.body.querySelector(`[class*="game_panoramaMessage"]`);
+}
 
 /**
  * Handle undo using the location history of the current round
@@ -7205,8 +7259,9 @@ function injectYandexScript() {
 function injectYandexPlayer() {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let switchCovergeButton = document.getElementById("switch");
-    let lat = 41.321861;
-    let lng = 69.212920;
+
+    let lng = 33.722662 ;//41.321861;
+    let lat = 44.402915; //69.212920;
 
     let options = {
         "direction": [0, 16],
@@ -7255,6 +7310,7 @@ function injectYandexPlayer() {
                 locHistory[locHistory.length - 1][3] = pov[1];
             }
         });
+
         YandexPlayer.events.add("panoramachange", (e) => {
             if (defaultPanoIdChange) {
                 let num = YandexPlayer.getPanorama().getPosition();
@@ -8241,7 +8297,7 @@ function injectMapboxPlayer() {
                                 // Using this style appears to cause flickering when used with the mapbox-dem source below. 
                                 style: 'mapbox://styles/jupaoqq/cl0xjs63k003a15ml3essawbk', // style URL
                                 center: [0, 0], // starting position [lng, lat]
-				zoom: 13, // starting zoom
+                                zoom: 13, // starting zoom
                                 pitch: 90,
                                 bearing: 200 
                             });
@@ -8304,6 +8360,7 @@ function injectMapboxPlayer() {
 function handleMapillary(latlng, options)
 {
     console.log("handleMapillary")
+    return;// Added by EC
     handleMapillaryHelper(latlng, options).then((data) => {
         //console.log(data.data)
         let idToSet = 0;
@@ -9348,11 +9405,11 @@ function makeGuessMapHack(options){
                     location.reload();
                     return;
                 }
-
+                
                 const locationMarker = new google.maps.Marker({
                     map,
                     position: {lat: global_lat, lng: global_lng},
-                    icon: 'http://maps.gstatic.com/mapfiles/ms2/micons/flag.png'
+                    icon: options.markerIcon || 'http://maps.gstatic.com/mapfiles/ms2/micons/flag.png'
                 });
 
                 locationMarker.addListener('click', (e)=>{
@@ -9360,32 +9417,40 @@ function makeGuessMapHack(options){
                     window.open(options.locationUrl,  '_blank');
                 }) ;
 
-                let markerShadow = new google.maps.Marker({
-                    clickable: false,
-                    position: {lat: global_lat, lng: global_lng},
-                    map: map,
-                    icon:{
-                        url: 'http://maps.google.com/mapfiles/ms/micons/flag.shadow.png',
-                        //The size image file.
-                      //  size: new google.maps.Size(225, 120),
-                        //The point on the image to measure the anchor from. 0, 0 is the top left.
-                      //  origin: new google.maps.Point(150, 0),
-                        //The x y coordinates of the anchor point on the marker. e.g. If your map marker was a drawing pin then the anchor would be the tip of the pin.
-                        anchor: new google.maps.Point(15, 32)
-                    },
-                    zIndex: (Math.round(global_lat*-100000)<<5)-1
-                }); 
-//
+                if (!options.markerIcon){
+                    let markerShadow = new google.maps.Marker({
+                        clickable: false,
+                        position: {lat: global_lat, lng: global_lng},
+                        map: map,
+                        icon:{
+                            url: 'http://maps.google.com/mapfiles/ms/micons/flag.shadow.png',
+                            //The size image file.
+                        //  size: new google.maps.Size(225, 120),
+                            //The point on the image to measure the anchor from. 0, 0 is the top left.
+                        //  origin: new google.maps.Point(150, 0),
+                            //The x y coordinates of the anchor point on the marker. e.g. If your map marker was a drawing pin then the anchor would be the tip of the pin.
+                            anchor: new google.maps.Point(15, 32)
+                        },
+                        zIndex: (Math.round(global_lat*-100000)<<5)-1
+                    }); 
+                }
+
                 mapContainer.classList.remove("baidu_guess_map_active");
                 mapContainer.classList.add("baidu_guess_map_between_rounds");
 
                 const interpolated = google.maps.geometry.spherical.interpolate({lat: global_lat, lng: global_lng}, marker.position, 0.5);
 
-                const contentString = `<div style="color: rgb(40, 40, 40); font-size: 1.3rem; font-family: var(--default-font); font-style:italic; padding: 1rem;">
-                                       <div><span style="font-size:1.1rem;">Points:</span> <span style="font-weight: 700">${jSon.player.guesses[len-1].roundScoreInPoints.toLocaleString()}</span></div>
-                                       <div><span style="font-size:1.1rem;">Distance (km):</span> <span style="font-weight: 700">${(+jSon.player.guesses[len-1].distance.meters.amount).toLocaleString()}</span></div>
-                                       </div>`;
-                
+                const dist = jSon.player.guesses[len-1].distance.meters;
+
+                const contentString = `
+                <div style="color: rgb(40, 40, 40); font-size: 1.3rem; font-family: var(--default-font); font-style:italic; padding: 1rem;">
+                    <div>
+                        <span style="font-size:1.1rem;">Points:</span> <span style="font-weight: 700">${jSon.player.guesses[len-1].roundScoreInPoints.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        <span style="font-size:1.1rem;">Distance:</span> <span style="font-weight: 700">${(+dist.amount).toLocaleString()} <span style="font-weight: 100; font-size: 1.1rem;">${dist.unit}</span></span>
+                    </div>
+                </div>`;
 
                 const infowindow = new google.maps.InfoWindow({
                     content: contentString,
@@ -9729,10 +9794,13 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
             triggerEvent(ell, "mouseup", eventt);
 
             let _trans = 0;
-
             window.unityNerdTimer = setInterval(function(){
                 // webgl main loop
-                if (window.ignoreUnityNerd && window.ignoreUnityNoob) return;
+                if (window.ignoreUnityNerd && window.ignoreUnityNoob){
+                    let uu_showCustomPano = globalGL.getUniformLocation(program, 'u_showCustomPano');
+                    globalGL.uniform1f(uu_showCustomPano, window.isOkToShowCustomPano ? 1.0 : 0.0);
+                    return;
+                } 
 
                 let _theArray = globalGL.getUniformLocation(program, 'theArray');
 
@@ -9777,7 +9845,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                                  0, 0, 0, 0, 0, false, false, false, false, 0, null);
             elem.dispatchEvent( event );
         }
-
+        
         function loadImg(_src, maskBool, callback){
             // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
             const gl = globalGL;
@@ -9836,7 +9904,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
 
                 gl.activeTexture(gl.TEXTURE0);
-console.log('loadImg onload');
+                console.log('loadImg onload');
                 callback();
             };
 
@@ -9867,30 +9935,38 @@ console.log('loadImg onload');
         const isNoob = (/\[unity noob/i.test(data.mapName));
         const isTimed = (/\[.*timed/i.test(data.mapName));
         const isUnhackable = (/\[.*UAC/i.test(data.mapName));
-       console.log("isunhackable", isUnhackable);
+
+        console.log("isunhackable", isUnhackable);
 
         if (isUnhackable){
             let _url = hex2a(global_panoID);
 
             if (/http/i.test(_url) === false) {
-                console.log("didn't find url");
+                console.log("Didn't find url for unhackable.");
+                window.isOkToShowCustomPano = false;
                // deactivateUnityNerd();
                 return;
             }
-          
+            
+            if (unityNerdFn.UAC_URLS[_url]){
+                alert('Is this a repeat? Maybe refreshing the page will fix it?');
+            }
+
+            unityNerdFn.UAC_URLS[_url] = true;
+
             window.isOkToShowCustomPano = true;
 
             fetch(_url)
-              .then((r) => r.blob())
-              .then((blob) => {
-                    console.log(blob, URL.createObjectURL(blob));
+            .then((r) => r.blob())
+            .then((blob) => {
+                console.log(blob, URL.createObjectURL(blob));
 
-                    let _url = URL.createObjectURL(blob);
+                let _url = URL.createObjectURL(blob);
 
-                    window.loadImg(_url, false, () => {
-                        console.log("loadImg callback called");
-                    });
-              });
+                window.loadImg(_url, false, () => {
+                    console.log("loadImg callback called");
+                });
+            });
 
             activateUnityNerd();
         }
@@ -9923,6 +9999,7 @@ console.log('loadImg onload');
 
         doUnityNerd(data, 0);
     }
+    unityNerdFn.UAC_URLS = [];
 
     let unityNerdTimer = null;
 
@@ -10001,131 +10078,39 @@ function getOverlayView(map){
     return ov;
 }
 
-async function makeChallengeResultRowsClickableForUnhackable(_rounds){
-    const token = getToken();
-    const URL = `https://www.geoguessr.com/api/v3/results/highscores/${token}?friends=false&limit=26&minRounds=5`;
-    let challengeInfo = await fetch(URL).then((response) => response.json());
-    
-    console.log(challengeInfo);
-    const rows = document.querySelectorAll('[class*="results_row_"]');
-    
-    rows.forEach(el => {
-        el.polyLines = [];
-
-        el.addEventListener('click', function(){
-            const isSelected = el.classList.value.lastIndexOf('selected');
-    
-            if (isSelected !== -1){
-                if (el.polyLines){
-                    el.polyLines.forEach(line => line.setMap(null));
-                }
-                
-                el.polyLines = [];
-
-                return;
+    function showUnhackableBtn(json = null){
+        let unity_alert = document.querySelector('.unity_alert');
+        let msg = document.createElement('div');
+        msg.style.cssText = `color: white;`;
+        msg.innerText = "Click here for UAC answers.";
+        msg.onclick = function(e){
+            if (!json) {
+                unhackableAnsswersShowPrompt();
+            } else {
+                unhackableAnswers(json);
             }
+            unity_alert.innerHTML = "";
+            unity_alert.style.visibility = "hidden";
+        };
 
-            createPolyLines();
-        });
+        unity_alert.innerHTML = "";
+        unity_alert.appendChild(msg);
+        unity_alert.style.visibility = 'visible'
 
-        const isSelected = el.classList.value.lastIndexOf('selected');
-        if (isSelected !== -1) createPolyLines();
+        // setTimeout(()=>{
+        //        unity_alert.innerHTML = '';
+        //        unity_alert.style.visibility = 'hidden';
+        // }, 6000);
+    }
 
-        function createPolyLines(){
-            const idx = +el.textContent.replace(/^(\d+).*/, "$1");
-            console.log(el.textContent, ",", idx);
-            console.log(_rounds);
-            
-            challengeInfo.items[idx-1].game.player.guesses.forEach((round,index,array) =>{
-               if (!_rounds[index]._unhackable_answer) return;
+    function unhackableAnsswersShowPrompt() {
 
-               const pos = {lat: round.lat, lng: round.lng};
-               
-               const line = new google.maps.Polyline({
-                    path: [pos, _rounds[index]._unhackable_answer],
-                    geodesic: true,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2,
-                    //geodesic: false, // If true infowindow won't be in middle of line.
-                });
+        let _prompt = prompt("Paste UAC answer info. here:") 
 
-                line.setMap(GoogleMapsObj);
-                
-                line.addListener('mouseover', ()=>{
-                       let dMarker = newDistanceMarker();
-                       setTimeout(()=> {
-                            dMarker.setMap(null);
-                            dMarker._msgDiv.remove();
-                       }, 2500);
-                });
-                
-                function newDistanceMarker(e){ 
-                    const svgMarker = {
-                        // Path is just a filler for a 0 opacity marker.
-                        path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406z",
-                        fillOpacity: 0.,
-                    };
+        if (!_prompt) return;
 
-                    const interpolated = google.maps.geometry.spherical.interpolate(_rounds[index]._unhackable_answer, pos, 0.5);
-                    let distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(pos, _rounds[index]._unhackable_answer);
-
-                    const units = distanceBetween > 1000 ? "km" : "m";
-
-                    distanceBetween = distanceBetween >= 1000
-                                       ? (distanceBetween / 1000).toFixed(2)
-                                       : distanceBetween >= 100
-                                           ? distanceBetween.toFixed(2)
-                                           : distanceBetween.toFixed(3);
-                   
-
-                    distanceBetween = (+distanceBetween).toLocaleString();// Add commas for large numbers.
-
-                    document.head.insertAdjacentHTML("beforeend", `<style>.unhackableLabel {background:rgb(50,50,50); padding: 10px; border-radius: 5px;}</style>`)
-
-                    const distanceMarker = new google.maps.Marker({
-                        position: interpolated,
-                        icon: svgMarker,
-                        map: GoogleMapsObj,
-                        label: {
-                            text: `${distanceBetween} ${units}`,
-                            color: "#ffffff",
-                            fontSize: "19px",
-                            fontWeight: "bold",
-                            className: "unhackableLabel",
-                        },
-                        clickable: true,
-                    });
-                    
-                    distanceMarker._msgDiv = document.createElement('div');
-                    distanceMarker._msgDiv.innerHTML = `${distanceBetween} ${units}`;
-                    distanceMarker._msgDiv.style.cssText = "position: absolute; bottom: 5px; left: 5px; color: rgba(100,100,100,0.1); font-size: 13px;";
-                    document.body.appendChild(distanceMarker._msgDiv);
-
-                    return distanceMarker;
-                };
-
-                el.polyLines.push(line);
-            });
-            
-                let t = getOverlayView(GoogleMapsObj);
-                let overlayLayer = t.getPanes().overlayLayer;
-                overlayLayer.style.opacity = 0;
-            setTimeout(()=>{
-                // Make dotted connecting lines opaque.
-                window._overlay = overlayLayer;
-
-                Array.from(overlayLayer.children).forEach((el, idx, array) => {
-                    if (!el.style.transform.startsWith("rotate")) return;
-                    el.style.opacity = 0.1;
-                });
-
-                overlayLayer.style.opacity = 1; 
-            }, 100);
-        }
-    })
-}
-
+        unhackableAnswers(_prompt);
+    }
 
     async function unhackableAnswers(json = null){
         let data = null; 
@@ -10157,26 +10142,12 @@ async function makeChallengeResultRowsClickableForUnhackable(_rounds){
         try {
             data = JSON.parse(json);
         } catch (e){
-             alert(e.message);
-             console.log("From prompt", e.message);
-             return
+            alert(e.message);
+            console.log("From prompt", e.message);
+            return
         }
         
-        let t = getOverlayView(GoogleMapsObj);
-
-        window.__overlay = t;
-
-        // Make dotted connecting lines opaque.
-    //    let overlayLayer = t.getPanes().overlayLayer;
-    //    window._overlay = overlayLayer;
-
-    //    Array.from(overlayLayer.children).forEach((el, idx, array)=>{
-    //        el.style.opacity = 0.1;
-    //    });
-
-        //overlayLayer.remove();
-        
-        // Remove correct location overlays.
+        // Lower opacity for correct location overlays for effect.
         document.querySelectorAll("[data-qa=\"correct-location-marker\"]").forEach(el=> el.style.opacity = 0.2);
 
         let thisRoundData = {};
@@ -10199,9 +10170,22 @@ async function makeChallengeResultRowsClickableForUnhackable(_rounds){
 
             bounds.extend(latLng);
 
+            const svgMarker = {
+                // Path is just a filler for a 0 opacity marker.
+                path: "M18.8-31.8c.3-3.4 1.3-6.6 3.2-9.5l-7-6.7c-2.2 1.8-4.8 2.8-7.6 3-2.6.2-5.1-.2-7.5-1.4-2.4 1.1-4.9 1.6-7.5 1.4-2.7-.2-5.1-1.1-7.3-2.7l-7.1 6.7c1.7 2.9 2.7 6 2.9 9.2.1 1.5-.3 3.5-1.3 6.1-.5 1.5-.9 2.7-1.2 3.8-.2 1-.4 1.9-.5 2.5 0 2.8.8 5.3 2.5 7.5 1.3 1.6 3.5 3.4 6.5 5.4 3.3 1.6 5.8 2.6 7.6 3.1.5.2 1 .4 1.5.7l1.5.6c1.2.7 2 1.4 2.4 2.1.5-.8 1.3-1.5 2.4-2.1.7-.3 1.3-.5 1.9-.8.5-.2.9-.4 1.1-.5.4-.1.9-.3 1.5-.6.6-.2 1.3-.5 2.2-.8 1.7-.6 3-1.1 3.8-1.6 2.9-2 5.1-3.8 6.4-5.3 1.7-2.2 2.6-4.8 2.5-7.6-.1-1.3-.7-3.3-1.7-6.1-.9-2.8-1.3-4.9-1.2-6.4z",
+                fillColor: "rgb(0, 102, 204)",
+                scale: 0.75,
+                fillOpacity: 1,
+                strokeColor: "rgb(0, 102, 204)",
+                strokeOpacity: 1,
+                anchor: new google.maps.Point(0, -20), 
+                labelOrigin: new google.maps.Point(0, -25) 
+            };
+
             let marker = new google.maps.Marker({
                 position: latLng,
                 map: GoogleMapsObj,
+                icon: svgMarker,
                 label:{ 
                     text: `${n+1}`,
                     color: "#ffffff",
@@ -10213,6 +10197,7 @@ async function makeChallengeResultRowsClickableForUnhackable(_rounds){
             marker.addListener('click', function(){
                 window.open(`http://maps.google.com/maps?q=&layer=c&cbll=${latLng.lat},${latLng.lng}`, "_blank")
             });
+            unhackableAnswers.markers.push(marker);
         }
         
         if (Object.keys(thisRoundData).length === 0){
@@ -10222,7 +10207,19 @@ async function makeChallengeResultRowsClickableForUnhackable(_rounds){
         
         GoogleMapsObj.fitBounds(bounds)
 
-        makeChallengeResultRowsClickableForUnhackable(global_data.rounds);
+        if (!google.maps.OverlayView.prototype._setMap){
+            // Listen for new overlays being made and use the latlng coordinates from them to
+            // draw the connecting polylines.
+            google.maps.OverlayView.prototype._setMap = google.maps.OverlayView.prototype.setMap;
+            google.maps.OverlayView.prototype.setMap = function(...args){
+                    setTimeout(()=>{
+                    if (this.to && this.from) {
+                        queOverlaysForUnhackable(this);
+                    }
+                    }, 100);
+                google.maps.OverlayView.prototype._setMap.apply(this, args);
+            };
+        }
 
         if (Object.keys(data).length <= 5) return;
 
@@ -10238,7 +10235,144 @@ async function makeChallengeResultRowsClickableForUnhackable(_rounds){
         }
 
         download("answers.json", thisRoundData);
-    };
+    }
+    unhackableAnswers.markers = [];
+    
+    function queOverlaysForUnhackable(overlay, dataIsReady){
+        if (dataIsReady){
+            queOverlaysForUnhackable._overlaysWaiting.forEach((overlay) =>{
+                makePolylinesForUnhackable(overlay);
+            });
+            queOverlaysForUnhackable._overlaysWaiting = [];
+            return;
+        } 
+
+        let hasAnswers = global_data?.rounds?.some((round) => round?._unhackable_answer);
+        if (!hasAnswers){
+            queOverlaysForUnhackable._overlaysWaiting.push(overlay); 
+            return;
+        }
+        makePolylinesForUnhackable(overlay);
+    }
+    
+    queOverlaysForUnhackable._overlaysWaiting = [];
+
+    function makePolylinesForUnhackable(overlay){
+            const _rounds = global_data.rounds;
+            const div = overlay.div;
+            const jsonFrom = overlay.from.toJSON();
+            const jsonTo = overlay.to.toJSON();
+            let round = _rounds.filter( round =>{
+                if (jsonFrom.lat === round.lat && jsonFrom.lng === round.lng){
+                    return true;
+                }
+            }) 
+            round = round.length > 0? round[0] : null;
+            
+            if (round === null) return;
+            
+               if (!round._unhackable_answer) return;
+               const answer = round._unhackable_answer;
+               const pos = jsonTo; 
+               
+               const line = new google.maps.Polyline({
+                    path: [pos, answer],
+                    geodesic: true,
+                    strokeColor: "rgb(0, 102, 204)",
+                    //strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                    //geodesic: false, // If true infowindow won't be in middle of line.
+                });
+
+                line.setMap(GoogleMapsObj);
+                
+                line.addListener('mouseover', ()=>{
+                       let dMarker = newDistanceMarker();
+                       setTimeout(()=> {
+                            dMarker.setMap(null);
+                            dMarker._msgDiv.remove();
+                       }, 2500);
+                });
+                
+                let _pollingInterval = setInterval(function(){
+                    if (div.children.length > 0) return;
+
+                    clearInterval(_pollingInterval);
+
+                    line.setMap(null);
+
+                    setTimeout(function(){
+                        // Remove markers if not on results page.
+                        if (!location.pathname.startsWith("/results/")){
+                            unhackableAnswers.markers.forEach((marker) => marker.setMap(null));
+                            unhackableAnswers.markers = [];
+                        }
+                    }, 5000);
+
+                }, 100);
+
+                function newDistanceMarker(e){ 
+                    const svgMarker = {
+                        // Path is just a filler for a 0 opacity marker.
+                        path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406z",
+                        fillOpacity: 0.,
+                    };
+
+                    const interpolated = google.maps.geometry.spherical.interpolate(answer, pos, 0.5);
+                    let distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(pos, answer);
+
+                    const units = distanceBetween > 1000 ? "km" : "m";
+
+                    distanceBetween = distanceBetween >= 1000
+                                       ? (distanceBetween / 1000).toFixed(2)
+                                       : distanceBetween >= 100
+                                           ? distanceBetween.toFixed(2)
+                                           : distanceBetween.toFixed(3);
+                   
+
+                    distanceBetween = (+distanceBetween).toLocaleString();// Add commas for large numbers.
+
+                    document.head.insertAdjacentHTML("beforeend", `<style>.unhackableLabel {background: rgb(0, 102, 204); padding: 10px; border-radius: 5px;}</style>`)
+
+                    const distanceMarker = new google.maps.Marker({
+                        position: interpolated,
+                        icon: svgMarker,
+                        map: GoogleMapsObj,
+                        label: {
+                            text: `${distanceBetween} ${units}`,
+                            color: "#ffffff",
+                            fontSize: "19px",
+                            fontWeight: "bold",
+                            className: "unhackableLabel",
+                        },
+                        clickable: true,
+                    });
+                    
+                    distanceMarker._msgDiv = document.createElement('div');
+                    distanceMarker._msgDiv.innerHTML = `${distanceBetween} ${units}`;
+                    distanceMarker._msgDiv.style.cssText = "position: absolute; bottom: 5px; left: 5px; color: rgba(100,100,100,0.1); font-size: 13px;";
+                    document.body.appendChild(distanceMarker._msgDiv);
+
+                    return distanceMarker;
+                };
+
+                let t = getOverlayView(GoogleMapsObj);
+                let overlayLayer = t.getPanes().overlayLayer;
+                overlayLayer.style.opacity = 0;
+
+            setTimeout(()=>{
+                // Make dotted connecting lines opaque.
+                window._overlay = overlayLayer;
+
+                Array.from(overlayLayer.children).forEach((el, idx, array) => {
+                    if (!el.style.transform.startsWith("rotate")) return;
+                    el.style.opacity = 0.05;
+                });
+
+                overlayLayer.style.opacity = 1; 
+            }, 100);
+    }
 
     function makeStreetViewCanvasHidden(){
         document.head.insertAdjacentHTML("beforeend", `<style>${GENERAL_CANVAS} {visibility: hidden;}</style>`)
