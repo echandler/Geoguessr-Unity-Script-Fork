@@ -6466,7 +6466,7 @@ console.log("yandex 1")
                         fillOpacity: 1,
                         strokeColor: "#e52620",
                         strokeOpacity: 1,
-                        anchor: new google.maps.Point(29, 64), 
+                        anchor: new google.maps.Point(31, 64), 
                     },
                     guessBtnText:"Yandex Guess Button", 
                     mapContainer: document.querySelector('ymaps'),
