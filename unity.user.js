@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.3
+// @version       7.3.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.3 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.4 by Jupaoqq");
 
 
 // Store each player instance
@@ -1911,7 +1911,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.3EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.4EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1950,7 +1950,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.3</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.4</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2014,7 +2014,7 @@ function UnityInitiate() {
     unity_alert.addEventListener("click", unhackableAnsswersShowPrompt);
 
     function unhackableAnsswersShowPrompt() {
-
+        // TODO EC
     }
 
     document.body.addEventListener('keydown', function(e){
@@ -9964,15 +9964,84 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
             window.isOkToShowCustomPano = true;
 
             fetch(_url)
-            .then((r) => r.blob())
-            .then((blob) => {
-                let _url = URL.createObjectURL(blob);
+            .then((r) => {
+                return r.blob();
+            })
+            .then(async (blob) => {
+                let srcUrl = "";
 
-                window.loadImg(_url, false, () => {
+                if (/\.enc$/.test(_url)){
+                    srcUrl = await blob.text().then(text => {
+                        return new Promise((res, rej)=>{
+                            let script = document.createElement('script');
+                            script.src = "https://echandler.github.io/test-geo-noob-script/misc/CryptoJS_AES.js";
+                            script.addEventListener('load', async function(){
+                                console.log('CryptoJS_AES.js loaded');
+
+                                if (!unityNerdFn.UAC_PassPhrase){
+                                    //unityNerdFn.UAC_PassPhrase = prompt("Enter UAC passphrase here:");
+                                    unityNerdFn.UAC_PassPhrase = await new Promise((res, rej) =>{
+                                        let unityAlert = document.querySelector('.unity_alert');
+                                        let _unityAlert = unityAlert.innerHTML;
+                                        unityAlert.innerHTML = "";
+                                        let container = document.createElement('div');
+                                        let textBox = document.createElement('input');
+                                        textBox.placeholder = "Type AES passphrase here!";
+                                        textBox.addEventListener('keydown', (e)=>{
+                                            // Prevent space bar from deleting unity buttons.
+                                            e.stopImmediatePropagation();
+                                            e.stopPropagation();
+                                        });
+                                        textBox.addEventListener('keyup', (e)=>{
+                                            // Prevent f from making full screen.
+                                            e.stopImmediatePropagation();
+                                            e.stopPropagation();
+                                        });
+                                        let btn = document.createElement('button');
+                                        btn.style.cssText = `padding: 5px; background: white; margin-left: 1em; border-radius: 5px; cursor: pointer;`;
+                                        btn.innerText = "Update";
+                                        btn.addEventListener('click', function(e){
+                                            //unityNerdFn.UAC_PassPhrase = textBox.value;                                         
+                                            unityAlert.style.visibility = 'hidden';
+                                            unityAlert.innerHTML = _unityAlert;
+                                            res(textBox.value);
+                                        });
+                                        container.appendChild(textBox);
+                                        container.appendChild(btn);
+                                        unityAlert.appendChild(container);
+
+                                        unityAlert.style.visibility = 'visible';
+                                    })
+
+                                    if (!unityNerdFn.UAC_PassPhrase) {
+                                        alert("Passphrase is blank, refresh screen and try again.");
+                                    }
+                                }
+
+                                let decrypted = null;
+
+                                try {
+                                    decrypted = CryptoJS.AES.decrypt(text, unityNerdFn.UAC_PassPhrase).toString(CryptoJS.enc.Utf8);
+                                } catch(error){
+                                    alert("There was a problem decrypting the image. Refresh page and try again.\r\n If the problem continues, inform the person that created the challenge.");
+                                    console.error(error);
+                                    return; 
+                                }
+
+                                res(decrypted);
+                            });
+                            document.body.appendChild(script) ;
+                        });
+                    }).then((text)=> text); 
+                } else {
+                    srcUrl = URL.createObjectURL(blob);
+                }
+
+                window.loadImg(srcUrl, false, () => {
                     setTimeout(()=>{
-                    GoogleMapsObj.setCenter({lat:0,lng:0})
-                    GoogleMapsObj.setZoom(2)
-                    console.log("Resized map in loadImg callback.")
+                        GoogleMapsObj.setCenter({lat:0,lng:0})
+                        GoogleMapsObj.setZoom(2)
+                        console.log("Resized map in loadImg callback.")
                     }, 1000);
                 });
             });
@@ -10009,6 +10078,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         doUnityNerd(data, 0);
     }
     unityNerdFn.UAC_URLS = [];
+    unityNerdFn.UAC_PassPhrase = null;
 
     let unityNerdTimer = null;
 
@@ -10228,25 +10298,25 @@ function getOverlayView(map){
 
         if (!google.maps.OverlayView.prototype._setMap){
             // Listen for new overlays being made and use the latlng coordinates from them to
-            // draw the connecting polylines.
-            google.maps.OverlayView.prototype._setMap = google.maps.OverlayView.prototype.setMap;
-            google.maps.OverlayView.prototype.setMap = function(...args){
-                    setTimeout(()=>{
-                    if (this.to && this.from) {
-                        queOverlaysForUnhackable(this);
-                        return;
-                    }
-                        if (!this.position) return;
+        // draw the connecting polylines.
+        google.maps.OverlayView.prototype._setMap = google.maps.OverlayView.prototype.setMap;
+        google.maps.OverlayView.prototype.setMap = function(...args){
+            setTimeout(()=>{
+                if (this.to && this.from) {
+                    queOverlaysForUnhackable(this);
+                    return;
+                }
+                    if (!this.position) return;
 
-                        this.div.firstElementChild.addEventListener('mouseover', (e)=>{
-                            const dMarker = newDistanceMarker(this);
-                            setTimeout(()=> {
-                                dMarker.setMap(null);
-                                dMarker._msgDiv.remove();
+                    this.div.firstElementChild.addEventListener('mouseover', (e)=>{
+                        const dMarker = newDistanceMarker(this);
+                        setTimeout(()=> {
+                            dMarker.setMap(null);
+                            dMarker._msgDiv.remove();
                             }, 2500);
                         })
+                }, 100);
 
-                    }, 100);
                 google.maps.OverlayView.prototype._setMap.apply(this, args);
             };
         }
@@ -10418,3 +10488,4 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
+    
