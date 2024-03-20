@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script test
+// @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
 // @version       7.3.4
 // @author        Jupaoqq
