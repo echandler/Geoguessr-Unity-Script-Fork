@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.4
+// @version       7.3.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -1813,6 +1813,7 @@ function UnityInitiate() {
     google.maps.StreetViewPanorama = class extends google.maps.StreetViewPanorama {
         constructor(...args) {
             super(...args);
+
             GooglePlayer = this;
 
             const isGamePage = () => location.pathname.startsWith("/challenge/") || location.pathname.startsWith("/results/") ||
@@ -1911,7 +1912,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.4EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.5EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1950,7 +1951,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -9362,13 +9363,15 @@ function makeGuessMapHack(options){
       guessBtn.classList.add('baidu_guess_button');
       guessBtn.innerHTML = options.guessBtnText; //"Baidu Guess Button";
       guessBtn.style.cssText =
-        "background: #526b7e; border-radius: 0px 0px 10px 10px; width: 100%; padding: 1em; cursor: pointer; font-family: var(--default-font);";
+        "background: #368ce7; border-radius: 0px 0px 10px 10px; width: 100%; padding: 1em; cursor: pointer; font-family: var(--default-font); transistion: 100ms ease;";
       guessBtn.disabled = true;
       guessBtn.addEventListener("click", (evt) => {
           if (guessBtn._doReload){
               location.reload();
               return;
           }
+          
+          guessBtn.classList.add('baidu_guess_button_clicked');
 
           const mapId = location.href.replace(/.*\/(.*)/, "$1");
 
@@ -9526,7 +9529,25 @@ function makeGuessMapHack(options){
 
           .baidu_guess_button_enabled:hover {
               color: white;
+              scale: 1.0 1.1;
+              background-color: #1666ba !important;
           }
+          
+          .baidu_guess_button_clicked {
+              scale: 1.0 0.99 !important;
+          }
+
+            div[class*="game_panoramaMessage"] { visibility: hidden; }
+
+            div[class*="game_panoramaMessage"]::after {
+                content: "UAC - You are awsome and you know it!";
+                color: white;
+                visibility: visible;
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                translate: 0px 50vh;
+            }
       </style>`);
 
       setTimeout(function(){
@@ -9554,11 +9575,11 @@ function makeGuessMapHack(options){
 // @noframes
 // ==/UserScript==
 
+    let globalGL = null;
 (function() {
     'use strict';
 
 function injected() {
-    let globalGL = null;
 
     const OPTIONS = {
         colorR: 0.5,
@@ -9961,6 +9982,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
 
             unityNerdFn.UAC_URLS[_url] = true;
 
+            // Setting this to true hides the default street view panorama.
             window.isOkToShowCustomPano = true;
 
             fetch(_url)
@@ -10035,6 +10057,23 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                     }).then((text)=> text); 
                 } else {
                     srcUrl = URL.createObjectURL(blob);
+                }
+                
+                let failedToLoadRoundMsg = checkFailedToLoadRoundMsg();
+                if (failedToLoadRoundMsg){
+                    // The streetview was created but for some reason it's blank.
+                    // Manually set a random position to start the webgl procesfor some reason it's blanks.
+                    const fenway = { lat: 42.345573, lng: -71.098326 };
+
+                    GooglePlayer.setPosition(fenway) ;
+
+                    failedToLoadRoundMsg.style.display = 'none';
+
+                    makeGuessMapHack({
+                        guessBtnText:"UAC Guess Button",
+                        mapContainer: document.querySelector('canvas'),
+                        locationUrl: '',
+                    });
                 }
 
                 window.loadImg(srcUrl, false, () => {
