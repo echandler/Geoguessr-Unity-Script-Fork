@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.5
+// @version       7.3.6
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.5 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.6 by Jupaoqq");
 
 
 // Store each player instance
@@ -1824,6 +1824,7 @@ function UnityInitiate() {
             this.addListener('position_changed', () => {
                 // Maybe this could be used to update the position in the other players
                 // so that they are always in sync
+
                 try {
                     if (!isGamePage()) return;
                     // timeMachineBtn.panoId = GooglePlayer.pano;
@@ -1891,6 +1892,7 @@ function UnityInitiate() {
                     console.error("Error:", e);
                 }
             });
+
             this.addListener('pov_changed', () => {
                 const { heading, pitch } = this.getPov();
                 if (KakaoPlayer) {
@@ -1912,7 +1914,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.5EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.6EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1951,7 +1953,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.5</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.6</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -3832,12 +3834,6 @@ function setHidden(cond)
                     iframe.src = ""
                 }
             }
-            //                 else
-            //                 {
-            //                     // TODO
-            //                 }
-            //             }
-
         }
         else
         {
@@ -9270,6 +9266,7 @@ setInterval(function () {
 
                  canvas.addEventListener("mousedown", function () {
                      const guessmap = document.querySelector("div[data-qa='guess-map']");
+                     if (!guessmap) return;
                      if (!guessmap.activeClass) {
                          guessmap.activeClass = Array.from(guessmap.classList).reduce( (x, a) => x + (/active/i.test(a) ? a : ""), "",);
                      }
@@ -9371,8 +9368,6 @@ function makeGuessMapHack(options){
               return;
           }
           
-          guessBtn.classList.add('baidu_guess_button_clicked');
-
           const mapId = location.href.replace(/.*\/(.*)/, "$1");
 
           fetch(`https://www.geoguessr.com/api/v3/games/${global_data.token}`, {
@@ -9533,6 +9528,10 @@ function makeGuessMapHack(options){
               background-color: #1666ba !important;
           }
           
+          .baidu_guess_button_enabled:active {
+              scale: 1.0 1.0;
+          }
+
           .baidu_guess_button_clicked {
               scale: 1.0 0.99 !important;
           }
@@ -9766,6 +9765,8 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                      glsl = vertexNew;
                         globalGL = ctx;
 
+                        console.log("ctx assigned to globalGL");
+
                         let oldCtx = ctx.linkProgram;
                         ctx.linkProgram = function(...args){
                             let p = oldCtx.call(this, args[0]);
@@ -9977,7 +9978,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
             }
 
             if (unityNerdFn.UAC_URLS[_url]){
-                alert('Is this a repeat? Maybe refreshing the page will fix it?');
+                alert('Was there an error? Is this a repeat? Maybe refreshing the page will fix it?');
             }
 
             unityNerdFn.UAC_URLS[_url] = true;
@@ -10075,11 +10076,19 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                         locationUrl: '',
                     });
                 }
+                
+                const noGlReloadTimer = setTimeout(()=>{
+                    if (globalGL) return;
+                    location.reload();
+                }, 2000);
 
                 window.loadImg(srcUrl, false, () => {
                     setTimeout(()=>{
+                        clearTimeout(noGlReloadTimer);
+
                         GoogleMapsObj.setCenter({lat:0,lng:0})
                         GoogleMapsObj.setZoom(2)
+
                         console.log("Resized map in loadImg callback.")
                     }, 1000);
                 });
