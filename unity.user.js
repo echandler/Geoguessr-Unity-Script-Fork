@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.6
+// @version       7.3.7
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.6 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.7 by Jupaoqq");
 
 
 // Store each player instance
@@ -1914,7 +1914,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.6EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.7EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1953,7 +1953,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.6</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.7</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4050,6 +4050,7 @@ function launchObserver() {
                             document.body.appendChild(sat0);
                             document.body.appendChild(minimap);
 
+                            debugger;
                             let t = setInterval(()=>{
 
                                 let GAME_CANVAS = document.querySelector(GENERAL_LAYOUT);
@@ -6344,7 +6345,7 @@ async function goToLocation(cond) {
         // Everything between these curly braces is just stupid.
 
         const _ymaps = document.querySelector("ymaps");
-console.log("yandex 1")
+        console.log("yandex 1")
         if (!document.querySelector("ymaps")){
             // Hack by EC to fix yandex not showing when starting a new game.
             location.reload();
@@ -6772,6 +6773,34 @@ console.log("yandex 1")
             }
         }
         waitSky();
+
+        //
+        // Satellite mode should still work even with no panorama - EC.
+        //        
+
+        if (document.querySelector('.baidu_guess_map')){
+            // Remove duplicate or old guess map and button.
+            let baiduGuessMap = document.querySelector('.baidu_guess_map');
+            baiduGuessMap._remove();
+        }
+
+        let failedToLoadRoundMsg = checkFailedToLoadRoundMsg();
+        if (failedToLoadRoundMsg){
+            // The streetview was created but for some reason it's blank.
+            // Manually set a random position to start the webgl procesfor some reason it's blanks.
+            const fenway = { lat: 42.345573, lng: -71.098326 };
+
+            GooglePlayer.setPosition(fenway) ;
+
+            failedToLoadRoundMsg.style.display = 'none';
+
+            makeGuessMapHack({
+                guessBtnText:"Satellite Guess Button",
+                mapContainer: document.querySelector('sat-map'), 
+                locationUrl: '',
+            });
+        }
+
     }
     else if (nextPlayer === "Mapy")
     {
@@ -8335,7 +8364,6 @@ function injectMapboxPlayer() {
                         });
                     });
 
-
                     MAPBOX_INJECTED = true;
                     resolve();
 
@@ -9290,12 +9318,7 @@ function makeGuessMapHack(options){
           // Remove duplicate or old guess map and button.
           // Timing out is one issue that could cause duplicate guess map and button.
           let baiduGuessMap = document.querySelector('.baidu_guess_map');
-          baiduGuessMap.parentElement.removeChild(baiduGuessMap);
-
-          let baiduGuessButton = document.querySelector('.baidu_guess_button');
-          if (baiduGuessButton){
-              baiduGuessButton.parentElement.removeChild(baiduGuessButton);
-          }
+          baiduGuessMap._remove();
       }
 
       const geoGuessContainer = document.querySelector(`[class*="game_guessMap"]`);
@@ -9310,9 +9333,17 @@ function makeGuessMapHack(options){
         }, 500);
     });
 
-
       const mapContainer = document.createElement("div");
       mapContainer.classList.add("baidu_guess_map");
+      mapContainer._remove = ()=>{
+          let baiduGuessMap = document.querySelector('.baidu_guess_map');
+          baiduGuessMap.parentElement.removeChild(baiduGuessMap);
+
+          let baiduGuessButton = document.querySelector('.baidu_guess_button');
+          if (baiduGuessButton){
+              baiduGuessButton.parentElement.removeChild(baiduGuessButton);
+          }
+      };
       mapContainer.addEventListener("mouseover", () =>{
           clearTimeout(closeMiniMapTimer);
           mapContainer.classList.add(`baidu_guess_map_active`)
@@ -9555,6 +9586,8 @@ function makeGuessMapHack(options){
             clockTimerEl.parentElement.style.zIndex = '3';
         }
       }, 2000);
+      
+      return 
 }
 
 
@@ -10536,4 +10569,3 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
-    
