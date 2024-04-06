@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.7
+// @version       7.3.8
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.7 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.8 by Jupaoqq");
 
 
 // Store each player instance
@@ -1914,7 +1914,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.7EC</font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1>v7.3.8EC</font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -1953,7 +1953,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.7</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.8</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4050,7 +4050,6 @@ function launchObserver() {
                             document.body.appendChild(sat0);
                             document.body.appendChild(minimap);
 
-                            debugger;
                             let t = setInterval(()=>{
 
                                 let GAME_CANVAS = document.querySelector(GENERAL_LAYOUT);
@@ -4089,7 +4088,7 @@ function launchObserver() {
                        // if (document.body.querySelector(`[class*="game_panoramaMessage"]`))
                         if (checkFailedToLoadRoundMsg())
                         {
-                            console.log("Fail to load canvas message")
+                            console.log("Fail to load canvas message - observer3")
                             if (allowDetect)
                             {
                                 detectGamePage();
@@ -6778,29 +6777,30 @@ async function goToLocation(cond) {
         // Satellite mode should still work even with no panorama - EC.
         //        
 
-        if (document.querySelector('.baidu_guess_map')){
-            // Remove duplicate or old guess map and button.
-            let baiduGuessMap = document.querySelector('.baidu_guess_map');
-            baiduGuessMap._remove();
-        }
+        setTimeout(()=>{
+            if (document.querySelector('.baidu_guess_map')){
+                // Remove duplicate or old guess map and button.
+                let baiduGuessMap = document.querySelector('.baidu_guess_map');
+                baiduGuessMap._remove();
+            }
 
-        let failedToLoadRoundMsg = checkFailedToLoadRoundMsg();
-        if (failedToLoadRoundMsg){
-            // The streetview was created but for some reason it's blank.
-            // Manually set a random position to start the webgl procesfor some reason it's blanks.
-            const fenway = { lat: 42.345573, lng: -71.098326 };
+            let failedToLoadRoundMsg = checkFailedToLoadRoundMsg();
+            if (failedToLoadRoundMsg){
+                // The streetview was created but for some reason it's blank.
+                // Manually set a random position to start the webgl procesfor some reason it's blanks.
+                const fenway = { lat: 42.345573, lng: -71.098326 };
 
-            GooglePlayer.setPosition(fenway) ;
+                GooglePlayer.setPosition(fenway) ;
 
-            failedToLoadRoundMsg.style.display = 'none';
+                failedToLoadRoundMsg.style.display = 'none';
 
-            makeGuessMapHack({
-                guessBtnText:"Satellite Guess Button",
-                mapContainer: document.querySelector('sat-map'), 
-                locationUrl: '',
-            });
-        }
-
+                makeGuessMapHack({
+                    guessBtnText:"Satellite Guess Button",
+                    mapContainer: document.querySelector('sat-map'), 
+                    locationUrl: '',
+                });
+            }
+        }, 500);
     }
     else if (nextPlayer === "Mapy")
     {
@@ -9352,7 +9352,7 @@ function makeGuessMapHack(options){
 
       let map = new google.maps.Map(mapContainer, {
           center: { lat: 0, lng: 0 },
-          zoom: 0,
+          zoom: 5,
           disableDefaultUI: true,
           clickableIcons: false,
           draggableCursor: "crosshair",
@@ -9363,6 +9363,8 @@ function makeGuessMapHack(options){
       bounds.extend(global_bounds.max);
 
       map.fitBounds(bounds)
+      
+      setTimeout(()=> (map.getZoom() === 0) && map.setZoom(1), 100);
 
       let marker = new google.maps.Marker({
         map,
@@ -9969,6 +9971,11 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                 console.log('loadImg onload');
                 callback();
             };
+            
+            image.onerror = function(e){
+                console.log(e);
+                alert("UAC panorama didn't load, try again later? Maybe refreshing the page will fix it?");
+            }
 
             image.src = _src;
           //  image.src = "https://c7.alamy.com/360/WKMJE4/full-seamless-spherical-panorama-360-degrees-angle-view-on-bank-of-wide-river-in-front-of-bridge-in-city-center-360-panorama-in-equirectangular-proje-WKMJE4.jpg";
@@ -10569,3 +10576,4 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
+    
