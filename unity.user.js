@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.1
+// @version       7.3.9.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.1 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.2 by Jupaoqq");
 
 
 // Store each player instance
@@ -929,7 +929,6 @@ function formatDist()
 
 function setButtons()
 {
-    // console.log("set")
     return [document.getElementById("Teleport Forward"), document.getElementById("Teleport Reverse"), document.getElementById("Teleport Button"), document.getElementById("plus"), document.getElementById("minus"),
             document.getElementById("reset"), document.getElementById("switch"), document.getElementById("Show Buttons"),
             document.getElementById("Date Button"), document.getElementById("minus year"), document.getElementById("plus year"),
@@ -942,9 +941,23 @@ function setButtons()
 
 function setButtons2()
 {
-    // console.log("set")
     return [document.getElementById("Show Buttons"),
             document.getElementById("Youtube Button"),
+            document.getElementById("Info Menu"),
+            document.getElementById("Teleport Menu"),
+            document.getElementById("Satellite Menu"),
+            document.getElementById("Mosaic Menu"),
+            document.getElementById("Minimap Menu Button"),
+            document.getElementById("Space Menu Button"),
+            document.getElementById("Time Machine Button"),
+            document.getElementById("Circus Menu"),
+           ];
+}
+
+function setButtons3()
+{
+    // Added by EC - same as setButtons2 but with out youtube button.
+    return [document.getElementById("Show Buttons"),
             document.getElementById("Info Menu"),
             document.getElementById("Teleport Menu"),
             document.getElementById("Satellite Menu"),
@@ -1954,7 +1967,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.1</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.2</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -3817,7 +3830,7 @@ function setHidden(cond)
     if (mainMenuBtn != null)
     {
         mainMenuBtn.style.visibility = "";
-        mainMenuBtn.hide = cond;
+       // mainMenuBtn.hide = cond;
         // console.log(["cache", mainMenuBtn.menuBtnCache]);
         if (cond)
         {
@@ -3844,6 +3857,20 @@ function setHidden(cond)
                     element.style.visibility = "hidden";
                 }
             }
+        }
+    }
+}
+
+function setMenuBtnsUnhidden(){
+    // Added by EC
+    let mainMenuBtn = document.getElementById("Show Buttons");
+    let btns= setButtons3();
+    for (let element of btns){
+        if (element == mainMenuBtn){
+            element.style.visibility = "";
+        }
+        if (!mainMenuBtn.hide){
+            element.style.visibility = "";
         }
     }
 }
@@ -4122,6 +4149,8 @@ function launchObserver() {
                             // console.log("detect spinner")
                             if (allowDetect)
                             {
+                                // obeserver detect
+                                console.log('observer detect')
                                 detectGamePage();
                             }
                         }
@@ -4730,6 +4759,7 @@ function guessButtonCallback()
 
 function loaderChecker(map_name, map_description)
 {
+    console.log('load checker')
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let substrings = ["Yangle", "Goodex", "Yandex", "Bing Streetside", "Kakao", "Mapbox", "Bing Satellite", "Planets"]
     bullseyeMapillary = ((isBullseye || isLiveChallenge) && !["Mapillary", "A United World", "A Unity World", "Unity Test","Unity Special Edition"].some(v => map_name.includes(v)));
@@ -5664,8 +5694,6 @@ function initializeCanvas() {
         partialCreateMapbox = (typeof mapboxgl !== typeof undefined);
         partialCreateMapy = (typeof SMap !== typeof undefined);
         loadPlayers();
-
-
     }
     else
     {
@@ -6293,6 +6321,9 @@ async function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     console.log("Going to location");
     console.log(nextPlayer);
+
+    // Added by EC - I can't figure out how to show unity buttons on new round.
+    setMenuBtnsUnhidden();
 
 //    if (nextPlayer === "Yandex" && !document.querySelector("ymaps")){
 //        // Hack by EC to fix yandex not showing when starting a new game.
