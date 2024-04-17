@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9
+// @version       7.3.9.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -1404,6 +1404,7 @@ function enterChaosMode(heading)
             }
             else if (skewedSpecial)
             {
+
                 hdn = (GooglePlayer.getPhotographerPov().heading + 90) % 360;
             }
 
@@ -1953,7 +1954,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4081,6 +4082,7 @@ function launchObserver() {
                         // console.log(m)
                         // let sat3 = m.getElementsByClassName("tooltip_tooltip__CHe2s");
                         let PATHNAME = window.location.pathname;
+                         let spinner = document.querySelector('div[class*="spinner"]');//(m.getElementsByClassName('fullscreen-spinner_square__NGIgc'));   
                          //let sat4 = m.getElementsByClassName('fullscreen-spinner_square__mwMfl');
                         // console.log(m.classList.contains('round-starting_wrapper__1G_FC'));
 
@@ -4115,7 +4117,7 @@ function launchObserver() {
                         else if ((PATHNAME.startsWith("/challenge/") ||PATHNAME.startsWith("/results/") ||
                                   PATHNAME.startsWith("/game/")|| PATHNAME.startsWith("/battle-royale/") ||
                                   PATHNAME.startsWith("/duels/") || PATHNAME.startsWith("/team-duels/") ||
-                                  PATHNAME.startsWith("/bullseye/")) && (m.getElementsByClassName('fullscreen-spinner_square__mwMfl').length !== 0))
+                                  PATHNAME.startsWith("/bullseye/")) && spinner)
                         {
                             // console.log("detect spinner")
                             if (allowDetect)
