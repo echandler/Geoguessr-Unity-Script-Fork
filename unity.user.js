@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.2
+// @version       7.3.9.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.2 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.3 by Jupaoqq");
 
 
 // Store each player instance
@@ -522,6 +522,13 @@ window.toggleMosaic = (e) => {
 
 window.toggleRestrictMovement = (e) => {
     restrictMovement = e.checked ? true : false;
+}
+
+function getPathName(){
+    // Hopefully this fixes most issues with localization.
+    // Thanks to Destroy666x for bringing this to our attention.
+    // https://github.com/echandler/Geoguessr-Unity-Script-Fork/issues/1
+    return location.pathname.replace(/^\/[a-z]{2}\//i, "/"); 
 }
 
 let guiEnabled = true;
@@ -1830,10 +1837,16 @@ function UnityInitiate() {
 
             GooglePlayer = this;
 
-            const isGamePage = () => location.pathname.startsWith("/challenge/") || location.pathname.startsWith("/results/") ||
-                  location.pathname.startsWith("/game/")|| location.pathname.startsWith("/battle-royale/") ||
-                  location.pathname.startsWith("/duels/") || location.pathname.startsWith("/team-duels/") || location.pathname.startsWith("/bullseye/")
-            || location.pathname.startsWith("/live-challenge/");
+            const path = getPathName(); 
+            const isGamePage = () => path.startsWith("/challenge/") || path.startsWith("/results/") ||
+                  path.startsWith("/game/")|| path.startsWith("/battle-royale/") ||
+                  path.startsWith("/duels/") || path.startsWith("/team-duels/") || path.startsWith("/bullseye/")
+                  || path.startsWith("/live-challenge/");
+
+//            const isGamePage = () => location.pathname.startsWith("/challenge/") || location.pathname.startsWith("/results/") ||
+//                  location.pathname.startsWith("/game/")|| location.pathname.startsWith("/battle-royale/") ||
+//                  location.pathname.startsWith("/duels/") || location.pathname.startsWith("/team-duels/") || location.pathname.startsWith("/bullseye/")
+//            || location.pathname.startsWith("/live-challenge/");
 
             this.addListener('position_changed', () => {
                 // Maybe this could be used to update the position in the other players
@@ -1967,7 +1980,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.2</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.3</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4108,7 +4121,7 @@ function launchObserver() {
                     {
                         // console.log(m)
                         // let sat3 = m.getElementsByClassName("tooltip_tooltip__CHe2s");
-                        let PATHNAME = window.location.pathname;
+                         let PATHNAME = getPathName(); 
                          let spinner = document.querySelector('div[class*="spinner"]');//(m.getElementsByClassName('fullscreen-spinner_square__NGIgc'));   
                          //let sat4 = m.getElementsByClassName('fullscreen-spinner_square__mwMfl');
                         // console.log(m.classList.contains('round-starting_wrapper__1G_FC'));
@@ -4242,7 +4255,7 @@ let fetchOnce = function(){
 var oldHref = document.location.href;
 
 const immediateLoad = localStorage['unity_immediate_load']; // EC
-const _pathName = location.pathname; // EC
+const _pathName = getPathName(); 
 if (_pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || _pathName.startsWith("/results/") || immediateLoad === "true"){
         // EC made this to fix not loading during game.
         injecter(() => {
@@ -4304,12 +4317,10 @@ function detectGamePage() {
             initializeCanvas();
         }
         waitLoad();
-
     }
 
     let toLoad = !playerLoaded && !YANDEX_INJECTED && !KAKAO_INJECTED && !MAPILLARY_INJECTED && !MS_INJECTED && !MAPBOX_INJECTED && !MAPY_INJECTED;
-    const PATHNAME = window.location.pathname;
-    // console.log(PATHNAME)
+    const PATHNAME = getPathName();
     if (PATHNAME.startsWith("/game/") || PATHNAME.startsWith("/challenge/")) {
         // console.log("Game page");
         isBattleRoyale = false;
@@ -5023,7 +5034,6 @@ function loadPlayers() {
 
     playerLoaded = true;
     injectContainer();
-
     getSeed().then((data) => {
         console.log('get seed', data)
         let map_name = "Default"
@@ -5945,7 +5955,6 @@ function Google() {
     let switchCovergeButton = document.getElementById("switch");
 
     let GOOGLE_MAPS_CANVAS = gCanvas();
-
     if (GOOGLE_MAPS_CANVAS !== null)
     {
         if (nextPlayer === "Google") {
@@ -7141,8 +7150,7 @@ function getSeed() {
         let URL;
         let cred = ""
 
-        const PATHNAME = window.location.pathname;
-
+        const PATHNAME = getPathName(); 
         if (PATHNAME.startsWith("/game/")) {
             URL = `https://www.geoguessr.com/api/v3/games/${token}`;
         }
@@ -7211,7 +7219,8 @@ getSeed.prevReqDate = null;
  * @returns token
  */
 function getToken() {
-    const PATHNAME = window.location.pathname;
+
+    const PATHNAME = getPathName(); 
     if (PATHNAME.startsWith("/game/")) {
         return PATHNAME.replace("/game/", "");
     }
@@ -9464,8 +9473,8 @@ function makeGuessMapHack(options){
                 console.log("jSon", jSon);
 
                 const len = jSon.round;
-
-                if (location.pathname.startsWith("/challenge/") || len === 5){
+                const PATHNAME = getPathName(); 
+                if (PATHNAME.startsWith("/challenge/") || len === 5){
                     location.reload();
                     return;
                 }
