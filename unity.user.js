@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.3
+// @version       7.3.9.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.3 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.4 by Jupaoqq");
 
 
 // Store each player instance
@@ -1151,19 +1151,19 @@ function handleStyles()
         `visibility:hidden;
         border-radius: 25px;
         opacity: 0.8;
-    height:2em;
-    position:fixed;
-    z-index:99990;
-    background-color: #ba55d3;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    border: none;
-    color: white;
-    padding: none;
-    text-align: center;
-    vertical-align: text-top;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;`;
+        height:2em;
+        position:fixed;
+        z-index:99990;
+        background-color: #ba55d3;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+        color: white;
+        padding: none;
+        text-align: center;
+        vertical-align: text-top;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;`;
 
     for (let element of document.getElementsByClassName("unity-btn")){
         if (element.id !== "Show Buttons")
@@ -1936,6 +1936,13 @@ function UnityInitiate() {
         }
     };
 
+      document.head.insertAdjacentHTML(
+        // Added by EC. Can't do hover effects with out style sheet. 
+        "beforeend",
+        `<style>
+            .unity-btn:not([class*="nonclickable"]):hover { scale: 0.95; }   , "unity-btn-nonclickable"
+        </style>`);
+
     var mainMenuBtn = document.createElement("Button");
     mainMenuBtn.classList.add("unity-btn", "main-btn");
     mainMenuBtn.id = "Show Buttons";
@@ -1978,9 +1985,9 @@ function UnityInitiate() {
     });
 
     var infoBtn = document.createElement("Button");
-    infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height");
+    infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.3</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.4</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2007,7 +2014,7 @@ function UnityInitiate() {
     });
 
     var menuResetBtn = document.createElement("Button");
-    menuResetBtn.classList.add("unity-btn", "info-btn", "large", "vertical-4");
+    menuResetBtn.classList.add("unity-btn", "info-btn", "large", "vertical-4", "unity-btn-nonclickable");
     menuResetBtn.id = "Menu Reset";
     menuResetBtn.innerHTML = "Menu Position";
     document.body.appendChild(menuResetBtn);
@@ -2309,6 +2316,11 @@ function UnityInitiate() {
 
     function teleportModule(dir)
     {
+        // Victheturtle said that someone was using teleport in nm duels game.
+
+        const PATH = getPathName();
+        if (PATH.startsWith("/duels/")) return;
+
         if (switchCovergeButton.init)
         {
             // console.log("run");
@@ -2941,7 +2953,7 @@ function UnityInitiate() {
     // skyDefault, skyCurrent, skyLocal
 
     var satelliteTypeBtn = document.createElement("Button");
-    satelliteTypeBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-1", "vertical-2");
+    satelliteTypeBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-1", "vertical-2", "unity-btn-nonclickable");
     satelliteTypeBtn.id = "Satellite Type Button";
     satelliteTypeBtn.innerHTML = "Map Style";
     satelliteTypeBtn.currentTime = "solarNoon";
@@ -2949,7 +2961,7 @@ function UnityInitiate() {
 
 
     var satelliteStyleBtn = document.createElement("Button");
-    satelliteStyleBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-2", "vertical-2");
+    satelliteStyleBtn.classList.add("unity-btn", "satellite-btn", "half", "horizontal-2", "vertical-2", "unity-btn-nonclickable");
     satelliteStyleBtn.id = "Satellite Style Button";
     satelliteStyleBtn.innerHTML = "Time";
 
@@ -10619,4 +10631,3 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
-    
