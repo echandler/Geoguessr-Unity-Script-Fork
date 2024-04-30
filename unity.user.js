@@ -693,7 +693,7 @@ let observerNew = new MutationObserver((mutations) => {
     }
     if (document.getElementById('Unity Start Menu'))
     {
-        if (document.querySelector('div[class*="start-standard-game_body"]'))
+        if (document.querySelector('div[class*="game_body"]'))
         {
             document.getElementById('Unity Start Menu').style.display = "";
         }
