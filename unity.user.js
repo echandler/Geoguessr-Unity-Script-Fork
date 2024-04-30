@@ -558,7 +558,7 @@ function guiHTML(){
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Enabled</span>
       <input type="checkbox" id="toggleSatellite" onclick="toggleSatellite(this)" class="${toggle.className}">
     </div>
   </div>
@@ -567,11 +567,11 @@ function guiHTML(){
 <div class="start-standard-game_settings__x94PU" id="tgs" style="display:none">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Live Weather</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Live Weather</span>
       <input type="checkbox" id="toggleWeather" onclick="toggleWeather(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Buildings</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Buildings</span>
       <input type="checkbox" id="toggleBuildings" onclick="toggleBuildings(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">3D</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">3D</span>
       <input type="checkbox" id="toggle3D" onclick="toggle3D(this)" class="${toggle.className}">
     </div>
   </div>
@@ -587,7 +587,7 @@ function guiHTML(){
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="${optionsLabel}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Enabled</span>
       <input type="checkbox" id="toggleMosaic" onclick="toggleMosaic(this)" class="${toggle.className}">
     </div>
   </div>
@@ -603,7 +603,7 @@ function guiHTML(){
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Enabled</span>
       <input type="checkbox" id="toggleRestrictMovement" onclick="toggleRestrictMovement(this)" class="${toggle.className}">
     </div>
   </div>
@@ -613,17 +613,17 @@ function guiHTML(){
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Sky</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Sky</span>
       <input type="checkbox" id="toggleSky" onclick="toggleSky(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Soiled</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Soiled</span>
       <input type="checkbox" id="toggleSoil" onclick="toggleSoil(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Skewed</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Skewed</span>
       <input type="checkbox" id="toggleSkewed" onclick="toggleSkewed(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Max Zoom</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Max Zoom</span>
       <input type="checkbox" id="toggleMaxZoom" onclick="toggleMaxZoom(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Random</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Random</span>
       <input type="checkbox" id="toggleRdn" onclick="toggleRdn(this)" class="${toggle.className}">
-      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">NMPZ</span>
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">NMPZ</span>
       <input type="checkbox" id="toggleNMPZSpecial" onclick="toggleNMPZSpecial(this)" class="${toggle.className}">
     </div>
   </div>
