@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.4
+// @version       7.3.9.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -462,7 +462,10 @@ let mosaicPre = false;
 let restrictMovement = false;
 
 var Weather = false;
-var Dimension = true;
+
+const ls_Dimension_choice = localStorage['Satallite_2D_3D_setting']; // Added by EC
+let Dimension = ls_Dimension_choice == undefined ? true /* Default = true 3D*/: (ls_Dimension_choice == "3D"? true/*3D*/: false /*2D*/); // Added by EC
+
 var mapSty = true;
 var Building = false;
 
@@ -1350,6 +1353,9 @@ function setVar(argm)
     else if (argm == "Dimension")
     {
         Dimension = !Dimension;
+
+        // Added by EC
+        localStorage["Satallite_2D_3D_setting"] = Dimension === true? "3D" : "2D";
     }
     else if (argm == "mapSty")
     {
@@ -1359,6 +1365,8 @@ function setVar(argm)
 
 function handleSatColor(cond1, cond2)
 {
+    // Added by EC: Button innerHTML and background color is added in this function.
+
     let sC = document.getElementById("Satellite Type Button");
     if (cond1)
     {
@@ -1987,7 +1995,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2316,8 +2324,7 @@ function UnityInitiate() {
 
     function teleportModule(dir)
     {
-        // Victheturtle said that someone was using teleport in nm duels game.
-
+        // Added by EC - Victheturtle said that someone was using teleport in nm duels games.
         const PATH = getPathName();
         if (PATH.startsWith("/duels/")) return;
 
@@ -3125,7 +3132,7 @@ function UnityInitiate() {
                 switchCovergeButton.style.background = "#ba55d3";
             }
         }
-        localStorage['unity_sat_choice'] = sat_choice;
+        localStorage['unity_sat_choice'] = sat_choice; // Added by EC
     });
 
     var satelliteMenu = document.createElement("Button");
@@ -10631,3 +10638,4 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
+    
