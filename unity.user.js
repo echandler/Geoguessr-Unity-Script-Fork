@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.5
+// @version       7.3.9.6
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.5 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.6 by Jupaoqq");
 
 
 // Store each player instance
@@ -536,77 +536,110 @@ function getPathName(){
 
 let guiEnabled = true;
 
-const guiHTML = `
+function guiHTML(){
+    const sectionHeader = document.querySelector('div[class*="section_sectionHeader"]');
+    const barsRoot = document.querySelector('div[class*="bars_root"]');
+    const barsBefore = document.querySelector('div[class*="bars_before"]');
+    const barsContent = document.querySelector('[class*="bars_content"]');
+    const barsAfter = document.querySelector('div[class*="bars_after"]');
+    const optionsLabel = document.querySelector('div[class*="label_label"]');
+    const bodyText = document.querySelector('div[class*="body-text_bodyText"]');
+    const toggle = document.querySelector('input[class*="toggle_toggle"]');
+
+    return `
 <div id="Unity Start Menu" style="margin-top: 20px;margin-bottom: 20px;">
-<div class="section_sectionHeader__WQ7Xz section_sizeMedium__yPqLK"><div class="bars_root___G89E bars_center__vAqnw"><div class="bars_before__xAA7R bars_lengthLong__XyWLx"></div><span class="bars_content__UVGlL"><h3>Satellite Mode (Unity Script)</h3></span><div class="bars_after__Z1Rxt bars_lengthLong__XyWLx"></div></div></div>
+<div class="${sectionHeader.className}">
+    <div class="${barsRoot.className}">
+        <div class="${barsBefore.className}"></div>
+        <span class="${barsContent.className}"> <h3>Satellite Mode (Unity Script)</h3> </span>
+        <div class="${barsAfter.className}"></div>
+    </div>
+</div>
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Enabled</span>
-      <input type="checkbox" id="toggleSatellite" onclick="toggleSatellite(this)" class="toggle_toggle__hwnyw">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <input type="checkbox" id="toggleSatellite" onclick="toggleSatellite(this)" class="${toggle.className}">
     </div>
   </div>
-  <p class="body-text_sizeXSmall__rwJFf" style="margin-top: 20px;margin-bottom: 20px;">Radius (2D): Default - depending on map bounds. NZ - 5km. NM - 2km. NMPZ - 1km. <br> Radius (3D): 50% of the radius for 2D under the same setting.</p>
+  <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Radius (2D): Default - depending on map bounds. NZ - 5km. NM - 2km. NMPZ - 1km. <br> Radius (3D): 50% of the radius for 2D under the same setting.</p>
 </div>
 <div class="start-standard-game_settings__x94PU" id="tgs" style="display:none">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Live Weather</span>
-      <input type="checkbox" id="toggleWeather" onclick="toggleWeather(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Buildings</span>
-      <input type="checkbox" id="toggleBuildings" onclick="toggleBuildings(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">3D</span>
-      <input type="checkbox" id="toggle3D" onclick="toggle3D(this)" class="toggle_toggle__hwnyw">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Live Weather</span>
+      <input type="checkbox" id="toggleWeather" onclick="toggleWeather(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Buildings</span>
+      <input type="checkbox" id="toggleBuildings" onclick="toggleBuildings(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">3D</span>
+      <input type="checkbox" id="toggle3D" onclick="toggle3D(this)" class="${toggle.className}">
     </div>
   </div>
-  <p class="body-text_sizeXSmall__rwJFf" style="margin-top: 20px;margin-bottom: 20px;">If "3D" is toggled, right click and drag for 3D View.</p>
+  <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">If "3D" is toggled, right click and drag for 3D View.</p>
 </div>
-<div class="section_sectionHeader__WQ7Xz section_sizeMedium__yPqLK"><div class="bars_root___G89E bars_center__vAqnw"><div class="bars_before__xAA7R bars_lengthLong__XyWLx"></div><span class="bars_content__UVGlL"><h3>Mosaic & Peek Mode (Unity Script)</h3></span><div class="bars_after__Z1Rxt bars_lengthLong__XyWLx"></div></div></div>
+<div class="${sectionHeader.className}">
+    <div class="${barsRoot.className}">
+        <div class="${barsBefore.className}"></div>
+        <span class="${barsContent.className}"><h3>Mosaic & Peek Mode (Unity Script)</h3></span>
+        <div class="${barsAfter.className}"></div>
+    </div>
+</div>
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Enabled</span>
-      <input type="checkbox" id="toggleMosaic" onclick="toggleMosaic(this)" class="toggle_toggle__hwnyw">
+      <span class="${optionsLabel}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <input type="checkbox" id="toggleMosaic" onclick="toggleMosaic(this)" class="${toggle.className}">
     </div>
   </div>
-  <p class="body-text_sizeXSmall__rwJFf" style="margin-top: 20px;margin-bottom: 20px;">Default mosaic grid: 5x5.</p>
+  <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Default mosaic grid: 5x5.</p>
 </div>
-<div class="section_sectionHeader__WQ7Xz section_sizeMedium__yPqLK"><div class="bars_root___G89E bars_center__vAqnw"><div class="bars_before__xAA7R bars_lengthLong__XyWLx"></div><span class="bars_content__UVGlL"><h3>No Escape Mode (Unity Script)</h3></span><div class="bars_after__Z1Rxt bars_lengthLong__XyWLx"></div></div></div>
+
+<div class="${sectionHeader.className}"><div class="${barsRoot.className}">
+    <div class="${barsBefore.className}"></div>
+    <span class="${barsContent.className}"><h3>No Escape Mode (Unity Script)</h3></span>
+    <div class="${barsAfter.className}"></div>
+    </div>
+</div>
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Enabled</span>
-      <input type="checkbox" id="toggleRestrictMovement" onclick="toggleRestrictMovement(this)" class="toggle_toggle__hwnyw">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Enabled</span>
+      <input type="checkbox" id="toggleRestrictMovement" onclick="toggleRestrictMovement(this)" class="${toggle.className}">
     </div>
   </div>
-  <p class="body-text_sizeXSmall__rwJFf" style="margin-top: 20px;margin-bottom: 20px;">Please make sure the "Move" option in Game Settings is allowed. Default radius: 250m.</p>
+  <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Please make sure the "Move" option in Game Settings is allowed. Default radius: 250m.</p>
 </div>
-<div class="section_sectionHeader__WQ7Xz section_sizeMedium__yPqLK"><div class="bars_root___G89E bars_center__vAqnw"><div class="bars_before__xAA7R bars_lengthLong__XyWLx"></div><span class="bars_content__UVGlL"><h3>Circus Mode (Unity Script)</h3></span><div class="bars_after__Z1Rxt bars_lengthLong__XyWLx"></div></div></div>
+<div class="${sectionHeader.className}"><div class="${barsRoot.className}"><div class="${barsBefore.className}"></div><span class="${barsContent.className}"><h3>Circus Mode (Unity Script)</h3></span><div class="${barsAfter.className}"></div></div></div>
 <div class="start-standard-game_settings__x94PU">
   <div style="display: flex; justify-content: space-around;">
     <div style="display: flex; align-items: center;">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Sky</span>
-      <input type="checkbox" id="toggleSky" onclick="toggleSky(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Soiled</span>
-      <input type="checkbox" id="toggleSoil" onclick="toggleSoil(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Skewed</span>
-      <input type="checkbox" id="toggleSkewed" onclick="toggleSkewed(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Max Zoom</span>
-      <input type="checkbox" id="toggleMaxZoom" onclick="toggleMaxZoom(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">Random</span>
-      <input type="checkbox" id="toggleRdn" onclick="toggleRdn(this)" class="toggle_toggle__hwnyw">
-      <span class="game-options_optionLabel__dJ_Cy" style="margin: 0; padding-right: 6px;">NMPZ</span>
-      <input type="checkbox" id="toggleNMPZSpecial" onclick="toggleNMPZSpecial(this)" class="toggle_toggle__hwnyw">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Sky</span>
+      <input type="checkbox" id="toggleSky" onclick="toggleSky(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Soiled</span>
+      <input type="checkbox" id="toggleSoil" onclick="toggleSoil(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Skewed</span>
+      <input type="checkbox" id="toggleSkewed" onclick="toggleSkewed(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Max Zoom</span>
+      <input type="checkbox" id="toggleMaxZoom" onclick="toggleMaxZoom(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">Random</span>
+      <input type="checkbox" id="toggleRdn" onclick="toggleRdn(this)" class="${toggle.className}">
+      <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px;">NMPZ</span>
+      <input type="checkbox" id="toggleNMPZSpecial" onclick="toggleNMPZSpecial(this)" class="${toggle.className}">
     </div>
   </div>
-  <p class="body-text_sizeXSmall__rwJFf" style="margin-top: 20px;margin-bottom: 20px;">Please make sure the "Pan" option in Game Settings is allowed. To play in NMPZ, toggle "NMPZ".<br> More than one of the options above may be toggled at the same time.</p>
+  <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Please make sure the "Pan" option in Game Settings is allowed. To play in NMPZ, toggle "NMPZ".<br> More than one of the options above may be toggled at the same time.</p>
 </div>
 </div>
 `
+}
 
 const checkInsertGui = () => {
-    if ((document.querySelector('.copy-link_root__dBcXL') || document.querySelector('.radio-box_root__ka_9S')) && document.getElementById('toggleSky') === null && document.querySelector('.section_sectionMedium__yXgE6')) {
-        document.querySelector('.section_sectionMedium__yXgE6').insertAdjacentHTML('beforeend', guiHTML);
+    if ((document.querySelector('.copy-link_root__dBcXL') || document.querySelector('div[class*="radio-box_root"')) 
+        && document.getElementById('toggleSky') === null 
+        && document.querySelector('div[class*="sectionMedium"]')) {
+
+        document.querySelector('div[class*="sectionMedium"]').insertAdjacentHTML('beforeend', guiHTML());
+
         if (sat_choice) {
             document.getElementById('toggleSatellite').checked = true;
             document.getElementById('tgs').style.display = "";
@@ -660,7 +693,7 @@ let observerNew = new MutationObserver((mutations) => {
     }
     if (document.getElementById('Unity Start Menu'))
     {
-        if (document.querySelector('.rule-icons_icon__dcLov'))
+        if (document.querySelector('div[class*="start-standard-game_body"]'))
         {
             document.getElementById('Unity Start Menu').style.display = "";
         }
@@ -1995,7 +2028,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.5</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.6</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -10638,4 +10671,3 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
-    
