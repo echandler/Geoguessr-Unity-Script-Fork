@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.7
+// @version       7.3.9.8
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -3845,11 +3845,13 @@ function logKey(e) {
         }
         if (e.code == "Digit4")
         {
-            document.getElementById("Teleport Forward").click();
+           // Got a DM from Mika and this appeared to be causeing people to jump forward in duels games.
+           // I can't duplicate the problem on my computer, but I don't think this is a feature that will be missed.
         }
         if (e.code == "Digit3")
         {
-            document.getElementById("Teleport Reverse").click();
+            // Got a DM from Mika and this appeared to be causeing people to jump forward in duels games.
+            // I can't duplicate the problem on my computer, but I don't think this is a feature that will be missed.
         }
         else if (e.code == "Digit5")
         {
