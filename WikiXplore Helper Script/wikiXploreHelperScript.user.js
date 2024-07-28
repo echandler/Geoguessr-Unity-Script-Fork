@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WikiXplore script for map-making.app
 // @namespace    WikiXplore
-// @version      2024-07-28
+// @version      0.1
 // @description  WikiXplore script for map-making.app.
 // @author       echandler
 // @match        https://map-making.app/maps/*
