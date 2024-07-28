@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.8
+// @version       7.3.9.9
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.7 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.3.9.9 by Jupaoqq");
 
 
 // Store each player instance
@@ -353,6 +353,7 @@ let syncLoaded = false;
 let yandex_map = false;
 let Kakao_map = false;
 let Wikipedia_map = false;
+let WikiXplore_map = false; 
 let Minecraft_map = false;
 let Youtube_map = false;
 let bing_map = false;
@@ -532,6 +533,13 @@ function getPathName(){
     // Thanks to Destroy666x for bringing this to our attention.
     // https://github.com/echandler/Geoguessr-Unity-Script-Fork/issues/1
     return location.pathname.replace(/^\/[a-z]{2}\//i, "/"); 
+}
+
+function getLocalizationFromPathName(){
+    const pathname = location.pathname;
+    const local = /^\/[a-z]{2}\//.test(pathname)? pathname[1] + pathname[2] : "en";
+
+    return local;
 }
 
 let guiEnabled = true;
@@ -1187,11 +1195,10 @@ function handleStyles()
     let unityCSS =
         `visibility:hidden;
         border-radius: 25px;
-        opacity: 0.8;
         height:2em;
         position:fixed;
         z-index:99990;
-        background-color: #ba55d3;
+        background-color: #ba55d3cc;
         box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
         border: none;
         color: white;
@@ -1211,14 +1218,14 @@ function handleStyles()
             if (classNames.some(className => element.classList.contains(className)))
             {
                 element.style.height = "1.5em";
-                element.style.background = "#ff69b4";
+                element.style.background = "#ff69b4cc";
                 if (["Clear", "Default", "Earth", "Grid 0"].includes(element.id))
                 {
                     if (element.id == "Clear")
                     {
                         element.loaded = true;
                     }
-                    element.style.background = "#ff1493";
+                    element.style.background = "#ff1493cc";
                 }
             }
 
@@ -1234,7 +1241,7 @@ function handleStyles()
 
             if (element.classList.contains("special-map-btn") && !element.classList.contains("full"))
             {
-                element.style.background = "#ff69b4";
+                element.style.background = "#ff69b4cc";
             }
 
             if (element.classList.contains("extra-height"))
@@ -1325,7 +1332,7 @@ function hideOtherBtn()
         {
             element.style.visibility = "";
         }
-        if (nextPlayer == "Wikipedia" && element.id == "local language")
+        if (nextPlayer == "Wikipedia" && (element.id == "local language" || element.id == "wikiXplore_btn"))
         {
             element.style.visibility = "";
         }
@@ -1343,7 +1350,7 @@ function switchBtn(arg)
         {
             element.style.visibility = "";
         }
-        if (nextPlayer == "Wikipedia" && element.id == "local language")
+        if (nextPlayer == "Wikipedia" && (element.id == "local language" || element.id == "wikiXplore_btn"))
         {
             element.style.visibility = "";
         }
@@ -1419,12 +1426,12 @@ function handleSatColor(cond1, cond2)
             if (strNmHere)
             {
                 ele0.innerHTML = element[1];
-                ele0.style.background = "#ff1493";
+                ele0.style.background = "#ff1493cc";
             }
             else
             {
                 ele0.innerHTML = element[2];
-                ele0.style.background = "#ff69b4";
+                ele0.style.background = "#ff69b4cc";
             }
         }
     }
@@ -1433,11 +1440,11 @@ function handleSatColor(cond1, cond2)
         for (let element of document.getElementsByClassName("satellite-style")){
             if (element.id == sC.currentTime)
             {
-                element.style.background = "#ff1493";
+                element.style.background = "#ff1493cc";
             }
             else
             {
-                element.style.background = "#ff69b4";
+                element.style.background = "#ff69b4cc";
             }
         }
     }
@@ -1498,8 +1505,6 @@ function enterChaosMode(heading)
         GooglePlayer.setZoom(zmn);
     }, 300);
 }
-
-
 
 function UnityInitiate() {
     const google = window.google;
@@ -1602,8 +1607,9 @@ function UnityInitiate() {
                     }
                     else if (mapDiv.id == "Country Streak")
                     {
-
-                        this.setMapTypeId("satellite");
+                        // Created by EC.
+                        initCountryStreakCounter();
+                        //this.setMapTypeId("satellite");
                     }
                     else
                     {
@@ -1641,11 +1647,11 @@ function UnityInitiate() {
                     for (let element of document.getElementsByClassName("preset-minimap")){
                         if (element.id == MinimapBtn.current)
                         {
-                            element.style.background = "#ff1493";
+                            element.style.background = "#ff1493cc";
                         }
                         else
                         {
-                            element.style.background = "#ff69b4";
+                            element.style.background = "#ff69b4cc";
                         }
                         if (rtded || nextPlayer == "Planets") {
                             if (["Borders", "Satellite", "Terrain", "Hybrid", "Custom"].includes(element.id))
@@ -1680,11 +1686,11 @@ function UnityInitiate() {
                         for (let element of document.getElementsByClassName("overlay-minimap")){
                             if (element.id === "Clear")
                             {
-                                element.style.background = "#ff1493";
+                                element.style.background = "#ff1493cc";
                             }
                             else
                             {
-                                element.style.background = "#ff69b4";
+                                element.style.background = "#ff69b4cc";
                                 if (["Coverage", "Official", "OSM"].includes(element.id))
                                 {
                                     if (rtded || nextPlayer == "Planets")
@@ -1758,19 +1764,19 @@ function UnityInitiate() {
                             for (let element of document.getElementsByClassName("overlay-minimap")){
                                 if (["Clear", "City Lights", "Watercolor", "Toner", "Fire"].includes(element.id))
                                 {
-                                    element.style.background = "#ff69b4";
+                                    element.style.background = "#ff69b4cc";
                                     element.loaded = false;
                                 }
                                 if (["Coverage", "Official", "OSM"].includes(element.id))
                                 {
                                     if (!rtded && nextPlayer !== "Planets")
                                     {
-                                        element.style.background = "#ff69b4";
+                                        element.style.background = "#ff69b4cc";
                                         element.loaded = false;
                                     }
                                 }
                             }
-                            mapDiv.style.background = "#ff1493";
+                            mapDiv.style.background = "#ff1493cc";
                             mapDiv.loaded = true;
                         }
                         else
@@ -1781,11 +1787,11 @@ function UnityInitiate() {
                             for (let element of document.getElementsByClassName("overlay-minimap")){
                                 if (element.id !== "Clear" && element.loaded)
                                 {
-                                    element.style.background = "#ff1493";
+                                    element.style.background = "#ff1493cc";
                                 }
                                 else
                                 {
-                                    element.style.background = "#ff69b4";
+                                    element.style.background = "#ff69b4cc";
                                 }
                                 if (["Coverage", "Official", "OSM"].includes(element.id))
                                 {
@@ -1814,10 +1820,10 @@ function UnityInitiate() {
                         this.set('styles', default_preset);
                         //                         for (let element of document.getElementsByClassName("space-minimap")) {
                         //                             if (element.id === spMini.id) {
-                        //                                 element.style.background = "#ff1493";
+                        //                                 element.style.background = "#ff1493cc";
                         //                             }
                         //                             else {
-                        //                                 element.style.background = "#ff69b4";
+                        //                                 element.style.background = "#ff69b4cc";
                         //                             }
                         //                         }
                     }
@@ -1866,10 +1872,10 @@ function UnityInitiate() {
                     }
                     for (let element of document.getElementsByClassName("spaceMM")) {
                         if (element.id === spMini.id) {
-                            element.style.background = "#ff1493";
+                            element.style.background = "#ff1493cc";
                         }
                         else if (element.id.includes(planetType)) {
-                            element.style.background = "#ff69b4";
+                            element.style.background = "#ff69b4cc";
                         }
                     }
                 });
@@ -2037,7 +2043,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.7</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.9</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2820,7 +2826,7 @@ function UnityInitiate() {
             {
                 switchCovergeButton.innerHTML = "Switch to Mapillary";
                 satelliteSwitchButton.disabled = false;
-                satelliteSwitchButton.style.background = "#ba55d3";
+                satelliteSwitchButton.style.background = "#ba55d3cc";
             }
             else
             {
@@ -2841,7 +2847,7 @@ function UnityInitiate() {
             {
                 switchCovergeButton.innerHTML = "Switch to Google Streetview";
                 satelliteSwitchButton.disabled = false;
-                satelliteSwitchButton.style.background = "#ba55d3";
+                satelliteSwitchButton.style.background = "#ba55d3cc";
             }
         }
     });
@@ -3171,7 +3177,7 @@ function UnityInitiate() {
             else
             {
                 switchCovergeButton.disabled = false;
-                switchCovergeButton.style.background = "#ba55d3";
+                switchCovergeButton.style.background = "#ba55d3cc";
             }
         }
         localStorage['unity_sat_choice'] = sat_choice; // Added by EC
@@ -3517,14 +3523,21 @@ function UnityInitiate() {
             wikiLocalLang.innerHTML = "Switch to English";
             wikiLocalLang.state = false;
         }
-        else
+        else if (wikiLocalLang.innerHTML == "Switch to English")
         {
             wiki("en", document.getElementById("i_container"), teleportMenu);
+            if (getLocalizationFromPathName() == "en"){
+                wikiLocalLang.innerHTML = "Switch to Local Language";
+                wikiLocalLang.state = true;
+            } else {
+                wikiLocalLang.innerHTML = "Switch to your language.";
+            }
+        } else {
+            wiki(getLocalizationFromPathName(), document.getElementById("i_container"), teleportMenu);
             wikiLocalLang.innerHTML = "Switch to Local Language";
             wikiLocalLang.state = true;
         }
     });
-
 
     var specialMapMain = document.createElement("Button");
     specialMapMain.classList.add("unity-btn", "special-map-btn", "full", "vertical-1");
@@ -3676,6 +3689,17 @@ function UnityInitiate() {
    }
 
     console.log("Script buttons Loaded");
+    UnityInitiate.callbacks.forEach( cb => cb() );
+}// End UntityInitiate();
+
+UnityInitiate.callbacks = [];
+UnityInitiate.removeCallback = function(cb){
+    for (let n = 0; n < UnityInitiate.callbacks.length;n++){
+        if (UnityInitiate.callbacks[n] == cb){
+            UnityInitiate.callbacks.splice(n, 1);
+            return;
+        }
+    }
 }
 
 function loadNMPZ()
@@ -3770,10 +3794,10 @@ function loadGridBtn(num)
 
             for (let grid2 of document.getElementsByClassName("grid-size"))
             {
-                grid2.style.background = "#ff69b4";
+                grid2.style.background = "#ff69b4cc";
                 if (parseInt(grid2.id.replace(/\D/g,'')) == mosaicMenu.grid)
                 {
-                    grid2.style.background = "#ff1493";
+                    grid2.style.background = "#ff1493cc";
                 }
             }
         }
@@ -3808,7 +3832,7 @@ function GenBtnColor()
     }
     else
     {
-        timeMachineNewerBtn.style.backgroundColor = "#ba55d3";
+        timeMachineNewerBtn.style.backgroundColor = "#ba55d3cc";
         timeMachineNewerBtn.disabled = false;
     }
     if (timeMachineBtn.index == 0)
@@ -3818,7 +3842,7 @@ function GenBtnColor()
     }
     else
     {
-        timeMachineOlderBtn.style.backgroundColor = "#ba55d3";
+        timeMachineOlderBtn.style.backgroundColor = "#ba55d3cc";
         timeMachineOlderBtn.disabled = false;
     }
 }
@@ -3845,13 +3869,13 @@ function logKey(e) {
         }
         if (e.code == "Digit4")
         {
-           // Got a DM from Mika and this appeared to be causeing people to jump forward in duels games.
-           // I can't duplicate the problem on my computer, but I don't think this is a feature that will be missed.
+           // Got a DM from Mika and this appeared to be causeing people to jump forward in nm duels.
+           // I can't duplicate it on my computer, but I don't think this is a feature that will be missed.
         }
         if (e.code == "Digit3")
         {
-            // Got a DM from Mika and this appeared to be causeing people to jump forward in duels games.
-            // I can't duplicate the problem on my computer, but I don't think this is a feature that will be missed.
+            // Got a DM from Mika and this appeared to be causeing people to jump forward in nm duels.
+            // I can't duplicate it on my computer, but I don't think this is a feature that will be missed.
         }
         else if (e.code == "Digit5")
         {
@@ -3987,17 +4011,17 @@ function setDisable(cond) {
         }
         else
         {
-            setMapstyle("#ff69b4", false)
+            setMapstyle("#ff69b4cc", false)
             if (cond === "NMPZ") {
                 setAll("red", true);
                 if (nextPlayer !== "Baidu")
                 {
-                    satelliteSwitchButton.style.backgroundColor = "#ba55d3";
+                    satelliteSwitchButton.style.backgroundColor = "#ba55d3cc";
                     satelliteSwitchButton.disabled = false;
                 }
                 if (nextPlayer !== "Google")
                 {
-                    switchCovergeButton.style.backgroundColor = "#ba55d3";
+                    switchCovergeButton.style.backgroundColor = "#ba55d3cc";
                     switchCovergeButton.disabled = false;
                 }
                 if (NZ)
@@ -4023,7 +4047,7 @@ function setDisable(cond) {
                 }
             }
             else if (nextPlayer == "Google" || nextPlayer === "Wikipedia" || nextPlayer === "Youtube") {
-                setAll("#ba55d3", false);
+                setAll("#ba55d3cc", false);
                 if (bullseyeMapillary && nextPlayer === "Google")
                 {
                     switchCovergeButton.style.backgroundColor = "red";
@@ -4032,16 +4056,16 @@ function setDisable(cond) {
             }
             else if (nextPlayer === "Baidu" || nextPlayer === "Image" || nextPlayer === "Minecraft" || nextPlayer === "Carte") {
                 setAll("red", true);
-                switchCovergeButton.style.backgroundColor = "#ba55d3";
+                switchCovergeButton.style.backgroundColor = "#ba55d3cc";
                 switchCovergeButton.disabled = false;
                 if (nextPlayer !== "Baidu")
                 {
-                    satelliteSwitchButton.style.backgroundColor = "#ba55d3";
+                    satelliteSwitchButton.style.backgroundColor = "#ba55d3cc";
                     satelliteSwitchButton.disabled = false;
                 }
             }
             else if (nextPlayer == "Kakao" || nextPlayer == "Yandex" || nextPlayer == "Mapillary" || nextPlayer == "Bing Streetside" || nextPlayer == "Mapy") {
-                setAll("#ba55d3", false);
+                setAll("#ba55d3cc", false);
                 timeMachineBtn.style.backgroundColor = "red";
                 timeMachineBtn.disabled = true;
                 let li = [RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn]
@@ -4053,7 +4077,7 @@ function setDisable(cond) {
 
             }
             else if (nextPlayer == "Mapbox Satellite") {
-                setAll("#ba55d3", false);
+                setAll("#ba55d3cc", false);
                 timeMachineBtn.style.backgroundColor = "red";
                 timeMachineBtn.disabled = true;
                 for (let btns of document.getElementsByClassName("teleport-btn"))
@@ -4083,12 +4107,12 @@ function setMapstylePlanet(cond)
     {
         if (cond == "None" && mapDiv.id.includes("Earth"))
         {
-            mapDiv.style.backgroundColor = "#ff1493";
+            mapDiv.style.backgroundColor = "#ff1493cc";
             mapDiv.disabled = false;
         }
         else if (mapDiv.id.includes(cond) || mapDiv.id.includes("Earth"))
         {
-            mapDiv.style.backgroundColor = "#ff69b4";
+            mapDiv.style.backgroundColor = "#ff69b4cc";
             mapDiv.disabled = false;
         }
         else
@@ -4148,7 +4172,7 @@ function launchObserver() {
                             console.log("Recycling the satellite map.");
 
                             sat0 = sat[0];
-				
+                            debugger;
                             sat0.style.display = "none";
                             //sat0.querySelector('.mapboxgl-map').classList.remove("inactive", "game-panorama_panorama__ncMwh", "game-panorama_panorama__IuPsO", "br-game-layout__panorama", "game-layout__panorama", "game-panorama_panorama__rdhFg")
                             document.body.appendChild(sat0);
@@ -4822,12 +4846,22 @@ function guessButtonCallback()
                 console.log("try to hide show buttons")
                 mainMenuBtn.style.visibility = "hidden";
                 setHidden(true);
+                guessButtonCallback.callbacks.forEach((cb) => cb());       
             }
         })
     }
     else
     {
         setTimeout(guessButtonCallback, 1000);
+    }
+}
+guessButtonCallback.callbacks = [];
+guessButtonCallback.removeCallback = function(cb){
+    for (let n = 0; n < guessButtonCallback.callbacks.length;n++){
+        if (guessButtonCallback.callbacks[n] == cb){
+            guessButtonCallback.callbacks.splice(n, 1);
+            return;
+        }
     }
 }
 
@@ -5061,6 +5095,16 @@ function loaderChecker(map_name, map_description)
         console.log("Wikipedia Map");
         Wikipedia_map = true;
 
+    }
+    else{
+        // console.log("Not Wikipedia map");
+    }
+
+    if (map_name.includes("WikiXplore"))
+    {
+        console.log("Wikipedia Map");
+        Wikipedia_map = true;
+        WikiXplore_map = true;
     }
     else{
         // console.log("Not Wikipedia map");
@@ -6331,6 +6375,11 @@ function addCustomYandexCompass(){
 
 function wiki(cc, iframe, teleportMenu)
 {
+    if (WikiXplore_map) {
+        wikiXplore(cc, iframe, teleportMenu, true);
+        return;
+    }
+
     let url = `https://${cc}.wikipedia.org/w/api.php`;
     let widthRight = 325;
     //     console.log(cc);
@@ -6366,7 +6415,6 @@ function wiki(cc, iframe, teleportMenu)
             iframe.style.visibility = "";
             iframe.style.right = `-${widthRight}px`;
             iframe.style.width = (window.innerWidth + widthRight) + 'px';
-
             // console.log(iframe.style.width);
             // iframe.style.visibility = "";
         }
@@ -6380,14 +6428,123 @@ function wiki(cc, iframe, teleportMenu)
     }).catch(function(error){console.log(error);});
 }
 
+function wikiXplore(cc, iframe, teleportMenu, newLocation){
+    let wikiXplore_btn = document.getElementById("wikiXplore_btn");
+
+    let GOOGLE_MAPS_CANVAS = gCanvas();
+    GOOGLE_MAPS_CANVAS.style.visibility = "";
+    if (!wikiXplore_btn){
+        wikiXplore_btn = document.createElement("Button");
+        wikiXplore_btn.classList.add("unity-btn", "full", "horizontal-1", "vertical-2");
+        wikiXplore_btn.style.cssText = "border-radius: 25px; height: 2em; position: fixed; z-index: 99970; background-color: rgba(186, 85, 211, 0.8); box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 15px; border: none; color: white; text-align: center; vertical-align: text-top; text-decoration: none; display: inline-block; font-size: 16px; width: 4em; right: calc(4em); top: calc(9.5em);";
+        wikiXplore_btn.id = "wikiXplore_btn";
+        wikiXplore_btn.state = true;
+        wikiXplore_btn.lang = cc;
+        //wikiXplore_btn.innerHTML = "Close WikiXplore";
+        const wikiImgOpen = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
+        const wikiImgClosed = "https://upload.wikimedia.org/wikipedia/commons/d/de/Wikipedia-logo_%28inverse%29.png";
+        wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 2px;" src="${wikiImgOpen}" alt="Girl in a jacket" >`;
+
+        wikiXplore_btn.addEventListener("click", () => {
+            GOOGLE_MAPS_CANVAS.style.visibility = "";
+            if (wikiXplore_btn.state === false){
+                let wikiLocalLang = document.getElementById("local language")
+                wikiLocalLang.style.visibility = "";
+                wikiXplore_btn.state = true;
+                //wikiXplore_btn.innerHTML = "Close WikiXplore";
+                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 2px;" src="${wikiImgOpen}" alt="Girl in a jacket" >`;
+                GOOGLE_MAPS_CANVAS.style.left = "calc(100vw * 0.25)";
+                GOOGLE_MAPS_CANVAS.style.width = "75vw";
+                setIframe();
+            }  else {
+                iframe.style.visibility = "hidden";
+                iframe.style.width = '0px';
+                let wikiLocalLang = document.getElementById("local language")
+                wikiLocalLang.style.visibility = "hidden";
+                wikiXplore_btn.state = false;
+                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${wikiImgClosed}" alt="Girl in a jacket" >`;
+                GOOGLE_MAPS_CANVAS.style.left = "";
+                GOOGLE_MAPS_CANVAS.style.width = "";
+            }
+        });
+        document.body.appendChild(wikiXplore_btn);
+    }
+
+    if (wikiXplore_btn.lang !== cc || newLocation){
+        if (wikiXplore_btn.state == false) return;
+
+        let wikiLocalLang = document.getElementById("local language")
+        wikiLocalLang.style.visibility = "";
+
+        iframe.style.right = ``;
+        iframe.style.width = "calc(100vw * 0.25)";
+
+        wikiXplore_btn.lang = cc;
+
+        GOOGLE_MAPS_CANVAS.style.left = "calc(100vw * 0.25)";
+        GOOGLE_MAPS_CANVAS.style.width = "75vw";
+
+        setIframe(); 
+    }
+
+    function setIframe(){
+        let url = `https://${cc}.wikipedia.org/w/api.php`;
+        let widthRight = 325;
+        //     console.log(cc);
+        //     if (cc == "fr")
+        //     {
+        //         widthRight = 1200;
+        //     }
+
+        let params = {
+            action: "query",
+            list: "geosearch",
+            gscoord: `${global_lat}|${global_lng}`,
+            gsradius: "10000",
+            gslimit: "1",
+            format: "json"
+        };
+
+        url = url + "?origin=*";
+        Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+        let GOOGLE_MAPS_CANVAS = gCanvas();
+
+        fetch(url)
+            .then(function(response){return response.json();})
+            .then(function(response) {
+            // console.log(response)
+            var pages = response.query.geosearch;
+            if (pages.length !== 0)
+            {
+                //GOOGLE_MAPS_CANVAS.style.visibility = "hidden";
+                let pageId = pages[0].pageid;
+                iframe.src = `https://${cc}.wikipedia.org/?curid=${pageId}`;
+                wikiUrl = `https://${cc}.wikipedia.org/?curid=${pageId}`;
+                iframe.style.visibility = "";
+                iframe.style.right = ``;
+                iframe.style.width = "calc(100vw * 0.25)";
+                // console.log(iframe.style.width);
+                // iframe.style.visibility = "";
+            }
+            else
+            {
+                GOOGLE_MAPS_CANVAS.style.visibility = "";
+                teleportMenu.google = true;
+                iframe.style.right = '0px';
+                iframe.style.width = window.innerWidth + 'px';
+            }
+        }).catch(function(error){console.log(error);});
+    }
+}
+
 function handleSpecialColor()
 {
-    document.getElementById("Circus Sky").style.background = skySpecial ? "#ff1493" : "#ff69b4";
-    document.getElementById("Circus Soil").style.background = soilSpecial ? "#ff1493" : "#ff69b4";
-    document.getElementById("Circus Skewed").style.background = skewedSpecial ? "#ff1493" : "#ff69b4";
-    document.getElementById("Circus Zoom").style.background = zoomSpecial ? "#ff1493" : "#ff69b4";
-    document.getElementById("Circus Random").style.background = randomSpecial ? "#ff1493" : "#ff69b4";
-    document.getElementById("Circus NMPZ").style.background = nmpzSpecial ? "#ff1493" : "#ff69b4";
+    document.getElementById("Circus Sky").style.background = skySpecial ? "#ff1493cc" : "#ff69b4cc";
+    document.getElementById("Circus Soil").style.background = soilSpecial ? "#ff1493cc" : "#ff69b4cc";
+    document.getElementById("Circus Skewed").style.background = skewedSpecial ? "#ff1493cc" : "#ff69b4cc";
+    document.getElementById("Circus Zoom").style.background = zoomSpecial ? "#ff1493cc" : "#ff69b4cc";
+    document.getElementById("Circus Random").style.background = randomSpecial ? "#ff1493cc" : "#ff69b4cc";
+    document.getElementById("Circus NMPZ").style.background = nmpzSpecial ? "#ff1493cc" : "#ff69b4cc";
 }
 
 let yandexIntervalFailedToLoadMessage = null;
@@ -6665,9 +6822,15 @@ async function goToLocation(cond) {
                 iframe.style.visibility = "";
                 iframe.src = iId;
             }
+            else if (WikiXplore_map){
+                iframe.style.top = '0px';
+                iframe.style.height = (window.innerHeight) + 'px';
+                let fi = getLocalizationFromPathName();
+                wikiXplore(fi, iframe, teleportMenu, true);
+            }
             else if (nextPlayer === "Wikipedia")
             {
-                if (!document.getElementById("mapbox-player"))
+                if (!WikiXplore_map && !document.getElementById("mapbox-player"))
                 {
                     switchCovergeButton.style.visibility = "";
                 }
@@ -6675,7 +6838,8 @@ async function goToLocation(cond) {
                 wikiLocalLang.style.visibility = "";
                 iframe.style.top = '0px';
                 iframe.style.height = (window.innerHeight) + 'px';
-                let fi = "en";
+                //let fi = "en";
+                let fi = getLocalizationFromPathName();
                 if (!wikiLocalLang.state && global_cc)
                 {
                     let cc = langDict[global_cc];
@@ -10688,3 +10852,168 @@ function getOverlayView(map){
 
         return distanceMarker;
     };
+    
+    UnityInitiate.callbacks.push(function(){
+        if (sessionStorage['unity_streak']){
+            initCountryStreakCounter();
+        }
+    });
+
+
+    async function initCountryStreakCounter(){
+        // TODO EC: Refactor this to a Object or class, this is just a test to see if it works.
+
+        const versionEl = document.getElementById("unity_version");
+        
+        if (versionEl._outerHTML){
+            versionEl.outerHTML = versionEl._outerHTML;
+            versionEl._outerHTML = null;
+            delete sessionStorage['unity_streak'];
+            google.maps.event.removeListener(versionEl.mapsClickListener);
+            guessButtonCallback.removeCallback(versionEl.guessBtnClickListener);
+            clearInterval( versionEl._interval );
+            clearInterval( versionEl.noClickOnMapInterval );
+            return;
+        }
+
+        const scoreBoard = document.createElement('font');
+        scoreBoard.title = "Use mouse wheel to change score!";
+
+        versionEl._outerHTML = versionEl.outerHTML;
+        versionEl.innerHTML = '';
+        versionEl.appendChild(scoreBoard);
+
+        scoreBoard.style.color = "rgb(0, 102, 204)";
+        scoreBoard.style.fontWeight = "bold";
+        scoreBoard.setAttribute('size', '2');
+
+        if (!scoreBoard.score){
+            scoreBoard.score = 0;
+        }
+
+        if (sessionStorage['unity_streak']){
+           scoreBoard.score = +sessionStorage['unity_streak'];
+        } else {
+            sessionStorage['unity_streak'] = scoreBoard.score; 
+        }
+
+        scoreBoard.innerHTML = scoreBoard.score;
+
+        // Create simple reverse geocoding object.
+        eval(await fetch('https://echandler.github.io/Simple-Reverse-Geocoding-Script/reverseGeocodingScript.user.js').then(x => x.text()));
+        
+        scoreBoard.lastLatLng = null;
+        
+        let mapsObj = null;
+        
+        versionEl._interval = setInterval(()=>{
+            // Let this run until counter is turned off by player.
+            if (!GoogleMapsObj || mapsObj === GoogleMapsObj) return;
+            mapsObj = GoogleMapsObj;
+            google.maps.event.removeListener(versionEl.mapsClickListener);
+            versionEl.mapsClickListener = GoogleMapsObj.addListener("click", mapsClicker);
+        }, 1000);
+        
+        async function mapsClicker(e) {
+            if (versionEl._outerHTML == null) return;
+
+            const latLng = e.latLng.toJSON();
+
+            const l  = await sgs.reverse(latLng).then(e => e);
+
+            scoreBoard.lastLatLng = l;   
+
+            console.log(l.country);
+            
+            showFlag(l.country.country_code);
+        };
+        
+        versionEl.guessBtnClickListener = async function(){
+            const curRoundLatLng = {lat: global_lat, lng: global_lng};
+            const cur = await sgs.reverse(curRoundLatLng).then(e => e);
+            
+            let unityAlert = document.querySelector('.unity_alert');
+            let _unityAlert = unityAlert.innerHTML;
+        
+            let svgFlag = sgs.countryFlags[cur.country.admin_country_code.toUpperCase()];
+            svgFlag = svgFlag.replace("<svg", `<svg style="position: relative; top: 1px; border-radius: 3px;"`);
+
+            if (scoreBoard.lastLatLng && (cur.country.admin_country_code == scoreBoard.lastLatLng.country.admin_country_code)){
+                unityAlert.innerHTML = `Yay! It was <span style="font-weight:bold">${cur.country.country_name}</span> ${svgFlag} ! Score is now <span style="font-weight:bold">${scoreBoard.score} + 1</span>!`;
+                scoreBoard.score += 1;
+            } else {
+                unityAlert.innerHTML = `<span>Nooooooo! It was <span style="font-weight:bold">${cur.country.country_name}</span> ${svgFlag} ! Final score was <span style="font-weight:bold">${scoreBoard.score}</span>!</span>`;
+                scoreBoard.score = 0;
+            }
+
+            scoreBoard.innerHTML = scoreBoard.score;
+
+            sessionStorage['unity_streak'] = scoreBoard.score;
+
+            unityAlert.style.minWidth = '22.75em';
+            unityAlert.style.width = 'fit-content';
+            unityAlert.style.padding = '0px 10px';
+            unityAlert.style.visibility = 'visible';
+            unityAlert._streakShowing = true;
+
+            let guessBtn = document.querySelector("[data-qa='perform-guess']");
+            if (!scoreBoard.waitIntervals){
+                scoreBoard.waitIntervals = [];
+            }
+            scoreBoard.waitIntervals.push(setInterval(() => {
+                const resultLayout = document.querySelector('div[class*="result-layout"]');
+                if (document.body.contains(guessBtn) || resultLayout) return;
+                guessBtn = null;// Now waiting for resultLayout to be removed.
+                scoreBoard.waitIntervals.forEach( x => clearInterval(x));
+                unityAlert.style.visibility = 'hidden';
+                unityAlert._streakShowing = false;
+            }, 500));
+            
+            scoreBoard.lastLatLng = null;
+        } // End guessbuttonListener. 
+        
+        guessButtonCallback.callbacks.push(versionEl.guessBtnClickListener);
+
+        let showFlagTimer = null;
+        function showFlag(code){
+            clearTimeout(showFlagTimer);
+            const svgFlag = sgs.countryFlags[code.toUpperCase()];
+
+            scoreBoard.innerHTML = svgFlag.replace("<svg", `<svg style="position: relative; top: 2px; height: 1em; overflow: visible; border-radius: 3px;"`);
+        
+            showFlagTimer = setTimeout(()=>{
+                scoreBoard.innerHTML = scoreBoard.score;
+                scoreBoard._flagInnerHTML = null;
+            }, 900);
+        }
+        
+        let d = Date.now();
+        scoreBoard.addEventListener('wheel', (e)=>{
+            if (Date.now() - d < 50) return;
+            d = Date.now();
+
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            if (e.wheelDelta > 0){
+                scoreBoard.score += 1;
+            } else {
+                scoreBoard.score -= 1;
+            }
+            sessionStorage['unity_streak'] = scoreBoard.score;
+            scoreBoard.innerHTML = scoreBoard.score;
+            console.log(e.wheelDelta, e.deltaY);
+        });
+
+        versionEl.noClickOnMapInterval = setInterval(() => {
+            // Incase Player doesn't click on map.
+            const resultLayout = document.querySelector('div[class*="result-layout"]');
+            if (!resultLayout) return;
+            const unityAlert = document.querySelector('.unity_alert');
+            //if (unityAlert.style.visibility !== 'hidden') return;
+            if (unityAlert._streakShowing) return;
+            // Alert should have been shown by now, if not then player didn't click on guess button.
+            versionEl.guessBtnClickListener();
+        }, 1000);
+    }
