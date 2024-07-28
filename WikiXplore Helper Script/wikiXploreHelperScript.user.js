@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WikiXplore script for map-making.app
 // @namespace    WikiXplore
-// @version      0.1
+// @version      0.2 
 // @description  WikiXplore script for map-making.app.
 // @author       echandler
 // @match        https://map-making.app/maps/*
@@ -23,6 +23,11 @@
         });
 
         marker.addListener('click', (e)=>{
+            if (document.getElementById("wikiXplore_body")){
+                infowindow.close();
+                return;
+            }
+
             infowindow.open({
                 map: map,
                 anchor: marker,
@@ -35,7 +40,6 @@
         });
 
         map.addListener('click', function(e){
-
             let ll = e.latLng.toJSON();
             let url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&list=geosearch&gscoord=${ll.lat}|${ll.lng}&gsradius=10000&gslimit=1&format=json`;
 
@@ -50,7 +54,7 @@
 
                 marker.setPosition({lat: pages[0].lat, lng: pages[0].lon});
 
-                infowindow.setContent(`<div style="font-size: 1.2em;">
+                infowindow.setContent(`<div id="wikiXplore_body" style="font-size: 1.2em;">
                     <div style="color:grey;">WikiXplore Helper Script</span></div>
                     </br>
                     <div style="color:grey;">title: <span style="color:black;">${pages[0].title}</span></div>
