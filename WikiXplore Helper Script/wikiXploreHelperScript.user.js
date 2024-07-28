@@ -7,8 +7,8 @@
 // @match        https://map-making.app/maps/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=map-making.app
 // @grant        none
-// @downloadURL  
-// @updateURL     
+// @downloadURL  https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/WikiXplore%20Helper%20Script/wikiXploreHelperScript.user.js
+// @updateURL    https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/WikiXplore%20Helper%20Script/wikiXploreHelperScript.user.js 
 // ==/UserScript==
 
 (function() {
