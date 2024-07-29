@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script test
+// @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.3.9.9
+// @version       7.4.0.0
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.3.9.9 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.0.0 by Jupaoqq");
 
 
 // Store each player instance
@@ -2004,7 +2004,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.3.9EC</font></font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.0EC</font></font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -2043,7 +2043,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.3.9.9</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.0</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -6433,42 +6433,53 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
 
     let GOOGLE_MAPS_CANVAS = gCanvas();
     GOOGLE_MAPS_CANVAS.style.visibility = "";
+
     if (!wikiXplore_btn){
+        const wikiImgOpened = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
+        const wikiImgClosed = "https://upload.wikimedia.org/wikipedia/commons/d/de/Wikipedia-logo_%28inverse%29.png";
+
         wikiXplore_btn = document.createElement("Button");
         wikiXplore_btn.classList.add("unity-btn", "full", "horizontal-1", "vertical-2");
-        wikiXplore_btn.style.cssText = "border-radius: 25px; height: 2em; position: fixed; z-index: 99970; background-color: rgba(186, 85, 211, 0.8); box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 15px; border: none; color: white; text-align: center; vertical-align: text-top; text-decoration: none; display: inline-block; font-size: 16px; width: 4em; right: calc(4em); top: calc(9.5em);";
+        wikiXplore_btn.style.cssText = "border-radius: 25px; height: 2em; position: fixed; z-index: 99970; background-color: rgba(186, 85, 211, 0.8); box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 15px; border: none; color: white; text-align: center; vertical-align: text-top; text-decoration: none; display: inline-block; font-size: 16px; width: 3em; right: calc(4em); top: calc(9.5em);";
         wikiXplore_btn.id = "wikiXplore_btn";
-        wikiXplore_btn.state = true;
+        wikiXplore_btn.title = "Open or close Wikipedia article.";
+        wikiXplore_btn.state = false;
         wikiXplore_btn.lang = cc;
-        //wikiXplore_btn.innerHTML = "Close WikiXplore";
-        const wikiImgOpen = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
-        const wikiImgClosed = "https://upload.wikimedia.org/wikipedia/commons/d/de/Wikipedia-logo_%28inverse%29.png";
-        wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 2px;" src="${wikiImgOpen}" alt="Girl in a jacket" >`;
+
+        wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${wikiImgClosed}" alt="Wiki logo" >`;
 
         wikiXplore_btn.addEventListener("click", () => {
+            const wikiLocalLang = document.getElementById("local language")
             GOOGLE_MAPS_CANVAS.style.visibility = "";
+
             if (wikiXplore_btn.state === false){
-                let wikiLocalLang = document.getElementById("local language")
                 wikiLocalLang.style.visibility = "";
+
                 wikiXplore_btn.state = true;
-                //wikiXplore_btn.innerHTML = "Close WikiXplore";
-                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 2px;" src="${wikiImgOpen}" alt="Girl in a jacket" >`;
+                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 2px;" src="${wikiImgOpened}" alt="Wiki logo" >`;
+
                 GOOGLE_MAPS_CANVAS.style.left = "calc(100vw * 0.25)";
                 GOOGLE_MAPS_CANVAS.style.width = "75vw";
+
                 setIframe();
             }  else {
                 iframe.style.visibility = "hidden";
                 iframe.style.width = '0px';
-                let wikiLocalLang = document.getElementById("local language")
+
                 wikiLocalLang.style.visibility = "hidden";
+
                 wikiXplore_btn.state = false;
-                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${wikiImgClosed}" alt="Girl in a jacket" >`;
+                wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${wikiImgClosed}" alt="Wiki logo" >`;
+
                 GOOGLE_MAPS_CANVAS.style.left = "";
                 GOOGLE_MAPS_CANVAS.style.width = "";
             }
         });
+
         document.body.appendChild(wikiXplore_btn);
     }
+
+    wikiXplore_btn.style.visibility = "";
 
     if (wikiXplore_btn.lang !== cc || newLocation){
         if (wikiXplore_btn.state == false) return;
@@ -6490,11 +6501,6 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
     function setIframe(){
         let url = `https://${cc}.wikipedia.org/w/api.php`;
         let widthRight = 325;
-        //     console.log(cc);
-        //     if (cc == "fr")
-        //     {
-        //         widthRight = 1200;
-        //     }
 
         let params = {
             action: "query",
@@ -6511,28 +6517,28 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
 
         fetch(url)
             .then(function(response){return response.json();})
-            .then(function(response) {
-            // console.log(response)
-            var pages = response.query.geosearch;
-            if (pages.length !== 0)
-            {
-                //GOOGLE_MAPS_CANVAS.style.visibility = "hidden";
+            .then(function(json) {
+
+            let pages = json.query.geosearch;
+
+            if (pages.length !== 0) {
                 let pageId = pages[0].pageid;
+
                 iframe.src = `https://${cc}.wikipedia.org/?curid=${pageId}`;
                 wikiUrl = `https://${cc}.wikipedia.org/?curid=${pageId}`;
+
                 iframe.style.visibility = "";
                 iframe.style.right = ``;
                 iframe.style.width = "calc(100vw * 0.25)";
-                // console.log(iframe.style.width);
-                // iframe.style.visibility = "";
-            }
-            else
-            {
+            } else {
                 GOOGLE_MAPS_CANVAS.style.visibility = "";
+
                 teleportMenu.google = true;
+
                 iframe.style.right = '0px';
                 iframe.style.width = window.innerWidth + 'px';
             }
+
         }).catch(function(error){console.log(error);});
     }
 }
@@ -6549,6 +6555,7 @@ function handleSpecialColor()
 
 let yandexIntervalFailedToLoadMessage = null;
 let __t = 0;
+let goToLocationTimerHack = Date.now();
 
 async function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
@@ -6882,7 +6889,22 @@ async function goToLocation(cond) {
 
         else
         {
-            setTimeout(goToLocation(true), 250);
+
+            if ((Date.now() - goToLocationTimerHack) > 2000){
+                goToLocationTimerHack = Date.now();
+                localStorage['unity_reload_to_fix_error_attempt'] = 'false';
+                setTimeout(()=> goToLocation(true), 250);
+            } else {
+
+                if (localStorage['unity_reload_to_fix_error_attempt'] === "true"){
+                    alert(`Attempted to reload page to fix error with Unity script but it didn't work.`);
+                    localStorage['unity_reload_to_fix_error_attempt'] = 'false';
+                    return;
+                } 
+                
+                localStorage['unity_reload_to_fix_error_attempt'] = 'true';
+                location.reload(); 
+            }
         }
         //         let a = new BMap.Point(global_lng, global_lat);
         //         BaiduPlayer.setPov({ heading: -40, pitch: 6 });
