@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.0.0
+// @version       7.4.0.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -298,7 +298,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.0.0 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.0.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -2043,7 +2043,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.0</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -6429,6 +6429,8 @@ function wiki(cc, iframe, teleportMenu)
 }
 
 function wikiXplore(cc, iframe, teleportMenu, newLocation){
+    // Mode suggested by Alok.
+    // Created by EC.
     let wikiXplore_btn = document.getElementById("wikiXplore_btn");
 
     let GOOGLE_MAPS_CANVAS = gCanvas();
@@ -6477,9 +6479,41 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
         });
 
         document.body.appendChild(wikiXplore_btn);
+        
+        let inter = setInterval(()=>{
+            // Deal with menu buttons being hidden and unhidden.
+
+            const mainMenuBtn = document.getElementById("Show Buttons");
+
+            if (!mainMenuBtn) return;
+            if (mainMenuBtn.wikXplore) return;
+
+            mainMenuBtn.wikXplore = true;
+
+            mainMenuBtn.addEventListener('click', ()=>{
+                // Listen for mainMenuBtn click which will hide or unhide the buttons.
+            
+                setTimeout(()=>{
+                    if (mainMenuBtn.hide === true) return;
+
+                    wikiXplore_btn.style.visibility = "";
+
+                    if (wikiXplore_btn.state === true){
+                        let wikiLocalLang = document.getElementById("local language")
+                        wikiLocalLang.style.visibility = "";
+                    };
+                }, 500);
+            });
+        }, 2000);
+
     }
 
-    wikiXplore_btn.style.visibility = "";
+    const mainMenuBtn = document.getElementById("Show Buttons");
+    if (mainMenuBtn && mainMenuBtn.hide === true) {
+        wikiXplore_btn.style.visibility = "hidden";
+    } else {
+        wikiXplore_btn.style.visibility = "";
+    }
 
     if (wikiXplore_btn.lang !== cc || newLocation){
         if (wikiXplore_btn.state == false) return;
