@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.0.1
+// @version       7.4.0.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -12,6 +12,9 @@
 // @downloadURL   https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.user.js
 // @updateURL     https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.meta.js
 // ==/UserScript==
+
+    // Added by EC
+    checkForRanomMapChallenge(); 
 
 /**
  * Custom your YouTube Search here!
@@ -298,7 +301,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.0.1 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.0.2 by Jupaoqq");
 
 
 // Store each player instance
@@ -353,7 +356,8 @@ let syncLoaded = false;
 let yandex_map = false;
 let Kakao_map = false;
 let Wikipedia_map = false;
-let WikiXplore_map = false; 
+let WikiXplore_map = false; // Added by EC.
+let randomMapChallenge_map = false;// Added by EC.
 let Minecraft_map = false;
 let Youtube_map = false;
 let bing_map = false;
@@ -1609,7 +1613,11 @@ function UnityInitiate() {
                     {
                         // Created by EC.
                         initCountryStreakCounter();
-                        //this.setMapTypeId("satellite");
+                    }
+                    else if (mapDiv.id == "RMC")
+                    {
+                        // Created by EC.
+                        initRandomMapChallenge(); 
                     }
                     else
                     {
@@ -2043,7 +2051,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.1</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.2</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4146,6 +4154,7 @@ function launchObserver() {
     SyncListener();
     kBoard();
     console.log("Main Observer");
+    
     //     const OBSERVER = new MutationObserver((mutations, observer) => {
     //         detectGamePage();
     //     });
@@ -5110,6 +5119,16 @@ function loaderChecker(map_name, map_description)
         // console.log("Not Wikipedia map");
     }
 
+    if (map_name.includes("[RMC]"))
+    {
+        console.log("is Random map challenge");
+        randomMapChallenge_map = true; 
+    
+        randomMapChallenge_map_init(map_description);
+    }
+    else{
+        // console.log("Not Wikipedia map");
+    }
     if (map_name.includes("Minecraft"))
     {
         console.log("Minecraft Map");
@@ -6431,6 +6450,8 @@ function wiki(cc, iframe, teleportMenu)
 function wikiXplore(cc, iframe, teleportMenu, newLocation){
     // Mode suggested by Alok.
     // Created by EC.
+    const lc = localStorage["unity_wikiXplore_active"] || "false";
+
     let wikiXplore_btn = document.getElementById("wikiXplore_btn");
 
     let GOOGLE_MAPS_CANVAS = gCanvas();
@@ -6445,10 +6466,10 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
         wikiXplore_btn.style.cssText = "border-radius: 25px; height: 2em; position: fixed; z-index: 99970; background-color: rgba(186, 85, 211, 0.8); box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 15px; border: none; color: white; text-align: center; vertical-align: text-top; text-decoration: none; display: inline-block; font-size: 16px; width: 3em; right: calc(4em); top: calc(9.5em);";
         wikiXplore_btn.id = "wikiXplore_btn";
         wikiXplore_btn.title = "Open or close Wikipedia article.";
-        wikiXplore_btn.state = false;
+        wikiXplore_btn.state = lc === 'true'? true: false;
         wikiXplore_btn.lang = cc;
 
-        wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${wikiImgClosed}" alt="Wiki logo" >`;
+        wikiXplore_btn.innerHTML = `<img style="width: 1.7em; margin-top: 4px;" src="${lc === 'true'? wikiImgOpened: wikiImgClosed}" alt="Wiki logo" >`;
 
         wikiXplore_btn.addEventListener("click", () => {
             const wikiLocalLang = document.getElementById("local language")
@@ -6463,6 +6484,8 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
                 GOOGLE_MAPS_CANVAS.style.left = "calc(100vw * 0.25)";
                 GOOGLE_MAPS_CANVAS.style.width = "75vw";
 
+                localStorage["unity_wikiXplore_active"] = "true";
+
                 setIframe();
             }  else {
                 iframe.style.visibility = "hidden";
@@ -6475,6 +6498,8 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
 
                 GOOGLE_MAPS_CANVAS.style.left = "";
                 GOOGLE_MAPS_CANVAS.style.width = "";
+
+                localStorage["unity_wikiXplore_active"] = "false";
             }
         });
 
@@ -6514,8 +6539,8 @@ function wikiXplore(cc, iframe, teleportMenu, newLocation){
     } else {
         wikiXplore_btn.style.visibility = "";
     }
-
-    if (wikiXplore_btn.lang !== cc || newLocation){
+    
+    if (wikiXplore_btn.lang !== cc || newLocation || lc === "true"){
         if (wikiXplore_btn.state == false) return;
 
         let wikiLocalLang = document.getElementById("local language")
@@ -6862,6 +6887,9 @@ async function goToLocation(cond) {
                 iframe.style.width = window.innerWidth + 'px';
                 iframe.style.visibility = "";
                 iframe.src = iId;
+            }
+            else if (randomMapChallenge_map){
+                console.log("IS RANDOM")
             }
             else if (WikiXplore_map){
                 iframe.style.top = '0px';
@@ -9394,7 +9422,8 @@ let presetMinimap = [[default_preset, "Default"],
                      [default_preset, "Terrain"],
                      [default_preset, "Hybrid"],
                      [custom, "Custom"],
-                     [default_preset, "Country Streak"]]
+                     [default_preset, "Country Streak"],
+                     [default_preset, "RMC"]]
 
 let GEOJSON_INVISIBLE =
     {
@@ -11072,4 +11101,52 @@ function getOverlayView(map){
             // Alert should have been shown by now, if not then player didn't click on guess button.
             versionEl.guessBtnClickListener();
         }, 1000);
+    }
+
+  async function randomMapChallenge_map_init(mapInfo){
+        debugger;
+        let info = await fetch(`https://www.geoguessr.com/api/maps/${mapInfo.map}`).then(res => res.json());
+        console.log(info)
+        let gameJSONUrl = info.description.match(/{\[(.*)]}/);
+        if (!gameJSONUrl.length != 2 && gameJSONUrl[1][0] != "h") {
+            alert("Can't find Random Map Challenge Information is description.");
+            return;
+        }
+        
+        let _json = await fetch(gameJSONUrl[1]).then(res=> res.json());
+
+        loadRandomMapChallenge(()=>{
+            window.playFinishedGame(_json);
+        });
+        
+    }
+    
+    function checkForRanomMapChallenge(){
+        if (localStorage["RandomMapChallenge"]){
+            loadRandomMapChallenge();
+        }
+    }
+    
+    function initRandomMapChallenge(){
+        if (document.getElementById('RMC_menu_button')){
+            if (!confirm("This will end your Random Map Challenge?")){
+                return;
+            }
+            delete localStorage["RandomMapChallenge"];
+            location.reload();
+            return;
+        }
+        loadRandomMapChallenge();
+    }
+
+    function loadRandomMapChallenge(fn){
+        var sw = document.createElement( 'script' );
+        sw.id = "_sweetAlert"
+        sw.setAttribute( 'src', `https://cdn.jsdelivr.net/npm/sweetalert2@11` );
+        document.body.appendChild( sw );
+
+        var s = document.createElement( 'script' );
+        s.addEventListener('load', fn);
+        s.setAttribute( 'src', `https://echandler.github.io/test-geo-noob-script/misc/test1.js` );
+        document.body.appendChild( s );
     }
