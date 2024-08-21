@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.0.4
+// @version       7.4.0.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -301,7 +301,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.0.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.0.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -532,8 +532,20 @@ window.toggleRestrictMovement = (e) => {
     restrictMovement = e.checked ? true : false;
 }
 
-window.toggleRandomMapChallenge = (e) => {
-    initRandomMapChallenge(); 
+window.toggleRandomMapChallenge = (_this) => {
+    if (_this.id === 'toggleRandomMapChallenge'){
+        initRandomMapChallenge(); 
+        return;
+    }
+    if (_this.id === 'toggleRandomMapChallengeOnHomePage'){
+        if (_this.checked){
+            localStorage["RandomMapChallenge_onHomePage"] = true;
+            showRandomMapChallengeBtnOnHomePage(true);
+        }else {
+            delete localStorage["RandomMapChallenge_onHomePage"];
+            showRandomMapChallengeBtnOnHomePage(false);
+        }
+    }
 }
 
 function getPathName(){
@@ -613,7 +625,13 @@ function guiHTML(){
                 <input type="checkbox" id="toggleRandomMapChallenge" onclick="toggleRandomMapChallenge(this)" class="${toggle.className}">
                 </div>
             </div>
-            <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">How many random maps can you play in a set amount of time?</p>
+            <div style="display: flex; justify-content: space-around;">
+                <div style="display: flex; align-items: center;">
+                <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Show on homepage?</span>
+                <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle.className}">
+                </div>
+            </div>
+            <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Inspired by TrackMania, how many random maps can you play in a set amount of time?</p>
         </div>
 
         <!-- Section -->
@@ -736,12 +754,17 @@ const checkInsertGui = () => {
         {
             document.getElementById('toggleRestrictMovement').checked = true;
         }
-        if (document.getElementById('RMC_menu_button'))
+        const rmcMenuBtn = document.getElementById('RMC_menu_button');
+        if ((rmcMenuBtn && rmcMenuBtn.style.display !== "none") || localStorage["RandomMapChallenge"])
         {
             // Added by EC
             document.getElementById('toggleRandomMapChallenge').checked = true;
+           console.log("hisfsfddddddddddddddddddddddddddddddddddddddddddddddddd")
         }
-
+        if (localStorage["RandomMapChallenge_onHomePage"]){
+            // Added by EC
+            document.getElementById('toggleRandomMapChallengeOnHomePage').checked = true;
+        }
     }
 }
 
@@ -2097,7 +2120,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -11149,11 +11172,14 @@ function getOverlayView(map){
         }, 1000);
     }
 
+
+
+    /// -------------------------------------- RANDOM MAP CHALLENGE ---------------------------------------------------------------------
+
   async function randomMapChallenge_map_init(mapInfo){
-        debugger;
         let info = await fetch(`https://www.geoguessr.com/api/maps/${mapInfo.map}`).then(res => res.json());
-        console.log(info)
         let gameJSONUrl = info.description.match(/{\[(.*)]}/);
+
         if (!gameJSONUrl.length != 2 && gameJSONUrl[1][0] != "h") {
             alert("Can't find Random Map Challenge Information is description.");
             return;
@@ -11169,13 +11195,65 @@ function getOverlayView(map){
     
     function checkForRanomMapChallenge(){
         if (localStorage["RandomMapChallenge"]){
-            loadRandomMapChallenge();
+            loadRandomMapChallenge(()=>{
+                setTimeout(()=>{
+                    const rmcMenuBtn = document.getElementById('RMC_menu_button');
+                    if (!rmcMenuBtn) return;
+                    rmcMenuBtn.doShow = true;
+                }, 500);
+            });
+        }
+        
+        if (localStorage["RandomMapChallenge_onHomePage"]){
+            setTimeout(()=>{
+                showRandomMapChallengeBtnOnHomePage(true);
+            }, 1000);
         }
     }
     
+    let showRandomMapChallengeBtnOnHomePageTimer = null;
+    function showRandomMapChallengeBtnOnHomePage(trueFalse){
+       if (trueFalse === false){
+           clearInterval(showRandomMapChallengeBtnOnHomePageTimer);
+           return;
+       } 
+       showRandomMapChallengeBtnOnHomePageTimer = setInterval(()=>{
+            const rmcMenuBtn = document.getElementById('RMC_menu_button');
+            if (!/^\/\w?\w?$/.test(getPathName())) {
+                if (rmcMenuBtn?.doShow) return;
+
+                if (rmcMenuBtn){
+                    rmcMenuBtn.style.display = "none";
+                }
+                return;
+            }
+
+            if (rmcMenuBtn){
+                rmcMenuBtn.style.display = "";
+                return;
+            }
+            
+            loadRandomMapChallenge(()=>{
+                setTimeout(()=>{
+                    const rmcMenuBtn = document.getElementById('RMC_menu_button');
+                    if (!rmcMenuBtn) return;
+                    rmcMenuBtn.style.display = "";
+                }, 1000);
+            });
+       })
+    }
+
     function initRandomMapChallenge(){
-        if (document.getElementById('RMC_menu_button')){
-            if (!confirm("This will end your Random Map Challenge?")){
+        const rmcMenuBtn = document.getElementById('RMC_menu_button');
+        if (rmcMenuBtn?.style?.display === "none"){
+            rmcMenuBtn.style.display = '';
+            rmcMenuBtn.doShow = true;
+            rmcMenuBtn.click();
+            return;
+        } 
+
+        if (rmcMenuBtn){
+            if (localStorage["RandomMapChallenge"] && !confirm("This will end your Random Map Challenge?")){
                 return;
             }
             delete localStorage["RandomMapChallenge"];
@@ -11183,12 +11261,16 @@ function getOverlayView(map){
             return;
         }
         loadRandomMapChallenge(()=>{
-            const rmcMenuBtn = document.getElementById('RMC_menu_button');
-            if (!rmcMenuBtn) return;
-            rmcMenuBtn.click();
+            setTimeout(()=>{
+                const rmcMenuBtn = document.getElementById('RMC_menu_button');
+                if (!rmcMenuBtn) return;
+                rmcMenuBtn.style.display = '';
+                rmcMenuBtn.doShow = true;
+                rmcMenuBtn.click();
+            }, 500);
         });
     }
-
+    
     function loadRandomMapChallenge(fn){
         var sw = document.createElement( 'script' );
         sw.id = "_sweetAlert"
@@ -11199,4 +11281,26 @@ function getOverlayView(map){
         s.addEventListener('load', fn);
         s.setAttribute( 'src', `https://echandler.github.io/test-geo-noob-script/misc/test1.js` );
         document.body.appendChild( s );
+        
+        checkForRMCButtonOnWrongPage();
     }
+
+    function checkForRMCButtonOnWrongPage(){
+        if (checkForRMCButtonOnWrongPage.isChecking) return;
+
+        checkForRMCButtonOnWrongPage.isChecking = true;
+        
+        setInterval(()=>{
+            const pathname = getPathName();
+            const rmcMenuBtn = document.getElementById('RMC_menu_button');
+            const onHomePage = /^\/\w?\w?$/.test(pathname);
+            const onGameMapsPage = /game\/|maps\//.test(pathname);
+
+            if (rmcMenuBtn && !onHomePage && !onGameMapsPage) {
+                rmcMenuBtn.style.display = 'none';
+            } else if (rmcMenuBtn.doShow){
+                rmcMenuBtn.style.display = '';
+            }
+        }, 1000)
+    }
+    checkForRMCButtonOnWrongPage.isChecking = null;
