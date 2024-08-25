@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.0.6
+// @version       7.4.0.7
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -14,7 +14,7 @@
 // ==/UserScript==
 
     // Added by EC
-    checkForRanomMapChallenge(); 
+   checkForRanomMapChallenge(); 
 
 /**
  * Custom your YouTube Search here!
@@ -301,7 +301,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.0.6 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.0.7 by Jupaoqq");
 
 
 // Store each player instance
@@ -759,7 +759,6 @@ const checkInsertGui = () => {
         {
             // Added by EC
             document.getElementById('toggleRandomMapChallenge').checked = true;
-           console.log("hisfsfddddddddddddddddddddddddddddddddddddddddddddddddd")
         }
         if (localStorage["RandomMapChallenge_onHomePage"]){
             // Added by EC
@@ -2120,7 +2119,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.6</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.7</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -11240,7 +11239,7 @@ function getOverlayView(map){
                     rmcMenuBtn.style.display = "";
                 }, 1000);
             });
-       })
+       }, 1000);
     }
 
     function initRandomMapChallenge(){
