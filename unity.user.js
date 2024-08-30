@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.0.9
+// @version       7.4.1.0
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -310,7 +310,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.0.9 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.0 by Jupaoqq");
 
 
 // Store each player instance
@@ -2089,7 +2089,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.0EC</font></font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.1EC</font></font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -2128,7 +2128,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.0.9</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.0</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -11282,12 +11282,7 @@ function getOverlayView(map){
     }
     
     function loadRandomMapChallenge(fn){
-        var sw = document.createElement( 'script' );
-        sw.id = "_sweetAlert"
-        sw.setAttribute( 'src', `https://cdn.jsdelivr.net/npm/sweetalert2@11` );
-        document.body.appendChild( sw );
-
-        var s = document.createElement( 'script' );
+        const s = document.createElement( 'script' );
         s.addEventListener('load', fn);
         s.setAttribute( 'src', `https://echandler.github.io/test-geo-noob-script/misc/test1.js` );
         document.body.appendChild( s );
