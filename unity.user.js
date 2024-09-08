@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.0
+// @version       7.4.1.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -310,7 +310,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.0 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.1 by Jupaoqq");
 
 
 // Store each player instance
@@ -623,7 +623,7 @@ function guiHTML(){
         <div class="${sectionHeader.className}">
             <div class="${barsRoot.className}">
                 <div class="${barsBefore.className}"></div>
-                <span class="${barsContent.className}" title="Invented by Alok!"><h3>Random Map Challenge Mode (Unity Script)</h3></span>
+                <span class="${barsContent.className}" title="Invented by Alok!"><h3>Alok's Radical Random Map Challenge Mode (Unity Script)</h3></span>
                 <div class="${barsAfter.className}"></div>
             </div>
         </div>
@@ -632,15 +632,17 @@ function guiHTML(){
                 <div style="display: flex; align-items: center;">
                 <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Enabled</span>
                 <input type="checkbox" id="toggleRandomMapChallenge" onclick="toggleRandomMapChallenge(this)" class="${toggle.className}">
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-around;">
-                <div style="display: flex; align-items: center;">
                 <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Show on homepage?</span>
                 <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle.className}">
                 </div>
             </div>
-            <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Inspired by TrackMania, how many random maps can you play in a set amount of time?</p>
+       <!--     <div style="display: flex; justify-content: space-around;">
+                <div style="display: flex; align-items: center;">
+                <span class="${optionsLabel.className}" style="margin: 0; padding-right: 6px; ${optionsLabel.style.cssText}">Show on homepage?</span>
+                <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle.className}">
+                </div>
+            </div> -->
+            <p class="${bodyText.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText.style.cssText}">Inspired by Trackmania, how many random maps can you play in a set amount of time?</p>
         </div>
 
         <!-- Section -->
@@ -2128,7 +2130,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.0</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.1</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
