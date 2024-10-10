@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.2
+// @version       7.4.1.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -310,7 +310,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.2 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.3 by Jupaoqq");
 
 
 // Store each player instance
@@ -333,6 +333,7 @@ let isBattleRoyale = false;
 let isDuel = false;
 let isBullseye = false;
 let isLiveChallenge = false;
+let isPlayAlong = false;
 
 // Player detection and coordinate conversion
 
@@ -2130,7 +2131,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.2</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.3</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -2140,7 +2141,6 @@ function UnityInitiate() {
     HelpBtn.classList.add("unity-btn", "info-btn", "half", "horizontal-1", "vertical-3");
     HelpBtn.id = "Help Button";
     HelpBtn.innerHTML = "Help & Credits";
-
     document.body.appendChild(HelpBtn);
     HelpBtn.addEventListener("click", () => {
         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4260,7 +4260,7 @@ function launchObserver() {
                             console.log("Recycling the satellite map.");
 
                             sat0 = sat[0];
-                            debugger;
+
                             sat0.style.display = "none";
                             //sat0.querySelector('.mapboxgl-map').classList.remove("inactive", "game-panorama_panorama__ncMwh", "game-panorama_panorama__IuPsO", "br-game-layout__panorama", "game-layout__panorama", "game-panorama_panorama__rdhFg")
                             document.body.appendChild(sat0);
@@ -4343,7 +4343,23 @@ function launchObserver() {
                                 detectGamePage();
                             }
                         }
-                        else if ((PATHNAME.startsWith("/duels/") || PATHNAME.startsWith("/team-duels/")) && (m.classList.contains('new-round_roundInfo__UlMCc')))
+                        else if (!isPlayAlong && PATHNAME.startsWith("/play-along/")){
+                             console.log("unity main observer detected play-along")
+
+                            isPlayAlong = true;
+
+                            if (allowDetect)
+                            {
+                                //detectGamePage();
+                                setTimeout(()=>{
+                                    btnAll();
+                                    setMenuBtnsUnhidden();
+                                }, 2000);
+                                playAlongWebSocketInit();
+                            }
+
+                        }
+                        else if ((PATHNAME.startsWith("/duels/") || PATHNAME.startsWith("/play-along/")) && (m.classList.contains('new-round_roundInfo__UlMCc')))
                         {
                             // console.log("detect duel")
                             if (allowDetect)
@@ -4434,7 +4450,7 @@ var oldHref = document.location.href;
 
 const immediateLoad = localStorage['unity_immediate_load']; // EC
 const _pathName = getPathName(); 
-if (_pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || _pathName.startsWith("/results/") || immediateLoad === "true"){
+if (_pathName.startsWith("/play-along/") || _pathName.startsWith("/challenge/") || _pathName.startsWith("/game/") || _pathName.startsWith("/results/") || immediateLoad === "true"){
         // EC made this to fix not loading during game.
         injecter(() => {
             launchObserver();
@@ -4497,9 +4513,9 @@ function detectGamePage() {
         waitLoad();
     }
 
-    let toLoad = !playerLoaded && !YANDEX_INJECTED && !KAKAO_INJECTED && !MAPILLARY_INJECTED && !MS_INJECTED && !MAPBOX_INJECTED && !MAPY_INJECTED;
+    let toLoad = !playerLoaded && !isPlayAlong && !YANDEX_INJECTED && !KAKAO_INJECTED && !MAPILLARY_INJECTED && !MS_INJECTED && !MAPBOX_INJECTED && !MAPY_INJECTED;
     const PATHNAME = getPathName();
-    if (PATHNAME.startsWith("/game/") || PATHNAME.startsWith("/challenge/")) {
+    if (PATHNAME.startsWith("/game/") || PATHNAME.startsWith("/challenge/") || PATHNAME.startsWith("/play-along/")) {
         // console.log("Game page");
         isBattleRoyale = false;
         isDuel = false;
@@ -4725,6 +4741,7 @@ function btnAll()
 
 function waitLoad() {
     //if (!YandexPlayer || !KakaoPlayer || !MapillaryPlayer || !MSStreetPlayer || !MapboxPlayer || !MapyPlayer || !document.getElementById("i_container") || !YANDEX_INJECTED || !KAKAO_INJECTED || !MAPILLARY_INJECTED || !MS_INJECTED || !MAPBOX_INJECTED || !MAPY_INJECTED) {
+    if (isPlayAlong) return;
     if (!YandexPlayer || !KakaoPlayer || !MapillaryPlayer || !MSStreetPlayer || !MapboxPlayer || !MapyPlayer /*|| !document.getElementById("i_container")*/ || !YANDEX_INJECTED || !KAKAO_INJECTED || !MAPILLARY_INJECTED || !MS_INJECTED || !MAPBOX_INJECTED || !MAPY_INJECTED) {
         // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
 
@@ -4844,7 +4861,7 @@ function nextButtonCallback()
     if (nextPlayer !== "Google" && nextPlayer !== "Planets")
     {
         // console.log("Clone buttons");
-        debugger;
+
         let clone = document.querySelector("button[data-qa='close-round-result']").cloneNode( true );
         let tx;
         if (nextPlayer == "Mapbox Satellite")
@@ -11029,6 +11046,54 @@ function getOverlayView(map){
     async function initCountryStreakCounter(){
         // TODO EC: Refactor this to a Object or class, this is just a test to see if it works.
 
+        let PATHNAME = getPathName(); 
+        if (PATHNAME.startsWith(`/play-along/`)){
+            // Only map is showing in play-along mode.
+            // Get reference to websocket for sending messages.
+            window._unity_fetch_ = (function () {
+                let _fetch = window._unity_fetch_;
+                return async function (...args) {
+                    if (!PATHNAME.startsWith(`/play-along/`)) {
+                        return _fetch.apply(window, args);
+                    }
+
+                    if (/geoguessr.com.api.v4.*result/i.test(args[0])) {
+
+                        let v3APIRes = await _fetch.apply(window, args);
+
+                        let resJSON = await v3APIRes.clone().json();
+
+                        const round = resJSON?.rounds? resJSON.rounds[resJSON.rounds.length-1]: resJSON?.round;
+
+                        if (round) {
+                            global_lat = round.location.lat;
+                            global_lng = round.location.lng;
+                        }
+
+                        versionEl.guessBtnClickListener();
+
+                        return new Promise((res) => {
+                            res(v3APIRes);
+                        });
+                    } else if (/geoguessr.com.api.v4/i.test(args[0]) && args[1]?.method === "POST") {
+                        let json = JSON.parse(args[1].body);
+
+                        if (json?.lat && json?.lng) {
+                            setScoreBoardLastLagLng(json);
+                        }
+                    }
+
+                    return _fetch.apply(window, args);
+                };
+            })();
+            
+          //  for (let element of document.getElementsByClassName("preset-minimap")){
+          //      element.addEventListener('click', function(e){
+          //          sendWSMsg({presetId: element.id});
+          //      });
+          //  }
+        }
+
         const versionEl = document.getElementById("unity_version");
         
         if (versionEl._outerHTML){
@@ -11066,7 +11131,7 @@ function getOverlayView(map){
         scoreBoard.innerHTML = scoreBoard.score;
 
         // Create simple reverse geocoding object.
-        eval(await fetch('https://echandler.github.io/Simple-Reverse-Geocoding-Script/reverseGeocodingScript.user.js').then(x => x.text()));
+        eval(await fetch('https://echandler.github.io/Simple-Reverse-Geocoding-Script/reverseGeocodingScript.user.js').then(x => x.text()).catch(x => console.log(x)));
         
         scoreBoard.lastLatLng = null;
         
@@ -11085,14 +11150,27 @@ function getOverlayView(map){
 
             const latLng = e.latLng.toJSON();
 
+            let PATHNAME = getPathName(); 
+            if (!PATHNAME.startsWith(`/play-along/`)){
+                setScoreBoardLastLagLng(latLng);
+            }           
+
             const l  = await sgs.reverse(latLng).then(e => e);
-
-            scoreBoard.lastLatLng = l;   
-
             console.log(l.country);
             
             showFlag(l.country.country_code);
         };
+        
+        async function setScoreBoardLastLagLng(latLng){
+            const l  = await sgs.reverse(latLng).then(e => e);
+
+            scoreBoard.lastLatLng = l;   
+           
+            console.log(l.country);
+            
+            showFlag(l.country.country_code);
+
+        }
         
         versionEl.guessBtnClickListener = async function(){
             const curRoundLatLng = {lat: global_lat, lng: global_lng};
@@ -11126,13 +11204,16 @@ function getOverlayView(map){
             if (!scoreBoard.waitIntervals){
                 scoreBoard.waitIntervals = [];
             }
+
             scoreBoard.waitIntervals.push(setInterval(() => {
                 const resultLayout = document.querySelector('div[class*="result-layout"]');
                 if (document.body.contains(guessBtn) || resultLayout) return;
                 guessBtn = null;// Now waiting for resultLayout to be removed.
                 scoreBoard.waitIntervals.forEach( x => clearInterval(x));
-                unityAlert.style.visibility = 'hidden';
-                unityAlert._streakShowing = false;
+                setTimeout(()=>{
+                    unityAlert.style.visibility = 'hidden';
+                    unityAlert._streakShowing = false;
+                }, 2000);
             }, 500));
             
             scoreBoard.lastLatLng = null;
@@ -11311,3 +11392,148 @@ function getOverlayView(map){
         }, 1000)
     }
     checkForRMCButtonOnWrongPage.isChecking = null;
+
+    /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
+
+    function playAlongWebSocketInit(){
+           console.log("Play along websoket listener initiated")
+           let old_WS_Send = window.WebSocket.prototype.send;
+           let p = false;
+           let msgCode = [];
+           let msgCodeTimer = null;
+
+           window.WebSocket.prototype.send = async function (...args) {
+               if (p === false){
+                   this.addEventListener('message', function(e){
+                       if (!e.data) return;
+                       onMsg(JSON.parse(e.data));
+                       
+                   });
+                   sendWSMsg._this = this;
+                   p = true;
+               }
+               return old_WS_Send.apply(this, args);
+           }
+            
+           function onMsg(json){
+                if (msgCodeTimer === null){
+                    msgCodeTimer = setTimeout(()=>{
+                        let len = msgCode.length;
+
+                        if (len !== 4) {
+                            msgCodeTimer = null;
+                            msgCode = [];
+                            return;
+                        }
+
+                        let code = msgCode.join(""); 
+
+                        // Clear the overlays before doing anything else. 
+                        document.getElementById('Clear').click();
+                         
+                        let obj = { "llll":'Default', "loll":'Oceanman', "olll":'Satellite', "llol":'Easy 5K', "lllo":'Impossible', "ooll":'City Lights', "lool":'Fire'};
+
+                        document.getElementById(obj[code])?.click();
+
+                        msgCodeTimer = null;
+                        msgCode = [];
+                    }, 2000);
+                }
+
+                if (json?.code === "PlayAlongGameUpdated"){
+                    let payload = JSON.parse(json.payload);
+                    if (payload.status.toLowerCase() === 'lockedround'){
+                        msgCode.push("l");
+                    } else if (payload.status.toLowerCase() === 'ongoinground'){
+                        msgCode.push('o');
+                    }
+                }
+           }
+            
+           function sendWSMsg(msg){
+               if (sendWSMsg._this === null) return;
+               sendWSMsg._this.send(JSON.stringify({"code":"ChatMessage","topic":"chat:Friend:TextMessages:5dc13f46e9473f1aa89d8f24","payload":"ignore this also lol","client":"web"})); 
+             //  sendWSMsg._this.send(JSON.stringify({
+             //      unity:true,
+             //      msg: msg,
+             //  }));
+           };
+           sendWSMsg._this = null;
+    }
+    
+    playAlongWebSocketInit();
+
+    let _delay = null;
+
+    function playAlongSendMsg(str){
+       if (_delay !== null) {
+           console.log("Need to wait!");
+           return;
+       }
+       
+       let keyObj = {
+        'l': "LockedRound",
+        'o': "OngoingRound"
+       };
+
+       _delay = true;
+       setTimeout(()=> _delay = null, 2500 );
+
+       let nextData = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
+       let token = nextData?.query?.token || null;
+       //let userId = nextData?.props?.accountProps?.account?.user?.userId || null;
+
+       if (token === null) {
+           console.log("Next data query token not found");
+           return;
+       }
+
+       for(let n = 0, t = 0; n < str.length; n++){
+            setTimeout(()=>{
+            fetch(`https://www.geoguessr.com/api/v4/play-along/streamer/${token}/3/update`, {
+                "headers": {
+                    "accept": "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "cache-control": "no-cache",
+                    "content-type": "application/json",
+                    "pragma": "no-cache",
+                    "x-client": "web"
+                },
+                "referrer": location.href, 
+                "referrerPolicy": "strict-origin-when-cross-origin",
+                "body": `{\"status\":\"${ keyObj[str[n]] }\"}`,
+                "method": "POST",
+                "mode": "cors",
+                "credentials": "include"
+                });
+            }, t);
+            t += 100;
+        } 
+    }
+
+    window.unity = {
+        play_along: {
+            get showOptions(){
+                let num = prompt(`
+                Unity Script Play Along Options:
+                1. Default
+                2. Satellite
+                3. Oceanman
+                4. Easy5k
+                5. Impossible
+                6. City Lights
+                7. Fire
+                `);
+
+                if (num === null) return;
+
+                const mapCodes = ["llll", "olll", "loll", "llol", "lllo", "ooll", "lool"];
+
+                try {
+                    playAlongSendMsg(mapCodes[parseInt(num) - 1]);
+                } catch (e) {
+                    alert("Ooops, try again!")
+                } 
+            }
+        }
+    }
