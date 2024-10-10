@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.3
+// @version       7.4.1.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -310,7 +310,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.3 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.4 by Jupaoqq");
 
 
 // Store each player instance
@@ -2131,7 +2131,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.3</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.4</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -9316,7 +9316,7 @@ let Indonesia =
                 }
             ]
         }
-    ]
+    ];
 
 let dark = [
     {
@@ -9503,7 +9503,20 @@ let dark = [
             }
         ]
     }
-]
+];
+
+const neon = [
+    {
+        "stylers": [
+            {
+                "saturation": 100
+            },
+            {
+                "gamma": 0.6
+            }
+        ]
+    }
+];
 
 let default_preset = []
 
@@ -9520,6 +9533,7 @@ let presetMinimap = [[default_preset, "Default"],
                      [default_preset, "Terrain"],
                      [default_preset, "Hybrid"],
                      [custom, "Custom"],
+                     [neon, "Neon"],
                      [default_preset, "Country Streak"],
                      [default_preset, "RMC"]]
 
@@ -11395,83 +11409,84 @@ function getOverlayView(map){
 
     /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
 
+    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K", "lllo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon"};
+
     function playAlongWebSocketInit(){
-           console.log("Play along websoket listener initiated")
-           let old_WS_Send = window.WebSocket.prototype.send;
-           let p = false;
-           let msgCode = [];
-           let msgCodeTimer = null;
+        console.log("Play along websoket listener initiated")
+        let old_WS_Send = window.WebSocket.prototype.send;
+        let p = false;
+        let msgCode = [];
+        let msgCodeTimer = null;
 
-           window.WebSocket.prototype.send = async function (...args) {
-               if (p === false){
-                   this.addEventListener('message', function(e){
-                       if (!e.data) return;
-                       onMsg(JSON.parse(e.data));
-                       
-                   });
-                   sendWSMsg._this = this;
-                   p = true;
-               }
-               return old_WS_Send.apply(this, args);
-           }
-            
-           function onMsg(json){
-                if (msgCodeTimer === null){
-                    msgCodeTimer = setTimeout(()=>{
-                        let len = msgCode.length;
+        window.WebSocket.prototype.send = async function (...args) {
+            if (p === false) {
+                this.addEventListener('message', function (e) {
+                    if (!e.data) return;
+                    onMsg(JSON.parse(e.data));
 
-                        if (len !== 4) {
-                            msgCodeTimer = null;
-                            msgCode = [];
-                            return;
+                });
+                sendWSMsg._this = this;
+                p = true;
+            }
+            return old_WS_Send.apply(this, args);
+        }
+
+        function onMsg(json) {
+            if (json?.code !== "PlayAlongGameUpdated") return;
+
+            if (msgCodeTimer === null) {
+                msgCodeTimer = setTimeout(() => {
+                    if (msgCode.length === 4) {
+                        const code = msgCode.join("");
+                        
+                        let PATHNAME = getPathName();
+                        if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
+
+                            let p = unity.play_along.showOptions;
+                        } else {
+
+                            // Clear the overlays before doing anything else. 
+                            document.getElementById('Clear').click();
+
+                            document.getElementById(mapStylesCodes[code])?.click();
                         }
-
-                        let code = msgCode.join(""); 
-
-                        // Clear the overlays before doing anything else. 
-                        document.getElementById('Clear').click();
-                         
-                        let obj = { "llll":'Default', "loll":'Oceanman', "olll":'Satellite', "llol":'Easy 5K', "lllo":'Impossible', "ooll":'City Lights', "lool":'Fire'};
-
-                        document.getElementById(obj[code])?.click();
-
-                        msgCodeTimer = null;
-                        msgCode = [];
-                    }, 2000);
-                }
-
-                if (json?.code === "PlayAlongGameUpdated"){
-                    let payload = JSON.parse(json.payload);
-                    if (payload.status.toLowerCase() === 'lockedround'){
-                        msgCode.push("l");
-                    } else if (payload.status.toLowerCase() === 'ongoinground'){
-                        msgCode.push('o');
                     }
-                }
-           }
-            
-           function sendWSMsg(msg){
-               if (sendWSMsg._this === null) return;
-               sendWSMsg._this.send(JSON.stringify({"code":"ChatMessage","topic":"chat:Friend:TextMessages:5dc13f46e9473f1aa89d8f24","payload":"ignore this also lol","client":"web"})); 
-             //  sendWSMsg._this.send(JSON.stringify({
-             //      unity:true,
-             //      msg: msg,
-             //  }));
-           };
-           sendWSMsg._this = null;
+
+                    msgCodeTimer = null;
+                    msgCode = [];
+                }, 2000);
+            }
+
+            let payload = JSON.parse(json.payload);
+
+            if (payload.status.toLowerCase() === 'lockedround') {
+                msgCode.push("l");
+            } else if (payload.status.toLowerCase() === 'ongoinground') {
+                msgCode.push("o");
+            }
+        }
+
+        function sendWSMsg(msg) {
+            if (sendWSMsg._this === null) return;
+            sendWSMsg._this.send(JSON.stringify({ "code": "ChatMessage", "topic": "chat:Friend:TextMessages:5dc13f46e9473f1aa89d8f24", "payload": "ignore this also lol", "client": "web" }));
+            //  sendWSMsg._this.send(JSON.stringify({
+            //      unity:true,
+            //      msg: msg,
+            //  }));
+        };
+        sendWSMsg._this = null;
     }
     
     playAlongWebSocketInit();
 
     let _delay = null;
-
     function playAlongSendMsg(str){
        if (_delay !== null) {
            console.log("Need to wait!");
            return;
        }
        
-       let keyObj = {
+       const keyObj = {
         'l': "LockedRound",
         'o': "OngoingRound"
        };
@@ -11479,8 +11494,8 @@ function getOverlayView(map){
        _delay = true;
        setTimeout(()=> _delay = null, 2500 );
 
-       let nextData = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
-       let token = nextData?.query?.token || null;
+       const nextData = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
+       const token = nextData?.query?.token || null;
        //let userId = nextData?.props?.accountProps?.account?.user?.userId || null;
 
        if (token === null) {
@@ -11507,30 +11522,36 @@ function getOverlayView(map){
                 "credentials": "include"
                 });
             }, t);
-            t += 100;
+            t += 250;
         } 
     }
 
     window.unity = {
         play_along: {
             get showOptions(){
-                let num = prompt(`
-                Unity Script Play Along Options:
-                1. Default
-                2. Satellite
-                3. Oceanman
-                4. Easy5k
-                5. Impossible
-                6. City Lights
-                7. Fire
-                `);
+                const vals = Object.values(mapStylesCodes);
+                let optionsTxt = "";
+
+                vals.forEach((x,idx)=>{
+                    optionsTxt += `\n                 ${idx+1}. ${x}`;
+                });
+
+                const num = prompt(`                 Unity Script Play Along Options:${optionsTxt}`);
 
                 if (num === null) return;
 
-                const mapCodes = ["llll", "olll", "loll", "llol", "lllo", "ooll", "lool"];
+                const style = vals[parseInt(num)-1];
+                let code = null;
+
+                for (let _code in mapStylesCodes){
+                    if(mapStylesCodes[_code] === style){
+                        code = _code;
+                        break;
+                    }
+                }
 
                 try {
-                    playAlongSendMsg(mapCodes[parseInt(num) - 1]);
+                    playAlongSendMsg(code);
                 } catch (e) {
                     alert("Ooops, try again!")
                 } 
