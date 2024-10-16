@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.4
+// @version       7.4.1.5
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -310,7 +310,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.4 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.5 by Jupaoqq");
 
 
 // Store each player instance
@@ -1786,7 +1786,7 @@ function UnityInitiate() {
                                         element.style.background = "red";
                                     }
                                 }
-                                if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire"].includes(element.id))
+                                if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(element.id))
                                 {
                                     element.loaded = false;
                                 }
@@ -1795,7 +1795,7 @@ function UnityInitiate() {
                     }
                     else
                     {
-                        if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire"].includes(mapDiv.id))
+                        if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(mapDiv.id))
                         {
                             this.overlayMapTypes.clear();
                             const coverageLayer = new google.maps.ImageMapType({
@@ -1806,35 +1806,24 @@ function UnityInitiate() {
 
                                     // Omits unofficial and trekker, but also half of mongolia
 
-                                    if (mapDiv.id == "Official")
-                                    {
+                                    if (mapDiv.id == "Official") {
                                         return `https://mts1.googleapis.com/vt?hl=en-US&lyrs=svv|cb_client:app&style=5,8&x=${x}&y=${y}&z=${z}`
-                                    }
-                                    else if (mapDiv.id == "OSM")
-                                    {
+                                    } else if (mapDiv.id == "OSM") {
                                         return `https://tile.openstreetmap.org/${z}/${x}/${y}.png`
-                                    }
-                                    else if (mapDiv.id == "City Lights")
-                                    {
+                                    } else if (mapDiv.id == "City Lights") { 
                                         return `https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/GoogleMapsCompatible_Level8/${z}/${y}/${x}.jpg`
-                                    }
-                                    else if (mapDiv.id == "Watercolor")
-                                    {
-                                        return `https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.jpg`
-                                    }
-                                    else if (mapDiv.id == "Toner")
-                                    {
+                                    } else if (mapDiv.id == "Watercolor") {
+                                        return `https://tiles.stadiamaps.com/tiles/stamen_watercolor/${z}/${x}/${y}.jpg`
+                                        //return `https://stamen-tiles.a.ssl.fastly.net/watercolor/${z}/${x}/${y}.jpg`
+                                    } else if (mapDiv.id == "Toner") {
                                         return `https://stamen-tiles.a.ssl.fastly.net/toner/${z}/${x}/${y}.png`
-                                    }
-                                    else if (mapDiv.id == "Fire")
-                                    {
+                                    } else if (mapDiv.id == "Fire") {
                                         return `https://tile.thunderforest.com/spinal-map/${z}/${x}/${y}.png?apikey=1360c6d2440c4202bf725238d1b9c761`
                                     }
                                     // return `https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i${z}!2i${x}!3i${y}!4i256!2m8!1e2!2ssvv!4m2!1scb_client!2sapp!4m2!1scc!2s*211m3*211e3*212b1*213e2*211m3*211e2*212b1*213e2!3m3!3sUS!12m1!1e68!4e0`
 
                                     // Includes everything
-                                    else if (mapDiv.id == "Coverage")
-                                    {
+                                    else if (mapDiv.id == "Coverage") {
                                         return `https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i${z}!2i${x}!3i${y}!4i256!2m8!1e2!2ssvv!4m2!1scb_client!2sapiv3!4m2!1scc!2s*211m3*211e3*212b1*213e2*211m3*211e2*212b1*213e2!3m3!3sUS!12m1!1e68!4e0`
                                     }
                                 },
@@ -1850,7 +1839,7 @@ function UnityInitiate() {
                             //                             }
 
                             for (let element of document.getElementsByClassName("overlay-minimap")){
-                                if (["Clear", "City Lights", "Watercolor", "Toner", "Fire"].includes(element.id))
+                                if (["Clear", "City Lights", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(element.id))
                                 {
                                     element.style.background = "#ff69b4cc";
                                     element.loaded = false;
@@ -2131,7 +2120,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.4</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.5</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -11400,7 +11389,7 @@ function getOverlayView(map){
 
             if (rmcMenuBtn && !onHomePage && !onGameMapsPage) {
                 rmcMenuBtn.style.display = 'none';
-            } else if (rmcMenuBtn.doShow){
+            } else if (rmcMenuBtn?.doShow){
                 rmcMenuBtn.style.display = '';
             }
         }, 1000)
@@ -11409,24 +11398,22 @@ function getOverlayView(map){
 
     /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
 
-    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K", "lllo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon"};
+    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon"};
 
     function playAlongWebSocketInit(){
         console.log("Play along websoket listener initiated")
         let old_WS_Send = window.WebSocket.prototype.send;
-        let p = false;
         let msgCode = [];
         let msgCodeTimer = null;
 
         window.WebSocket.prototype.send = async function (...args) {
-            if (p === false) {
+            if (this._unity_message_listener_added === undefined) {
                 this.addEventListener('message', function (e) {
                     if (!e.data) return;
                     onMsg(JSON.parse(e.data));
-
                 });
                 sendWSMsg._this = this;
-                p = true;
+                this._unity_message_listener_added = true;
             }
             return old_WS_Send.apply(this, args);
         }
@@ -11443,8 +11430,19 @@ function getOverlayView(map){
                         if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
 
                             let p = unity.play_along.showOptions;
-                        } else {
+                        } else if (code === "lllo"){
+                            document.getElementById('Clear').click();
+                             
+                            const coverageLayer = new google.maps.ImageMapType({
+                                getTileUrl ({ x, y }, z) {
+                                    return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`
+                                },
+                                maxZoom: 20,
+                                tileSize: new google.maps.Size(256, 256),
+                            })
 
+                            GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                        } else {
                             // Clear the overlays before doing anything else. 
                             document.getElementById('Clear').click();
 
@@ -11495,7 +11493,8 @@ function getOverlayView(map){
        setTimeout(()=> _delay = null, 2500 );
 
        const nextData = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
-       const token = nextData?.query?.token || null;
+       const gameId = location.href.replace(/.*\/(.*)/, "$1");
+       const token = nextData?.query?.token || gameId || null; 
        //let userId = nextData?.props?.accountProps?.account?.user?.userId || null;
 
        if (token === null) {
