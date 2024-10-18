@@ -1,17 +1,19 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.5
+// @version       7.4.1.6
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
 // @license       MIT
+// @icon          https://raw.githubusercontent.com/echandler/test-geo-noob-script/refs/heads/main/misc/U-10-16-2024a%20(2).png
 // @namespace     Unity script
 // @namespace     https://greasyfork.org/users/838374
 // @grant         none
 // @downloadURL   https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.user.js
 // @updateURL     https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.meta.js
 // ==/UserScript==
+
 
     // Added by EC
 window._unity_fetch_ = window.fetch;
@@ -310,7 +312,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.5 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.6 by Jupaoqq");
 
 
 // Store each player instance
@@ -1672,6 +1674,7 @@ function UnityInitiate() {
             for (let mapDiv of document.getElementsByClassName("preset-minimap")){
                 google.maps.event.addDomListener(mapDiv, "click", () => {
                     // Create click handler for mini-map buttons. 
+                    this.unity_is_blocking_style_changes = false;
                     MinimapBtn.current = mapDiv.id;
                     if (mapDiv.id == "Hybrid")
                     {
@@ -1703,6 +1706,7 @@ function UnityInitiate() {
                     {
                         this.setMapTypeId('roadmap');
                     }
+
                     // this.setTilt(45);
                     for (let ar of presetMinimap)
                     {
@@ -1718,7 +1722,7 @@ function UnityInitiate() {
                                     // unpaid "job".
                                     // Prevents map style from changing once set by this script.
                                     // So if map style is set to "Easy 5k", it won't change.
-                                    if (args[0] === 'styles'){
+                                    if ((args[0] === 'styles' || args[0] === "mapTypeId")){
                                         if (args[2] !== "unity" && this.unity_is_blocking_style_changes){
                                             return;
                                         }
@@ -1883,9 +1887,6 @@ function UnityInitiate() {
                     }
                 });
             }
-
-
-
 
             for (let spMini of document.getElementsByClassName("spaceMM")) {
                 google.maps.event.addDomListener(spMini, "click", () => {
@@ -2120,7 +2121,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.5</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.6</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -11398,7 +11399,7 @@ function getOverlayView(map){
 
     /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
 
-    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon"};
+    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon", "olol": "Hybrid"};
 
     function playAlongWebSocketInit(){
         console.log("Play along websoket listener initiated")
@@ -11431,6 +11432,7 @@ function getOverlayView(map){
 
                             let p = unity.play_along.showOptions;
                         } else if (code === "lllo"){
+                            //Choekaas.no
                             document.getElementById('Clear').click();
                              
                             const coverageLayer = new google.maps.ImageMapType({
