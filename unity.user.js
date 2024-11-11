@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.7
+// @version       7.4.1.8
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -12,17 +12,21 @@
 // @grant         none
 // @downloadURL   https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.user.js
 // @updateURL     https://github.com/echandler/Geoguessr-Unity-Script-Fork/raw/main/unity.meta.js
+// @tag           Unity Script
+// @tag           games
 // ==/UserScript==
 
 
     // Added by EC
-window._unity_fetch_ = window.fetch;
+if (!window._unity_fetch_){
+    window._unity_fetch_ = window.fetch;
 
-window.fetch = (function(){
-    return async function (...args){
-        return window._unity_fetch_.apply(window, args); 
-    };
-})();
+    window.fetch = (function(){
+        return async function (...args){
+            return window._unity_fetch_.apply(window, args); 
+        };
+    })();
+}
 
     // Added by EC
 checkForRanomMapChallenge(); 
@@ -141,11 +145,13 @@ let YOUR_URL = "https://raw.githubusercontent.com/severinlandolt/map-switzerland
 
 // set it to true to add your custom GeoJSON by copy it to the code below (this is for
 
-let GeoJsonCustomUser = false
+let GeoJsonCustomUser =  true; //false
 
 // replace with your custom GeoJson, go to https://geojson.io/ to customize it then copy the Json to here
 
-let CUSTOM_GEOJSON =
+let CUSTOM_GEOJSON = null;
+
+CUSTOM_GEOJSON =
 
     {
         "type": "FeatureCollection",
@@ -255,7 +261,6 @@ let CUSTOM_GEOJSON =
             }
         ]
     }
-
 /**
  * Overlay a custom image:
  */
@@ -312,7 +317,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.7 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.1.8 by Jupaoqq");
 
 
 // Store each player instance
@@ -486,79 +491,82 @@ let Dimension = ls_Dimension_choice == undefined ? true /* Default = true 3D*/: 
 var mapSty = true;
 var Building = false;
 
-window.toggleSatellite = (e) => {
-    if (e.checked)
-    {
-        sat_choice = true;
-        document.getElementById('tgs').style.display = "";
+setTimeout(function createWindowFunctions(){
+// Made by EC
+// Trying to make this script load faster, by delaying unnecessary stuff.
+
+    window.toggleSatellite = (e) => {
+        if (e.checked) {
+            sat_choice = true;
+            document.getElementById('tgs').style.display = "";
+        }
+        else {
+            sat_choice = false;
+            document.getElementById('tgs').style.display = "none";
+        }
+        localStorage['unity_sat_choice'] = sat_choice;
     }
-    else
-    {
-        sat_choice = false;
-        document.getElementById('tgs').style.display = "none";
+
+    window.toggleWeather = (e) => {
+        Weather = e.checked ? true : false;
     }
-    localStorage['unity_sat_choice'] = sat_choice;
-}
 
-window.toggleWeather = (e) => {
-    Weather = e.checked ? true : false;
-}
-
-window.toggleBuildings = (e) => {
-    Building = e.checked ? true : false;
-}
-
-window.toggle3D = (e) => {
-    Dimension = e.checked ? true : false;
-}
-
-window.toggleSky = (e) => {
-    skySpecial = e.checked ? true : false;
-}
-
-window.toggleSoil = (e) => {
-    soilSpecial = e.checked ? true : false;
-}
-
-window.toggleSkewed = (e) => {
-    skewedSpecial = e.checked ? true : false;
-}
-
-window.toggleMaxZoom = (e) => {
-    zoomSpecial = e.checked ? true : false;
-}
-
-window.toggleRdn = (e) => {
-    randomSpecial = e.checked ? true : false;
-}
-
-window.toggleNMPZSpecial = (e) => {
-    nmpzSpecial = e.checked ? true : false;
-}
-
-window.toggleMosaic = (e) => {
-    mosaicPre = e.checked ? true : false;
-}
-
-window.toggleRestrictMovement = (e) => {
-    restrictMovement = e.checked ? true : false;
-}
-
-window.toggleRandomMapChallenge = (_this) => {
-    if (_this.id === 'toggleRandomMapChallenge'){
-        initRandomMapChallenge(); 
-        return;
+    window.toggleBuildings = (e) => {
+        Building = e.checked ? true : false;
     }
-    if (_this.id === 'toggleRandomMapChallengeOnHomePage'){
-        if (_this.checked){
-            localStorage["RandomMapChallenge_onHomePage"] = true;
-            showRandomMapChallengeBtnOnHomePage(true);
-        }else {
-            delete localStorage["RandomMapChallenge_onHomePage"];
-            showRandomMapChallengeBtnOnHomePage(false);
+
+    window.toggle3D = (e) => {
+        Dimension = e.checked ? true : false;
+    }
+
+    window.toggleSky = (e) => {
+        skySpecial = e.checked ? true : false;
+    }
+
+    window.toggleSoil = (e) => {
+        soilSpecial = e.checked ? true : false;
+    }
+
+    window.toggleSkewed = (e) => {
+        skewedSpecial = e.checked ? true : false;
+    }
+
+    window.toggleMaxZoom = (e) => {
+        zoomSpecial = e.checked ? true : false;
+    }
+
+    window.toggleRdn = (e) => {
+        randomSpecial = e.checked ? true : false;
+    }
+
+    window.toggleNMPZSpecial = (e) => {
+        nmpzSpecial = e.checked ? true : false;
+    }
+
+    window.toggleMosaic = (e) => {
+        mosaicPre = e.checked ? true : false;
+    }
+
+    window.toggleRestrictMovement = (e) => {
+        restrictMovement = e.checked ? true : false;
+    }
+
+    window.toggleRandomMapChallenge = (_this) => {
+        if (_this.id === 'toggleRandomMapChallenge') {
+            initRandomMapChallenge();
+            return;
+        }
+        if (_this.id === 'toggleRandomMapChallengeOnHomePage') {
+            if (_this.checked) {
+                localStorage["RandomMapChallenge_onHomePage"] = true;
+                showRandomMapChallengeBtnOnHomePage(true);
+            } else {
+                delete localStorage["RandomMapChallenge_onHomePage"];
+                showRandomMapChallengeBtnOnHomePage(false);
+            }
         }
     }
-}
+}, 100);
 
 function getPathName(){
     // Hopefully this fixes most issues with localization.
@@ -2122,7 +2130,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.7</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.8</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -9008,7 +9016,15 @@ function injectMapyPlayer() {
  * Minimap presets
  */
 
-let water_name_only =
+
+
+let water_name_only, country_name_only,no_label_or_terrain,no_label,blank,thick_border,Indonesia,dark,default_preset,presetMinimap,GEOJSON_INVISIBLE,presetOverlay,spaceMinimap,spaceMinimap2,spaceMinimap3,spaceList,neon;
+
+setTimeout(function makeMiniMapPresets(){
+// Made by EC
+// Trying to make this script load faster, by delaying unnecessary stuff.
+
+water_name_only =
     [
         {
             "elementType": "geometry",
@@ -9059,7 +9075,8 @@ let water_name_only =
             ]
         }
     ]
-let country_name_only =
+
+country_name_only =
     [
         {
             "elementType": "geometry",
@@ -9128,7 +9145,7 @@ let country_name_only =
         }
     ]
 
-let no_label_or_terrain =
+no_label_or_terrain =
     [
         {
             "elementType": "geometry",
@@ -9197,7 +9214,7 @@ let no_label_or_terrain =
         }
     ]
 
-let no_label =
+no_label =
     [
         {
             "elementType": "labels",
@@ -9217,7 +9234,7 @@ let no_label =
         }
     ]
 
-let blank =
+blank =
 
     [
         {
@@ -9229,7 +9246,7 @@ let blank =
         }
     ]
 
-let thick_border =
+thick_border =
 
     [
         {
@@ -9252,7 +9269,7 @@ let thick_border =
         }
     ]
 
-let Indonesia =
+Indonesia =
     [
         {
             "featureType": "administrative",
@@ -9309,7 +9326,7 @@ let Indonesia =
         }
     ];
 
-let dark = [
+dark = [
     {
         "elementType": "geometry",
         "stylers": [
@@ -9496,7 +9513,7 @@ let dark = [
     }
 ];
 
-const neon = [
+neon = [
     {
         "stylers": [
             {
@@ -9509,9 +9526,9 @@ const neon = [
     }
 ];
 
-let default_preset = []
+default_preset = []
 
-let presetMinimap = [[default_preset, "Default"],
+presetMinimap = [[default_preset, "Default"],
                      [blank, "Blank"],
                      [water_name_only, "Oceanman"],
                      [country_name_only, "Impossible"],
@@ -9528,14 +9545,14 @@ let presetMinimap = [[default_preset, "Default"],
                      [default_preset, "Country Streak"],
                      [default_preset, "RMC"]]
 
-let GEOJSON_INVISIBLE =
+GEOJSON_INVISIBLE =
     {
         strokeOpacity: 0,
         fillOpacity: 0,
         clickable: false,
     }
 
-let presetOverlay = [["Clear",""],
+presetOverlay = [["Clear",""],
                      ["Coverage",""],
                      ["Official",""],
                      ["OSM",""],
@@ -9551,7 +9568,7 @@ let presetOverlay = [["Clear",""],
                      ["UK Parliament", "https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json"],
                      ["Custom", YOUR_URL]]
 
-let spaceMinimap = [["Earth",""],
+spaceMinimap = [["Earth",""],
                     ["Moon", "https://s3.amazonaws.com/opmbuilder/301_moon/tiles/w/hillshaded-albedo/"],
                     ["Moon (Labels)", "https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/"],
                     ["Mars", "http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/celestia_mars-shaded-16k_global/"],
@@ -9559,7 +9576,7 @@ let spaceMinimap = [["Earth",""],
                     ["Mars-Viking", "http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/viking_mdim21_global/"],
                    ]
 
-let spaceMinimap2 = [["Mercury", "mercury/mercury_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=MESSENGER_May2013"],
+spaceMinimap2 = [["Mercury", "mercury/mercury_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=MESSENGER_May2013"],
                      ["Venus", "venus/venus_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=MAGELLAN_color"],
                      ["Phobos", "mars/phobos_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=VIKING"],
                      ["Deimos", "mars/deimos_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=VIKING"],
@@ -9572,7 +9589,7 @@ let spaceMinimap2 = [["Mercury", "mercury/mercury_simp_cyl.map&SERVICE=WMS&VERSI
                      ["Io", "jupiter/io_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=SSI_VGR_color"]
                     ]
 
-let spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI"],
+spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI"],
                      ["Dione", "saturn/dione_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI_VOYAGER"],
                      ["Enceladus", "saturn/enceladus_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI"],
                      ["Iapetus", "saturn/iapetus_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=CASSINI_VOYAGER"],
@@ -9585,8 +9602,9 @@ let spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=
                      ["Pluto", "pluto/pluto_simp_cyl.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=NEWHORIZONS_PLUTO_MOSAIC"],
                     ]
 
-let spaceList = ["Moon", "Mars", "Mercury", "Venus", "Phobos", "Deimos", "Ceres", "Vesta", "Jupiter", "Callisto", "Europa", "Ganymede", "Io",
+spaceList = ["Moon", "Mars", "Mercury", "Venus", "Phobos", "Deimos", "Ceres", "Vesta", "Jupiter", "Callisto", "Europa", "Ganymede", "Io",
                  "Saturn", "Dione", "Enceladus", "Iapetus", "Mimas", "Rhea", "Tethys", "Titan", "Uranus", "Neptune", "Pluto", "Solar System"];
+}, 100);
 
 function handleSpURL(url, x1, y1, z1)
 {
@@ -11400,7 +11418,8 @@ function getOverlayView(map){
 
     /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
 
-    const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon", "olol": "Hybrid"};
+    //const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon", "olol": "Hybrid"};
+    const mapStylesCodes = { "oool":'Default', "oolo":'Oceanman', "ooll":'Satellite', "oloo":"Easy 5K","olol":"Neon", "ollo":"Impossible", "olll":"Choekaas.no", "looo":"Fire", "lool": "City Lights","lolo": "show menu", "loll": "Hybrid"};
 
     function playAlongWebSocketInit(){
         console.log("Play along websoket listener initiated")
@@ -11426,30 +11445,36 @@ function getOverlayView(map){
             if (msgCodeTimer === null) {
                 msgCodeTimer = setTimeout(() => {
                     if (msgCode.length === 4) {
+                        _delay = null;
+
                         const code = msgCode.join("");
                         
                         let PATHNAME = getPathName();
-                        if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
+                        //if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
+                        if (mapStylesCodes[code] === "show menu" && !PATHNAME.startsWith("/play-along/") /*player has play-along in url*/){
 
                             let p = unity.play_along.showOptions;
-                        } else if (code === "lllo"){
-                            //Choekaas.no
-                            document.getElementById('Clear').click();
-                             
-                            const coverageLayer = new google.maps.ImageMapType({
-                                getTileUrl ({ x, y }, z) {
-                                    return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`
-                                },
-                                maxZoom: 20,
-                                tileSize: new google.maps.Size(256, 256),
-                            })
-
-                            GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                        //} else if (code === "lllo"){
                         } else {
                             // Clear the overlays before doing anything else. 
                             document.getElementById('Clear').click();
 
-                            document.getElementById(mapStylesCodes[code])?.click();
+                            if (mapStylesCodes[code] === "Choekaas.no") {
+                                // Show Choekaas.no
+                                document.getElementById('Clear').click();
+
+                                const coverageLayer = new google.maps.ImageMapType({
+                                    getTileUrl({ x, y }, z) {
+                                        return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`
+                                    },
+                                    maxZoom: 20,
+                                    tileSize: new google.maps.Size(256, 256),
+                                })
+
+                                GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                            } else {
+                                document.getElementById(mapStylesCodes[code])?.click();
+                            } 
                         }
                     }
 
@@ -11505,26 +11530,34 @@ function getOverlayView(map){
            return;
        }
 
-       for(let n = 0, t = 0; n < str.length; n++){
+       for(let n = 0, fetchDelay = 0; n < str.length + 1; n++){
+            let gameStatus = keyObj[str[n]];
+
+            if (n === str.length){
+                // Make sure game is in unlock state once code is sent. 
+                fetchDelay += 2000;
+                gameStatus = keyObj["o"];
+            }
+
             setTimeout(()=>{
-            fetch(`https://www.geoguessr.com/api/v4/play-along/streamer/${token}/3/update`, {
-                "headers": {
-                    "accept": "*/*",
-                    "accept-language": "en-US,en;q=0.9",
-                    "cache-control": "no-cache",
-                    "content-type": "application/json",
-                    "pragma": "no-cache",
-                    "x-client": "web"
-                },
-                "referrer": location.href, 
-                "referrerPolicy": "strict-origin-when-cross-origin",
-                "body": `{\"status\":\"${ keyObj[str[n]] }\"}`,
-                "method": "POST",
-                "mode": "cors",
-                "credentials": "include"
+                fetch(`https://www.geoguessr.com/api/v4/play-along/streamer/${token}/3/update`, {
+                    "headers": {
+                        "accept": "*/*",
+                        "accept-language": "en-US,en;q=0.9",
+                        "cache-control": "no-cache",
+                        "content-type": "application/json",
+                        "pragma": "no-cache",
+                        "x-client": "web"
+                    },
+                    "referrer": location.href,
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": `{\"status\":\"${gameStatus}\"}`,
+                    "method": "POST",
+                    "mode": "cors",
+                    "credentials": "include"
                 });
-            }, t);
-            t += 250;
+            }, fetchDelay);
+            fetchDelay  += 250;
         } 
     }
 
@@ -11534,11 +11567,13 @@ function getOverlayView(map){
                 const vals = Object.values(mapStylesCodes);
                 let optionsTxt = "";
 
-                vals.forEach((x,idx)=>{
-                    optionsTxt += `\n                 ${idx+1}. ${x}`;
+                let idx = 1;
+                vals.forEach((x)=>{
+                    if (x == "show menu") return;
+                    optionsTxt += `\n                 ${idx++}. ${x}`;
                 });
 
-                const num = prompt(`                 Unity Script Play Along Options:${optionsTxt}`);
+                const num = prompt(`              Unity Script Play Along Options:${optionsTxt}`);
 
                 if (num === null) return;
 
@@ -11559,4 +11594,4 @@ function getOverlayView(map){
                 } 
             }
         }
-    }
+    };
