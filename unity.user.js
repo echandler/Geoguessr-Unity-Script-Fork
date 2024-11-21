@@ -24,6 +24,7 @@ if (!window._unity_fetch_){
 
     window.fetch = (function(){
         return async function (...args){
+            console.log(args)
             return window._unity_fetch_.apply(window, args); 
         };
     })();
@@ -594,16 +595,16 @@ function guiHTML(){
     const barsContent = document.querySelector('[class*="bars_content"]');
     const barsAfter = document.querySelector('div[class*="bars_after"]');
     const optionsLabel = `color:#fecd19;  margin: 0; padding-right: 6px; font-size: 1rem; text-transform: uppercase; font-style:italic; font-size: 700;`;//document.querySelector('div[class*="label_label"]');//
-    const bodyText = document.querySelector('div[class*="body-text_bodyText"]');
+    const bodyText = {};//document.querySelector('div[class*="body-text_bodyText"]');
     const toggle = document.querySelector('input[class*="toggle_toggle"]');
 
     return `
-    <div id="Unity Start Menu" style="margin: 0px auto; text-align: center; color: grey;">
+    <div id="Unity Start Menu" style="margin: 0px auto; text-align: center; color: grey; --hlColor: #a19bd9; --hlTextColor: var(--hlColor);">
         <div class="${sectionHeader?.className}">
-            <div class="${barsRoot?.className}" style="display:flex; align-items: center;">
-                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
-                <span class="${barsContent?.className}" style="padding: 0px 1rem;"> <h3>Satellite Mode (Unity Script)</h3> </span>
-                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
+            <div class="${barsRoot?.className}" style="display:flex; align-items: center; margin-bottom: 1rem;">
+                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
+                <span class="${barsContent?.className}" style="font-style: italic; padding: 0px 1rem; color: var(--hlTextColor);"> <h3>Satellite Mode (Unity Script)</h3> </span>
+                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color:  var(--hlColor);"></div>
             </div>
         </div>
         <div class="${standardGameModeSettings?.className}">
@@ -615,7 +616,7 @@ function guiHTML(){
                 </label>
                 </div>
             </div>
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">Radius (2D): Default - depending on map bounds. NZ - 5km. NM - 2km. NMPZ - 1km. <br> Radius (3D): 50% of the radius for 2D under the same setting.</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;${bodyText?.style?.cssText}">Radius (2D): Default - depending on map bounds. NZ - 5km. NM - 2km. NMPZ - 1km. <br> Radius (3D): 50% of the radius for 2D under the same setting.</p>
         </div>
         <div class="${standardGameModeSettings?.className}" id="tgs" style="display:none">
             <div style="display: flex; justify-content: space-around;">
@@ -637,7 +638,7 @@ function guiHTML(){
                 </label>
                 </div>
             </div>
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">If "3D" is toggled, right click and drag for 3D View.</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;${bodyText?.style?.cssText}">If "3D" is toggled, right click and drag for 3D View.</p>
         </div>
 
         <!-- Section -->
@@ -645,10 +646,10 @@ function guiHTML(){
         <!-- Random Map Challenge by Alok -->
 
         <div class="${sectionHeader?.className}">
-            <div class="${barsRoot?.className}"style="display:flex; align-items: center;">
-                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
-                <span class="${barsContent?.className}" style="padding: 0px 1rem;" title="Invented by Alok!"><h3>Alok's Radical Random Map Challenge Mode (Unity Script)</h3></span>
-                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: grey;" ></div>
+            <div class="${barsRoot?.className}"style="display:flex; align-items: center; margin-bottom: 1rem;">
+                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
+                <span class="${barsContent?.className}" style="font-style: italic; padding: 0px 1rem; color: var(--hlTextColor);" title="Invented by Alok!"><h3>Alok's Radical Random Map Challenge Mode (Unity Script)</h3></span>
+                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);" ></div>
             </div>
         </div>
         <div class="${standardGameModeSettings?.className}">
@@ -672,16 +673,16 @@ function guiHTML(){
                 <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
                 </div>
             </div> -->
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">Inspired by Trackmania, how many random maps can you play in a set amount of time?</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;">Inspired by Trackmania, how many random maps can you play in a set amount of time?</p>
         </div>
 
         <!-- Section -->
 
         <div class="${sectionHeader?.className}">
-            <div class="${barsRoot?.className}" style="display:flex; align-items: center;">
-                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
-                <span class="${barsContent?.className}" style="padding: 0px 1rem;"><h3>Mosaic & Peek Mode (Unity Script)</h3></span>
-                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
+            <div class="${barsRoot?.className}" style="display:flex; align-items: center; margin-bottom: 1rem;">
+                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
+                <span class="${barsContent?.className}" style="font-style: italic; padding: 0px 1rem; color: var(--hlTextColor);"><h3>Mosaic & Peek Mode (Unity Script)</h3></span>
+                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
             </div>
         </div>
         <div class="${standardGameModeSettings?.className}">
@@ -693,16 +694,16 @@ function guiHTML(){
                 </label>
                 </div>
             </div>
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">Default mosaic grid: 5x5.</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;">Default mosaic grid: 5x5.</p>
         </div>
 
         <!-- Section -->
 
         <div class="${sectionHeader?.className}">
-            <div class="${barsRoot?.className}" style="display:flex; align-items: center;">
-                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
-                <span class="${barsContent?.className}" style="padding: 0px 1rem;"><h3>No Escape Mode (Unity Script)</h3></span>
-                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
+            <div class="${barsRoot?.className}" style="display:flex; align-items: center; margin-bottom: 1rem;">
+                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
+                <span class="${barsContent?.className}" style="font-style: italic; padding: 0px 1rem; color: var(--hlTextColor);"><h3>No Escape Mode (Unity Script)</h3></span>
+                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
             </div>
         </div>
         <div class="${standardGameModeSettings?.className}">
@@ -714,16 +715,16 @@ function guiHTML(){
                     </labe>
                 </div>
             </div>
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">Please make sure the "Move" option in Game Settings is allowed. Default radius: 250m.</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;">Please make sure the "Move" option in Game Settings is allowed. Default radius: 250m.</p>
         </div>
 
         <!-- Section -->
 
         <div class="${sectionHeader?.className}">
-            <div class="${barsRoot?.className}" style="display:flex; align-items: center;">
-                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
-                <span class="${barsContent?.className}" style="padding: 0px 1rem;"><h3>Circus Mode (Unity Script)</h3></span>
-                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: grey;"></div>
+            <div class="${barsRoot?.className}" style="display:flex; align-items: center; margin-bottom: 1rem;">
+                <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
+                <span class="${barsContent?.className}" style="font-style: italic; padding: 0px 1rem; color: var(--hlTextColor);"><h3>Circus Mode (Unity Script)</h3></span>
+                <div class="${barsAfter?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
             </div>
         </div>
         <div class="${standardGameModeSettings?.className}">
@@ -755,7 +756,7 @@ function guiHTML(){
                     </label>
                 </div>
             </div>
-            <p class="${bodyText?.className}" style="margin-top: 20px;margin-bottom: 20px;${bodyText?.style?.cssText}">Please make sure the "Pan" option in Game Settings is allowed. To play in NMPZ, toggle "NMPZ".<br> More than one of the options above may be toggled at the same time.</p>
+            <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;${bodyText?.style?.cssText}">Please make sure the "Pan" option in Game Settings is allowed. To play in NMPZ, toggle "NMPZ".<br> More than one of the options above may be toggled at the same time.</p>
         </div>
     </div>
     `;
