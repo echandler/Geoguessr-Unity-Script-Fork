@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.1.9
+// @version       7.4.2.0
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -16,7 +16,6 @@
 // @tag           Unity Script
 // @tag           games
 // ==/UserScript==
-
 
     // Added by EC
 if (!window._unity_fetch_){
@@ -319,7 +318,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.1.9 by Jupaoqq");
+console.log("Geoguessr Unity Script v7.4.2.0 by Jupaoqq");
 
 
 // Store each player instance
@@ -596,10 +595,67 @@ function guiHTML(){
     const barsAfter = document.querySelector('div[class*="bars_after"]');
     const optionsLabel = `color:#fecd19;  margin: 0; padding-right: 6px; font-size: 1rem; text-transform: uppercase; font-style:italic; font-size: 700;`;//document.querySelector('div[class*="label_label"]');//
     const bodyText = {};//document.querySelector('div[class*="body-text_bodyText"]');
-    const toggle = document.querySelector('input[class*="toggle_toggle"]');
+    const toggle = {className: "toggle"};//document.querySelector('input[class*="toggle_toggle"]');
+
+      document.head.insertAdjacentHTML(
+        // EC: Styles for toggle copied from the streaks page before it was changed to new style.
+        "beforeend",
+        `<style>
+            .toggle:checked {
+                background: var(--ds-color-purple-50);
+            }    
+            .toggle {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                background: var(--ds-color-white-10);
+                border: 0;
+                border-radius: 2rem;
+                cursor: pointer;
+                display: inline-block;
+                height: 1.25rem;
+                position: relative;
+                transition: background-color .2s ease;
+                width: 2.5rem;
+            }
+            input {
+                border: .0625rem solid #ddd;
+                box-sizing: border-box;
+                outline: none;
+                padding: .625rem
+            }
+            .toggle:before {
+                background: var(--ds-color-purple-50);
+                content: "";
+                height: 100%;
+                left: 0;
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                transition: opacity .3s ease;
+                width: 100%;
+            }
+            .toggle:after {
+                background: var(--ds-color-white);
+                border-radius: 100%;
+                content: "";
+                height: 1rem;
+                left: 0;
+                margin: 0.125rem;
+                opacity: .1;
+                position: absolute;
+                top: 0;
+                transition: transform .1s ease, opacity .1s ease;
+                width: 1rem;
+            }
+            .toggle:checked:after {
+                opacity: 1;
+                transform: translateX(125%);
+            }
+        </style>`);
 
     return `
-    <div id="Unity Start Menu" style="margin: 0px auto; text-align: center; color: grey; --hlColor: #a19bd9; --hlTextColor: var(--hlColor);">
+    <div id="Unity Start Menu" style="margin: 0px auto; text-align: center; color: grey; padding: 1rem; backdrop-filter: blur(1000px); border-radius: 10px; --hlColor: #a19bd9; --hlTextColor: var(--hlColor);">
         <div class="${sectionHeader?.className}">
             <div class="${barsRoot?.className}" style="display:flex; align-items: center; margin-bottom: 1rem;">
                 <div class="${barsBefore?.className}" style="flex:1; height: 3px; background-color: var(--hlColor);"></div>
@@ -610,10 +666,12 @@ function guiHTML(){
         <div class="${standardGameModeSettings?.className}">
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
-                    <input type="checkbox" id="toggleSatellite" onclick="toggleSatellite(this)" class="${toggle?.className}">
-                </label>
+
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
+                        <input type="checkbox" id="toggleSatellite" onclick="toggleSatellite(this)" class="${toggle?.className}">
+                    </label>
+
                 </div>
             </div>
             <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;${bodyText?.style?.cssText}">Radius (2D): Default - depending on map bounds. NZ - 5km. NM - 2km. NMPZ - 1km. <br> Radius (3D): 50% of the radius for 2D under the same setting.</p>
@@ -622,20 +680,20 @@ function guiHTML(){
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
 
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}" style="${optionsLabel}">Live Weather</span>
-                    <input type="checkbox" id="toggleWeather" onclick="toggleWeather(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}" style="${optionsLabel}">Live Weather</span>
+                        <input type="checkbox" id="toggleWeather" onclick="toggleWeather(this)" class="${toggle?.className}">
+                    </label>
 
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}"  style="${optionsLabel}">Buildings</span>
-                    <input type="checkbox" id="toggleBuildings" onclick="toggleBuildings(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}"  style="${optionsLabel}">Buildings</span>
+                        <input type="checkbox" id="toggleBuildings" onclick="toggleBuildings(this)" class="${toggle?.className}">
+                    </label>
 
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}"  style="${optionsLabel}">3D</span>
-                    <input type="checkbox" id="toggle3D" onclick="toggle3D(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}"  style="${optionsLabel}">3D</span>
+                        <input type="checkbox" id="toggle3D" onclick="toggle3D(this)" class="${toggle?.className}">
+                    </label>
                 </div>
             </div>
             <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;${bodyText?.style?.cssText}">If "3D" is toggled, right click and drag for 3D View.</p>
@@ -656,23 +714,25 @@ function guiHTML(){
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
 
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
-                    <input type="checkbox" id="toggleRandomMapChallenge" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
+                        <input type="checkbox" id="toggleRandomMapChallenge" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
+                    </label>
 
-                <label style="cursor: pointer; margin-right: 10px;">
-                    <span class="${optionsLabel?.className}" style="${optionsLabel}">Show on homepage?</span>
-                    <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}" style="${optionsLabel}">Show on homepage?</span>
+                        <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
+                    </label>
                 </div>
             </div>
-       <!--     <div style="display: flex; justify-content: space-around;">
+       <!--     
+            <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
-                <span class="${optionsLabel?.className}" style="${optionsLabel}">Show on homepage?</span>
-                <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
+                    <span class="${optionsLabel?.className}" style="${optionsLabel}">Show on homepage?</span>
+                    <input type="checkbox" id="toggleRandomMapChallengeOnHomePage" onclick="toggleRandomMapChallenge(this)" class="${toggle?.className}">
                 </div>
-            </div> -->
+            </div> 
+        -->
             <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;">Inspired by Trackmania, how many random maps can you play in a set amount of time?</p>
         </div>
 
@@ -688,10 +748,10 @@ function guiHTML(){
         <div class="${standardGameModeSettings?.className}">
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
-                <label style="cursor: pointer; margin-right: 10px;">
-                   <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
-                    <input type="checkbox" id="toggleMosaic" onclick="toggleMosaic(this)" class="${toggle?.className}">
-                </label>
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
+                        <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
+                        <input type="checkbox" id="toggleMosaic" onclick="toggleMosaic(this)" class="${toggle?.className}">
+                    </label>
                 </div>
             </div>
             <p class="${bodyText?.className}" style="margin-top: 1rem;margin-bottom: 1rem;">Default mosaic grid: 5x5.</p>
@@ -709,7 +769,7 @@ function guiHTML(){
         <div class="${standardGameModeSettings?.className}">
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Enabled</span>
                         <input type="checkbox" id="toggleRestrictMovement" onclick="toggleRestrictMovement(this)" class="${toggle?.className}">
                     </labe>
@@ -730,27 +790,27 @@ function guiHTML(){
         <div class="${standardGameModeSettings?.className}">
             <div style="display: flex; justify-content: space-around;">
                 <div style="display: flex; align-items: center;">
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Sky</span>
                         <input type="checkbox" id="toggleSky" onclick="toggleSky(this)" class="${toggle?.className}">
                     </label>
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Soiled</span>
                         <input type="checkbox" id="toggleSoil" onclick="toggleSoil(this)" class="${toggle?.className}">
                     </label>
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Skewed</span>
                         <input type="checkbox" id="toggleSkewed" onclick="toggleSkewed(this)" class="${toggle?.className}">
                     </label>
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Max Zoom</span>
                         <input type="checkbox" id="toggleMaxZoom" onclick="toggleMaxZoom(this)" class="${toggle?.className}">
                     </label>
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">Random</span>
                         <input type="checkbox" id="toggleRdn" onclick="toggleRdn(this)" class="${toggle?.className}">
                     </label> 
-                    <label style="cursor: pointer; margin-right: 10px;">
+                    <label style="display:flex; align-items: center; cursor: pointer; margin-right: 10px;">
                         <span class="${optionsLabel?.className}" style="${optionsLabel}">NMPZ</span>
                         <input type="checkbox" id="toggleNMPZSpecial" onclick="toggleNMPZSpecial(this)" class="${toggle?.className}">
                     </label>
@@ -1036,6 +1096,10 @@ function handleBtwRoundsClear()
 
 function overrideOnLoad(googleScript, observer, overrider) {
     const oldOnload = googleScript.onload
+    if (window.google){
+        // Delete this before uploading.
+        // alert('window google')
+    }
     googleScript.onload = (event) => {
         const google = window.google
         if (google) {
@@ -2165,7 +2229,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.1.9</font>";
+    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.2.0</font>";
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -4266,7 +4330,8 @@ function launchObserver() {
     handleTeleport();
     SyncListener();
     kBoard();
-    console.log("Main Observer");
+
+    console.log("Unity Main Observer");
     
     //     const OBSERVER = new MutationObserver((mutations, observer) => {
     //         detectGamePage();
@@ -4492,14 +4557,18 @@ if (_pathName.startsWith("/play-along/") || _pathName.startsWith("/challenge/") 
         localStorage['unity_immediate_load'] = false;
 }
 
-//window.addEventListener('DOMContentLoaded', (event) => {
-window.addEventListener('load', (event) => {
+window.addEventListener('DOMContentLoaded', (event) => {
+       // Added by EC
     doInitScript();
 });
 
-console.log('ready state', document.readyState);
+window.addEventListener('load', (event) => {
+       // Added by EC
+    doInitScript();
+});
 
 function doInitScript(){
+   // doInitScript added by EC.
    if (sat_choice){
        // Added by EC
        const svCanvas = document.body.querySelector(GENERAL_CANVAS);
