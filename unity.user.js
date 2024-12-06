@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.0
+// @version       7.4.2.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -17,8 +17,10 @@
 // @tag           games
 // ==/UserScript==
 
-    // Added by EC
+const globalScriptVersion = "7.4.2.1";
+
 if (!window._unity_fetch_){
+    // Added by EC
     window._unity_fetch_ = window.fetch;
 
     window.fetch = (function(){
@@ -28,6 +30,8 @@ if (!window._unity_fetch_){
         };
     })();
 }
+
+setTimeout(()=>{
 
     // Added by EC
 checkForRanomMapChallenge(); 
@@ -318,7 +322,7 @@ var MAPILLARY_API_KEY_LIST =
 var MAPILLARY_API_KEY = MAPILLARY_API_KEY_LIST[Math.floor(Math.random() * MAPILLARY_API_KEY_LIST.length)];
 var MAPY_API_KEY = "placeholder";
 
-console.log("Geoguessr Unity Script v7.4.2.0 by Jupaoqq");
+console.log(`Geoguessr Unity Script v${globalScriptVersion} by Jupaoqq`);
 
 
 // Store each player instance
@@ -600,7 +604,7 @@ function guiHTML(){
       document.head.insertAdjacentHTML(
         // EC: Styles for toggle copied from the streaks page before it was changed to new style.
         "beforeend",
-        `<style>
+        `<style id='unity_guiHTML_styles'>
             .toggle:checked {
                 background: var(--ds-color-purple-50);
             }    
@@ -2190,7 +2194,7 @@ function UnityInitiate() {
     mainMenuBtn.id = "Show Buttons";
     mainMenuBtn.hide = false;
     mainMenuBtn.menuBtnCache = true;
-    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.1EC</font></font>";
+    mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.2EC</font></font>";
     mainMenuBtn.style =
         "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
@@ -2229,7 +2233,7 @@ function UnityInitiate() {
     var infoBtn = document.createElement("Button");
     infoBtn.classList.add("unity-btn", "info-btn", "full", "vertical-1", "extra-height", "unity-button-nonclickable");
     infoBtn.id = "Info Button";
-    infoBtn.innerHTML = "Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v7.4.2.0</font>";
+    infoBtn.innerHTML = `Geoguessr Unity Script<font size=1><br>&#169; Jupaoqq | v${globalScriptVersion}</font>`;
     document.body.appendChild(infoBtn);
     //     infoBtn.addEventListener("click", () => {
     //         window.open('https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing');
@@ -7359,12 +7363,15 @@ async function goToLocation(cond) {
                 GooglePlayer.setPosition(fenway) ;
 
                 failedToLoadRoundMsg.style.display = 'none';
-
-                makeGuessMapHack({
-                    guessBtnText:"Satellite Guess Button",
-                    mapContainer: document.querySelector('sat-map'), 
-                    locationUrl: '',
-                });
+                
+                setTimeout(() => {
+                    // Wait a while incase geoguessr map guess button appears late.
+                    makeGuessMapHack({
+                        guessBtnText: "Satellite Guess Button",
+                        mapContainer: document.querySelector('sat-map'),
+                        locationUrl: '',
+                    });
+                }, 2000);
             }
         }, 500);
     }
@@ -8718,6 +8725,8 @@ function styleMapboxAll(changeAttr, attrVal)
             [latlngBounds[3], latlngBounds[0]] // Northeast coordinates
         ];
 
+        MapboxPlayer.setMaxBounds(mpBounds);
+
         MapboxPlayer.once("moveend", (x) => {
            setTimeout(()=>{
                 // Wait for the map to load a bit and then reset the map.
@@ -8728,18 +8737,16 @@ function styleMapboxAll(changeAttr, attrVal)
                     bearing: 0,
                     pitch: 0,
                     zoom: 0,
-                    duration: 1000,
+                    duration: 1,
                 });
-           }, 1000);
+           }, 1);
         });
-
-        MapboxPlayer.setMaxBounds(mpBounds);
 
         setTimeout(()=>{
             // Added by EC waiting a bit seems to make the the animation
             // more reliable. Sometimes it won't set the center properly.
             MapboxPlayer.setCenter([global_lng, global_lat]);
-        }, 100);
+        }, 1);
 
         if (attrVal)
         {
@@ -9927,30 +9934,38 @@ function makeGuessMapHack(options){
         }, 500);
     });
 
-      const mapContainer = document.createElement("div");
-      mapContainer.classList.add("baidu_guess_map");
-      mapContainer._remove = ()=>{
-          let baiduGuessMap = document.querySelector('.baidu_guess_map');
-          baiduGuessMap.parentElement.removeChild(baiduGuessMap);
+    const mapContainer = document.createElement("div");
+    mapContainer.classList.add("baidu_guess_map");
+    mapContainer._remove = ()=>{
+        let baiduGuessMap = document.querySelector('.baidu_guess_map');
+        baiduGuessMap.parentElement.removeChild(baiduGuessMap);
 
-          let baiduGuessButton = document.querySelector('.baidu_guess_button');
-          if (baiduGuessButton){
-              baiduGuessButton.parentElement.removeChild(baiduGuessButton);
-          }
-      };
-      mapContainer.addEventListener("mouseover", () =>{
-          clearTimeout(closeMiniMapTimer);
-          mapContainer.classList.add(`baidu_guess_map_active`)
-      });
-      geoGuessContainer.appendChild(mapContainer);
+        let baiduGuessButton = document.querySelector('.baidu_guess_button');
+        if (baiduGuessButton){
+            baiduGuessButton.parentElement.removeChild(baiduGuessButton);
+        }
+    };
+    mapContainer.addEventListener("mouseover", () =>{
+        clearTimeout(closeMiniMapTimer);
+        mapContainer.classList.add(`baidu_guess_map_active`)
+    });
+    mapContainer.geoguessrGuessButtonWatcher = setInterval(()=>{
+        // Remove mapContainer if geoguessr guess button appears out of the blue.
+        const guessButton = document.querySelector('[data-qa="perform-guess"]');
+        if (!guessButton) return;
+        clearInterval(mapContainer.geoguessrGuessButtonWatcher); 
+        mapContainer._remove();
+    }, 2000);
 
-      let map = new google.maps.Map(mapContainer, {
-          center: { lat: 0, lng: 0 },
-          zoom: 5,
-          disableDefaultUI: true,
-          clickableIcons: false,
-          draggableCursor: "crosshair",
-      });
+    geoGuessContainer.appendChild(mapContainer);
+
+    let map = new google.maps.Map(mapContainer, {
+        center: { lat: 0, lng: 0 },
+        zoom: 5,
+        disableDefaultUI: true,
+        clickableIcons: false,
+        draggableCursor: "crosshair",
+    });
 
       const bounds = new google.maps.LatLngBounds();
       bounds.extend(global_bounds.min);
@@ -10703,7 +10718,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                     GooglePlayer.setPosition(fenway) ;
 
                     failedToLoadRoundMsg.style.display = 'none';
-
+                    
                     makeGuessMapHack({
                         guessBtnText:"UAC Guess Button",
                         mapContainer: document.querySelector('canvas'),
@@ -11710,3 +11725,4 @@ function getOverlayView(map){
     };
 
 
+},1)
