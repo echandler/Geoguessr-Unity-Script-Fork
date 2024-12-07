@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.1
+// @version       7.4.2.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -17,7 +17,7 @@
 // @tag           games
 // ==/UserScript==
 
-const globalScriptVersion = "7.4.2.1";
+const globalScriptVersion = "7.4.2.2";
 
 if (!window._unity_fetch_){
     // Added by EC
@@ -9140,7 +9140,8 @@ function injectMapyPlayer() {
 
 let water_name_only, country_name_only,no_label_or_terrain,no_label,blank,thick_border,Indonesia,dark,default_preset,presetMinimap,GEOJSON_INVISIBLE,presetOverlay,spaceMinimap,spaceMinimap2,spaceMinimap3,spaceList,neon;
 
-setTimeout(function makeMiniMapPresets(){
+(function makeMiniMapPresets(){
+//setTimeout(function makeMiniMapPresets(){
 // Made by EC
 // Trying to make this script load faster, by delaying unnecessary stuff.
 
@@ -9724,7 +9725,7 @@ spaceMinimap3 = [["Saturn", "saturn/saturn_simp_cyl.map&SERVICE=WMS&VERSION=1.3.
 
 spaceList = ["Moon", "Mars", "Mercury", "Venus", "Phobos", "Deimos", "Ceres", "Vesta", "Jupiter", "Callisto", "Europa", "Ganymede", "Io",
                  "Saturn", "Dione", "Enceladus", "Iapetus", "Mimas", "Rhea", "Tethys", "Titan", "Uranus", "Neptune", "Pluto", "Solar System"];
-}, 100);
+})();
 
 function handleSpURL(url, x1, y1, z1)
 {
