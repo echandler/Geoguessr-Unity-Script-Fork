@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.2
+// @version       7.4.2.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -17,7 +17,9 @@
 // @tag           games
 // ==/UserScript==
 
-const globalScriptVersion = "7.4.2.2";
+Object.freeze(window.console);
+
+const globalScriptVersion = "7.4.2.3";
 
 if (!window._unity_fetch_){
     // Added by EC
@@ -25,7 +27,6 @@ if (!window._unity_fetch_){
 
     window.fetch = (function(){
         return async function (...args){
-            console.log(args)
             return window._unity_fetch_.apply(window, args); 
         };
     })();
@@ -5943,7 +5944,8 @@ function locationCheck(data) {
     }
     if (NM || NP || NZ)
     {
-        setDisable("NMPZ");
+        // EC: Why disable the time machine feature for nm or np or nz? 
+        //setDisable("NMPZ");
     }
     else
     {
