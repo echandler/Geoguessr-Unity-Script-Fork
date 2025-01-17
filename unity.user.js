@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.3
+// @version       7.4.2.4
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -19,7 +19,13 @@
 
 Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.2.3";
+const globalScriptVersion = "7.4.2.4";
+
+let tempChangeScore = false; // delete soon used to test 5k country streak scores
+let tempLastLatLng = null; // delete soon used to test 5k country streak scores
+
+let global_lat = 0;
+let global_lng = 0;
 
 if (!window._unity_fetch_){
     // Added by EC
@@ -27,6 +33,53 @@ if (!window._unity_fetch_){
 
     window.fetch = (function(){
         return async function (...args){
+       //     console.log(args)
+       //     if (/lat|lng/.test(args[1]?.body)){
+
+       // +++++++ country streak 5k for correct country and 0 points for wrong country test +++++++++++++
+       
+       //         console.log("-------------------------------------------------------------------------------------")
+       //         let body = JSON.parse(args[1].body);
+       //         if (tempChangeScore){
+       //             body.lat = global_lat + 0.0001;
+       //             body.lng = global_lng;
+       //         } else {
+
+       //             debugger;
+       //             //body.lat = -84000.399864;
+       //             body.lat = global_lat > 0? -90: 90; 
+       //             body.lng = 0; global_lng > 0? -180: 180 
+       //         }
+       //         args[1].body = JSON.stringify(body);
+       //         let res = await window._unity_fetch_.apply(window, args); 
+       //         let cloned = res.clone();
+       //         let ppp = await cloned.json().then( x => x);
+       //          if (ppp?.player?.guesses){
+       //              ppp.player.guesses[ppp.player.guesses.length - 1].lat = tempLastLatLng.lat;
+       //              ppp.player.guesses[ppp.player.guesses.length - 1].lng = tempLastLatLng.lng;
+       //          }
+       //      //   console.log(ppp);
+       //         debugger;
+       //          res.json = function() {
+       //             return ppp;
+       //             return new Promise((res, rej)=>{
+       //             debugger;
+       //             return {
+       //                 hi: "hi"
+       //             }
+       //          });
+       //         };
+       //      //   return {
+       //      //       text: function(){ 
+       //      //           return new Promise((res, rej)=>{
+       //      //              return JSON.stringify(ppp)    ;
+       //      //           } )
+       //      //       }
+       //      //   };
+
+       //         return res;
+       // +++++++ country streak 5k for correct country and 0 points for wrong country test +++++++++++++
+       //     }
             return window._unity_fetch_.apply(window, args); 
         };
     })();
@@ -353,8 +406,6 @@ let isPlayAlong = false;
 let nextPlayer = "Google";
 let nextPlayer_save = "Google";
 let global_data = {};
-let global_lat = 0;
-let global_lng = 0;
 let global_bounds = {max : {lat: 50.387397, lng: 57.412767}, min : {lat: 50.181227, lng: 57.077273}};
 let global_cc = null;
 let global_panoID = null;
@@ -8733,7 +8784,8 @@ function styleMapboxAll(changeAttr, attrVal)
            setTimeout(()=>{
                 // Wait for the map to load a bit and then reset the map.
 
-                MapboxMarker.setLngLat([global_lng, global_lat]);
+                MapboxMarker.setLngLat([global_lng, global_lat])
+                            .addTo(MapboxPlayer);
 
                 MapboxPlayer.easeTo({
                     bearing: 0,
@@ -8902,14 +8954,15 @@ function injectMapboxPlayer() {
                                 center: [0, 0], // starting position [lng, lat]
                                 zoom: 13, // starting zoom
                                 pitch: 0,
-                                bearing: 200
+                                //bearing: 200
+                                bearing: 0
                             });
 
                             console.log("New Mapbox API Call");
 
                             MapboxMarker = new mapboxgl.Marker()
-                                .setLngLat([0, 0])
-                                .addTo(MapboxPlayer);
+                            //    .setLngLat([0, 0])
+                            //    .addTo(MapboxPlayer);
                             MapboxPlayer.addControl(new mapboxgl.NavigationControl(), 'top-left');
                             MapboxPlayer.addControl(new mapboxgl.ScaleControl({}));
                             MapboxPlayer.on('load', () => {
@@ -11307,6 +11360,8 @@ function getOverlayView(map){
             let PATHNAME = getPathName(); 
             if (!PATHNAME.startsWith(`/play-along/`)){
                 setScoreBoardLastLagLng(latLng);
+                debugger;
+                tempLastLatLng = latLng;// delete soon used to test 5k country streak scores
             }           
 
             const l  = await sgs.reverse(latLng).then(e => e);
@@ -11339,6 +11394,7 @@ function getOverlayView(map){
             if (scoreBoard.lastLatLng && (cur.country.admin_country_code == scoreBoard.lastLatLng.country.admin_country_code)){
                 unityAlert.innerHTML = `Yay! It was <span style="font-weight:bold">${cur.country.country_name}</span> ${svgFlag} ! Score is now <span style="font-weight:bold">${scoreBoard.score} + 1</span>!`;
                 scoreBoard.score += 1;
+                tempChangeScore = true;
             } else {
                 unityAlert.innerHTML = `<span>Nooooooo! It was <span style="font-weight:bold">${cur.country.country_name}</span> ${svgFlag} ! Final score was <span style="font-weight:bold">${scoreBoard.score}</span>!</span>`;
                 scoreBoard.score = 0;
@@ -11367,10 +11423,13 @@ function getOverlayView(map){
                 setTimeout(()=>{
                     unityAlert.style.visibility = 'hidden';
                     unityAlert._streakShowing = false;
+                    tempLastLatLng = null;// delete soon used to test 5k country streak scores
                 }, 2000);
+                tempChangeScore = false;
             }, 500));
             
             scoreBoard.lastLatLng = null;
+
         } // End guessbuttonListener. 
         
         guessButtonCallback.callbacks.push(versionEl.guessBtnClickListener);
@@ -11549,19 +11608,62 @@ function getOverlayView(map){
 
     /// -------------------------------------- PLAY ALONG WEBSOCKET STUFF ---------------------------------------------------------------------
 
-    //const mapStylesCodes = { "llll":'Default', "olll":'Oceanman', "loll":'Satellite', "llol":"Easy 5K","lllo":"Choekaas.no", "ollo":"Impossible", "ooll":"City Lights", "lool":"Fire", "lloo": "Neon", "olol": "Hybrid"};
-    const mapStylesCodes = { "oool":'Default', "oolo":'Oceanman', "ooll":'Satellite', "oloo":"Easy 5K","olol":"Neon", "ollo":"Impossible", "olll":"Choekaas.no", "looo":"Fire", "lool": "City Lights","lolo": "show menu", "loll": "Hybrid"};
+    const mapStylesCodes = { 
+        "oool": { id: 'Default', fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "oolo": { id: 'Oceanman', fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "ooll": { id: 'Satellite', fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "oloo": { id: "Easy 5K", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "olol": { id: "Neon", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "ollo": { id: "Impossible", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "olll": { id: "Choekaas.no", 
+                  fn : function(id){
+                        const coverageLayer = new google.maps.ImageMapType({
+                            getTileUrl({ x, y }, z) {
+                                return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`;
+                            },
+                            maxZoom: 20,
+                            tileSize: new google.maps.Size(256, 256),
+                        });
 
-    function playAlongWebSocketInit(){
-        console.log("Play along websoket listener initiated")
-        let old_WS_Send = window.WebSocket.prototype.send;
-        let msgCode = [];
-        let msgCodeTimer = null;
+                        GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                    } 
+        },
+        "looo": { id: "Fire", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "lool": { id:  "City Lights", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "lolo": { id:  "show menu", 
+                  fn : function(id){
+                            const PATHNAME = getPathName();
+                            //if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
+                            if (PATHNAME.startsWith("/play-along/") /*player has play-along in url*/) return;
+                            unity.play_along.showOptions;
+                        } 
+        },
+        "loll": { id:  "Hybrid", fn : function(id){ document.getElementById(this.id)?.click(); } },
+        "llll": { id:  "CG's 📸travel-pics-game",
+                  fn : function(id){
+                            const coverageLayer = new google.maps.ImageMapType({
+                                getTileUrl({ x, y }, z) {
+                                    return `https://echandler.github.io/a/misc/tiles/${z}/${x}/${y}.webp`
+                                },
+                                maxZoom: 20,
+                                tileSize: new google.maps.Size(256, 256),
+                            })
 
-        window.WebSocket.prototype.send = async function (...args) {
-            if (this._unity_message_listener_added === undefined) {
-                this.addEventListener('message', function (e) {
-                    if (!e.data) return;
+                            GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                        } 
+            },
+        };
+
+        function playAlongWebSocketInit(){
+            console.log("Play along websoket listener initiated")
+            let old_WS_Send = window.WebSocket.prototype.send;
+            let msgCode = [];
+            let msgCodeTimer = null;
+
+            window.WebSocket.prototype.send = async function (...args) {
+                if (this._unity_message_listener_added === undefined) {
+                    this.addEventListener('message', function (e) {
+                        if (!e.data) return;
                     onMsg(JSON.parse(e.data));
                 });
                 sendWSMsg._this = this;
@@ -11580,33 +11682,12 @@ function getOverlayView(map){
 
                         const code = msgCode.join("");
                         
-                        let PATHNAME = getPathName();
-                        //if (code === "lolo" && !PATHNAME.startsWith("/play-along/")/*is player not streamer*/){
-                        if (mapStylesCodes[code] === "show menu" && !PATHNAME.startsWith("/play-along/") /*player has play-along in url*/){
+                        console.log("code", code);
+                        
+                        // Clear the overlays before doing anything else. 
+                        document.getElementById('Clear').click();
 
-                            let p = unity.play_along.showOptions;
-                        //} else if (code === "lllo"){
-                        } else {
-                            // Clear the overlays before doing anything else. 
-                            document.getElementById('Clear').click();
-
-                            if (mapStylesCodes[code] === "Choekaas.no") {
-                                // Show Choekaas.no
-                                document.getElementById('Clear').click();
-
-                                const coverageLayer = new google.maps.ImageMapType({
-                                    getTileUrl({ x, y }, z) {
-                                        return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`
-                                    },
-                                    maxZoom: 20,
-                                    tileSize: new google.maps.Size(256, 256),
-                                })
-
-                                GoogleMapsObj.overlayMapTypes.push(coverageLayer);
-                            } else {
-                                document.getElementById(mapStylesCodes[code])?.click();
-                            } 
-                        }
+                        mapStylesCodes[code].fn();
                     }
 
                     msgCodeTimer = null;
@@ -11625,7 +11706,13 @@ function getOverlayView(map){
 
         function sendWSMsg(msg) {
             if (sendWSMsg._this === null) return;
-            sendWSMsg._this.send(JSON.stringify({ "code": "ChatMessage", "topic": "chat:Friend:TextMessages:5dc13f46e9473f1aa89d8f24", "payload": "ignore this also lol", "client": "web" }));
+            sendWSMsg._this.send(JSON.stringify(
+                { 
+                    "code": "ChatMessage", 
+                    "topic": "chat:Friend:TextMessages:5dc13f46e9473f1aa89d8f24",
+                    "payload": "Ignore this also lol",
+                    "client": "web" 
+                }));
             //  sendWSMsg._this.send(JSON.stringify({
             //      unity:true,
             //      msg: msg,
@@ -11649,6 +11736,7 @@ function getOverlayView(map){
        };
 
        _delay = true;
+
        setTimeout(()=> _delay = null, 2500 );
 
        const nextData = JSON.parse(document.getElementById('__NEXT_DATA__').innerHTML);
@@ -11695,28 +11783,24 @@ function getOverlayView(map){
     window.unity = {
         play_along: {
             get showOptions(){
-                const vals = Object.values(mapStylesCodes);
+                const keys = Object.keys(mapStylesCodes);
                 let optionsTxt = "";
 
                 let idx = 1;
-                vals.forEach((x)=>{
-                    if (x == "show menu") return;
-                    optionsTxt += `\n                 ${idx++}. ${x}`;
+                keys.forEach((k)=>{
+                    let _id_ = mapStylesCodes[k].id;
+                    if (_id_ == "show menu"){
+                        idx += 1; // Lazy fix for menu item numbers being one off after this is skipped.
+                        return;
+                    } 
+                    optionsTxt += `\n                 ${idx++}. ${_id_}`;
                 });
 
                 const num = prompt(`              Unity Script Play Along Options:${optionsTxt}`);
 
                 if (num === null) return;
 
-                const style = vals[parseInt(num)-1];
-                let code = null;
-
-                for (let _code in mapStylesCodes){
-                    if(mapStylesCodes[_code] === style){
-                        code = _code;
-                        break;
-                    }
-                }
+                const code = keys[parseInt(num)-1]; 
 
                 try {
                     playAlongSendMsg(code);
