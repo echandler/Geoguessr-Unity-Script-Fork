@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script
+// @name          Geoguessr Unity Script test
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.7
+// @version       7.4.2.8
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -19,7 +19,7 @@
 
 Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.2.7";
+const globalScriptVersion = "7.4.2.8";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -1855,7 +1855,6 @@ function UnityInitiate() {
             if (savedCustomStyleInfo && savedCustomStyleInfo.doPersist){
                 google.maps.event.addListenerOnce(this, 'idle', function(){
                     // Made by EC
-                    const _oldVal_ = this.unity_is_blocking_style_changes;
 
                     this.unity_is_blocking_style_changes = false;
 
@@ -1978,7 +1977,7 @@ function UnityInitiate() {
                                         element.style.background = "red";
                                     }
                                 }
-                                if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(element.id))
+                                if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire","TastyCheese", "Choekaas.no"].includes(element.id))
                                 {
                                     element.loaded = false;
                                 }
@@ -1987,7 +1986,7 @@ function UnityInitiate() {
                     }
                     else
                     {
-                        if (["Coverage", "Official", "City Lights", "OSM", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(mapDiv.id))
+                        if (["Coverage", "Official", "City Lights", "OSM", "Watercolor","TastyCheese", "Toner", "Fire", "Choekaas.no"].includes(mapDiv.id))
                         {
                             this.overlayMapTypes.clear();
                             const coverageLayer = new google.maps.ImageMapType({
@@ -2011,6 +2010,8 @@ function UnityInitiate() {
                                         return `https://stamen-tiles.a.ssl.fastly.net/toner/${z}/${x}/${y}.png`
                                     } else if (mapDiv.id == "Fire") {
                                         return `https://tile.thunderforest.com/spinal-map/${z}/${x}/${y}.png?apikey=1360c6d2440c4202bf725238d1b9c761`
+                                    } else if (mapDiv.id == "TastyCheese") {
+                                        return `https://echandler.github.io/map_tiles/tiles/${z}/${x}/${y}.webp`;
                                     }
                                     // return `https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i${z}!2i${x}!3i${y}!4i256!2m8!1e2!2ssvv!4m2!1scb_client!2sapp!4m2!1scc!2s*211m3*211e3*212b1*213e2*211m3*211e2*212b1*213e2!3m3!3sUS!12m1!1e68!4e0`
 
@@ -2031,7 +2032,7 @@ function UnityInitiate() {
                             //                             }
 
                             for (let element of document.getElementsByClassName("overlay-minimap")){
-                                if (["Clear", "City Lights", "Watercolor", "Toner", "Fire", "Choekaas.no"].includes(element.id))
+                                if (["Clear", "City Lights", "Watercolor", "TastyCheese", "Toner", "Fire", "Choekaas.no"].includes(element.id))
                                 {
                                     element.style.background = "#ff69b4cc";
                                     element.loaded = false;
@@ -10012,6 +10013,7 @@ presetOverlay = [["Clear",""],
                      ["Watercolor",""],
                      ["Toner",""],
                      ["Fire",""],
+                     ["TastyCheese",""],
                      ["Longitude", "https://raw.githubusercontent.com/Jupaoqq/Jupaoqq.github.io/main/lonl.json"],
                      ["Latitude", "https://raw.githubusercontent.com/Jupaoqq/Jupaoqq.github.io/main/latl.json"],
                      ["US County","https://raw.githubusercontent.com/CodeForCary/CountyDataUSA5m/master/cb_2017_us_county_5m.json"],
