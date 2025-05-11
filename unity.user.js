@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.9
+// @version       7.4.3.0
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -19,7 +19,7 @@
 
 Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.2.9";
+const globalScriptVersion = "7.4.3.0";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -655,7 +655,7 @@ function guiHTML(){
         "beforeend",
         `<style id='unity_guiHTML_styles'>
             .toggle:checked {
-                background: var(--ds-color-purple-50);
+                background:rgb(63, 61, 145);
             }    
             .toggle {
                 -webkit-appearance: none;
@@ -878,8 +878,11 @@ function guiHTML(){
 
 const checkInsertGui = () => {
     if (document.querySelector(`div[class*="map-block_root"]`) && document.getElementById('toggleSky') === null){
+	    
+        if (document.querySelector('#Unity Start Menu')){
+            return;
+        }
 
-        document.querySelector(`div[class*="map-block_root"]`).lastChild.remove();
         document.querySelector(`div[class*="map-block_root"]`).insertAdjacentHTML('beforeend', guiHTML());
 
         if (sat_choice) {
