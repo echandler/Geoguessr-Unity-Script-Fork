@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name          Geoguessr Unity Script test
+// @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.2.8
+// @version       7.4.2.9
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -19,7 +19,7 @@
 
 Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.2.8";
+const globalScriptVersion = "7.4.2.9";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -1875,6 +1875,9 @@ function UnityInitiate() {
                     // Create click handler for mini-map buttons. 
                     this.unity_is_blocking_style_changes = false;
                     MinimapBtn.current = mapDiv.id;
+
+                    localStorage["unity_custom_map_styles_button"] = mapDiv.id;
+
                     if (mapDiv.id == "Hybrid")
                     {
                         this.setMapTypeId('hybrid');
@@ -1889,6 +1892,7 @@ function UnityInitiate() {
                     }
                     else if (mapDiv.id == "Custom")
                     {
+                        localStorage["unity_custom_map_styles_button"] = false;
                         openCustomMiniMapInput();
                         return;
                         //this.setMapTypeId(customMode);
@@ -1896,21 +1900,28 @@ function UnityInitiate() {
                     else if (mapDiv.id == "Country Streak")
                     {
                         // Created by EC.
+                        localStorage["unity_custom_map_styles_button"] = false;
                         initCountryStreakCounter();
                     }
                     else if (mapDiv.id == "RMC")
                     {
+                        localStorage["unity_custom_map_styles_button"] = false;
                         // Created by EC.
                         initRandomMapChallenge(); 
                     }
                     else
                     {
+                        localStorage["unity_custom_map_styles_button"] = false;
                         this.setMapTypeId('roadmap');
                     }
 
                     // this.setTilt(45);
                     for (let ar of presetMinimap) {
                         if (ar[1] == mapDiv.id) {
+
+                            if (mapDiv.id !== "Default"){
+                                localStorage["unity_custom_map_styles_button"] = mapDiv.id;
+                            }
 
                             this.unity_is_blocking_style_changes = ar[1] === 'Default'? false: true;
                             
@@ -1936,6 +1947,20 @@ function UnityInitiate() {
                         }
                     }
                 });
+                
+            }
+
+            const savedMapStylesButton = localStorage["unity_custom_map_styles_button"];
+
+            if (savedMapStylesButton !== undefined && savedMapStylesButton !== "false" && savedMapStylesButton !== "Default"){
+                google.maps.event.addListenerOnce(this, 'idle', function(){
+                    // Made by EC
+
+                    this.unity_is_blocking_style_changes = false;
+
+                    document.getElementById(savedMapStylesButton).click(); 
+
+                });
             }
 
             for (let mapDiv of document.getElementsByClassName("overlay-minimap")){
@@ -1944,7 +1969,10 @@ function UnityInitiate() {
                     //                     console.log(mapDiv.url)
                     //                     console.log(mapDiv.id)
                     //                     console.log(mapDiv.loaded)
+                    localStorage["unity_custom_map_overlay_button"] = mapDiv.id;
+
                     if (mapDiv.id === "Custom"){
+                        localStorage["unity_custom_map_overlay_button"] = false;
                         openCustomOverlayMapInput();
                         return;
                     }
@@ -1958,6 +1986,8 @@ function UnityInitiate() {
                     }
                     if (mapDiv.id == "Clear")
                     {
+                        localStorage["unity_custom_map_overlay_button"] = false;
+
                         this.overlayMapTypes.clear();
                         this.data.setStyle(function(feature) {
                             return GEOJSON_INVISIBLE
@@ -2074,6 +2104,17 @@ function UnityInitiate() {
                             }
                         }
                     }
+                });
+            }
+
+            const savedMapOverlaysButton = localStorage["unity_custom_map_overlay_button"];
+
+            if (savedMapOverlaysButton !== undefined && savedMapOverlaysButton !== "false" && savedMapOverlaysButton !== "Clear"){
+                google.maps.event.addListenerOnce(this, 'idle', function(){
+                    // Made by EC
+
+                    document.getElementById(savedMapOverlaysButton).click(); 
+
                 });
             }
 
