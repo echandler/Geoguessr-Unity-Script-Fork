@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.3.0
+// @version       7.4.3.1
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -19,7 +19,7 @@
 
 Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.3.0";
+const globalScriptVersion = "7.4.3.1";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -878,7 +878,7 @@ function guiHTML(){
 
 const checkInsertGui = () => {
     if (document.querySelector(`div[class*="map-block_root"]`) && document.getElementById('toggleSky') === null){
-	    
+
         if (document.querySelector('#Unity Start Menu')){
             return;
         }
@@ -1878,7 +1878,7 @@ function UnityInitiate() {
                     // Create click handler for mini-map buttons. 
                     this.unity_is_blocking_style_changes = false;
                     MinimapBtn.current = mapDiv.id;
-
+            
                     localStorage["unity_custom_map_styles_button"] = mapDiv.id;
 
                     if (mapDiv.id == "Hybrid")
@@ -1972,10 +1972,12 @@ function UnityInitiate() {
                     //                     console.log(mapDiv.url)
                     //                     console.log(mapDiv.id)
                     //                     console.log(mapDiv.loaded)
+
+                    const old_overlay_btn = localStorage["unity_custom_map_overlay_button"];
                     localStorage["unity_custom_map_overlay_button"] = mapDiv.id;
 
                     if (mapDiv.id === "Custom"){
-                        localStorage["unity_custom_map_overlay_button"] = false;
+                        localStorage["unity_custom_map_overlay_button"] = old_overlay_btn;
                         openCustomOverlayMapInput();
                         return;
                     }
@@ -2121,6 +2123,41 @@ function UnityInitiate() {
                 });
             }
 
+            const savedMapOverlaysInfo= localStorage["unity_custom_map_overlays_info"];
+
+            if (savedMapOverlaysInfo !== undefined){
+                google.maps.event.addListenerOnce(this, 'idle', function(){
+                    // Made by EC
+                try {
+
+                    let _customOverlayInfo = JSON.parse(savedMapOverlaysInfo);
+
+                    if (!_customOverlayInfo.overlayTile_URL || !_customOverlayInfo.doOverlayTilePersist) {
+                        return;
+                    }
+
+                    const coverageLayer = new google.maps.ImageMapType({
+                        getTileUrl({ x, y }, z) {
+                            // return `https://echandler.github.io/test-geo-noob-script/misc/geoguessr%20artwork%20map%20tiles/${z}/${x}/${y}.png`;
+                            let url = _customOverlayInfo.overlayTile_URL;
+                            url = url.replace("${x}", x);
+                            url = url.replace("${y}", y);
+                            url = url.replace("${z}", z);
+
+                            return url;
+                        },
+                        //    maxZoom: 3, /////parseInt(_customOverlayInfo.overLayTile_maxZoom),
+                        //    minZoom: 0,
+                        tileSize: new google.maps.Size(256, 256),
+                    });
+
+                    GoogleMapsObj.overlayMapTypes.push(coverageLayer);
+                } catch(e){
+                    console.log("Unity Overlay info error => ", e);
+                }
+                });
+            }
+
             for (let spMini of document.getElementsByClassName("spaceMM")) {
                 google.maps.event.addDomListener(spMini, "click", () => {
                     OverlayBtn.current = spMini.id;
@@ -2203,6 +2240,7 @@ function UnityInitiate() {
             super(...args);
 
             GooglePlayer = this;
+            window.svPano = this;
 
             const path = getPathName(); 
             const isGamePage = () => path.startsWith("/challenge/") || path.startsWith("/results/") ||
@@ -4144,7 +4182,19 @@ function openCustomOverlayMapInput(){
     
     let body = document.createElement("div");
     body.id = "custom_map_style_body";
-    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;`; body.innerHTML = `
+    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;`; 
+    
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `<style>
+          
+          ._button_:active {
+              scale: 1.2 1.2;
+          }
+
+      </style>`);
+
+    body.innerHTML = `
 <!-- Image -->
 <!-- 
         <div>
@@ -4190,7 +4240,7 @@ function openCustomOverlayMapInput(){
             </label>
         </div>
         <div>
-            <button id="updateTile" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update Tiles</button> 
+            <button id="updateTile" class="_button_" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update Tiles</button> 
         </div>
 
 <!-- JSON -->
@@ -4205,10 +4255,10 @@ function openCustomOverlayMapInput(){
             </label>
         </div>
         <div>
-            <button id="updateJSON" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update JSON</button> 
+            <button id="updateJSON" class="_button_" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update JSON</button> 
         </div>
         <div>
-            <button id="close" style="margin: 0px auto; padding: 1em; cursor: pointer; display: block;">Close</button> 
+            <button id="close" class="_button_" style="margin: 0px auto; padding: 1em; cursor: pointer; display: block;">Close</button> 
         </div>
     `; 
 
@@ -4259,7 +4309,7 @@ function openCustomOverlayMapInput(){
                 });
 
                 GoogleMapsObj.overlayMapTypes.push(coverageLayer);
-
+                
             } catch(error){
                 alert(error);
             }
@@ -4298,6 +4348,16 @@ function openCustomMiniMapInput(){
 
     let savedInfo = JSON.parse(localStorage["unity_custom_map_styles"] || _customStyles);
     
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `<style>
+          
+          ._button_:active {
+              scale: 1.2 1.2;
+          }
+
+      </style>`);
+
     let body = document.createElement("div");
     body.id = "custom_map_style_body";
     body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;`; body.innerHTML = `
@@ -4313,7 +4373,7 @@ function openCustomMiniMapInput(){
                 <textarea id="custom_map_styles" type="text" style="height: 50vh; width: 100%;" >${JSON.stringify(savedInfo.mapStyle, null, 4)}</textarea> 
             </div>
             <div style="position: relative; top: -3em; height: 1em;">
-                <button id="prettifyJSON" style="margin-left: 1em; padding: 1em; cursor: pointer;">Prettify</button> 
+                <button id="prettifyJSON" class="_button_" style="margin-left: 1em; padding: 1em; cursor: pointer;">Prettify</button> 
             </div>
             <div>
                 <label style="cursor: pointer;">
@@ -4321,7 +4381,7 @@ function openCustomMiniMapInput(){
                 </label>
             </div>
             <div>
-                <button id="update" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update</button> <button id="close" style="margin-left: 1em; padding: 1em; cursor: pointer;">Close</button> 
+                <button id="update" class="_button_" style="margin-left: 1em; padding: 1em; cursor: pointer;">Update</button> <button id="close" class="_button_" style="margin-left: 1em; padding: 1em; cursor: pointer;">Close</button> 
             </div>
         </div> 
     `; 
@@ -6125,7 +6185,12 @@ function locationCheck(data) {
     //
     // Start of Unity Nerd stuff
     //
-    unityNerdFn(data);
+    console.log("Uinty nerd", data)
+    setTimeout(()=>{
+
+        unityNerdFn(data);
+
+    }, 500)
     //
     // End of Unity Nerd stuff
     //
@@ -11005,14 +11070,17 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
             }
 
             if (unityNerdFn.UAC_URLS[_url]){
+                console.log("sdffsdfsd", unityNerdFn.UAC_URLS[_url]);
                 alert('Was there an error? Is this a repeat? Maybe refreshing the page will fix it?');
+                if (confirm("Do you want to refresh page now?")){
+                     location.reload();
+                }
             }
 
             unityNerdFn.UAC_URLS[_url] = true;
 
             // Setting this to true hides the default street view panorama.
             window.isOkToShowCustomPano = true;
-
             fetch(_url)
             .then((r) => {
                 return r.blob();
