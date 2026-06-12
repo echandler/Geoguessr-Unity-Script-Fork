@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.3.1
+// @version       7.4.3.2
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -17,9 +17,9 @@
 // @tag           games
 // ==/UserScript==
 
-Object.freeze(window.console);
+//Object.freeze(window.console);
 
-const globalScriptVersion = "7.4.3.1";
+const globalScriptVersion = "7.4.3.2";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -4182,7 +4182,9 @@ function openCustomOverlayMapInput(){
     
     let body = document.createElement("div");
     body.id = "custom_map_style_body";
-    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;`; 
+    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ 
+                          top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; 
+                          background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em; z-index:999;`; 
     
       document.head.insertAdjacentHTML(
         "beforeend",
@@ -4360,7 +4362,11 @@ function openCustomMiniMapInput(){
 
     let body = document.createElement("div");
     body.id = "custom_map_style_body";
-    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;`; body.innerHTML = `
+    body.style.cssText = `position: absolute; width: fit-content; /* margin-inline: auto; */ 
+                          top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; 
+                          background-color: rgba(186, 85, 211, 0.8); padding: 1em; border-radius: 1em;z-index:999;`; 
+    
+    body.innerHTML = `
         <div>
             <div style="margin-bottom: 1em;">
             <span title="Map ID Constants: roadmap, satellite, terrain, hybrid. \n Or create your own map id useing Google cloud.">Map Id </span>
