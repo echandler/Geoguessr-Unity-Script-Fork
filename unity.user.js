@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Geoguessr Unity Script
 // @description   For a full list of features included in this script, see this document https://docs.google.com/document/d/18nLXSQQLOzl4WpUgZkM-mxhhQLY6P3FKonQGp-H0fqI/edit?usp=sharing
-// @version       7.4.3.2
+// @version       7.4.3.3
 // @author        Jupaoqq
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -17,9 +17,11 @@
 // @tag           games
 // ==/UserScript==
 
-//Object.freeze(window.console);
+let logger = window.console.log;
 
-const globalScriptVersion = "7.4.3.2";
+//Object.freeze(window.console.log);
+
+const globalScriptVersion = "7.4.3.3";
 
 let tempChangeScore = false; // delete soon used to test 5k country streak scores
 let tempLastLatLng = null; // delete soon used to test 5k country streak scores
@@ -689,7 +691,7 @@ function guiHTML(){
                 width: 100%;
             }
             .toggle:after {
-                background: var(--ds-color-white);
+                background: var(--ds-color-purple-50);
                 border-radius: 100%;
                 content: "";
                 height: 1rem;
@@ -877,13 +879,13 @@ function guiHTML(){
 
 
 const checkInsertGui = () => {
-    if (document.querySelector(`div[class*="map-block_root"]`) && document.getElementById('toggleSky') === null){
+    if (document.querySelector(`div[class*="map-detail-page_content"]`) && document.getElementById('toggleSky') === null){
 
         if (document.querySelector('#Unity Start Menu')){
             return;
         }
 
-        document.querySelector(`div[class*="map-block_root"]`).insertAdjacentHTML('beforeend', guiHTML());
+        document.querySelector(`div[class*="map-detail-page_content"]`).insertAdjacentHTML('beforeend', guiHTML());
 
         if (sat_choice) {
             document.getElementById('toggleSatellite').checked = true;
@@ -948,7 +950,7 @@ let observerNew = new MutationObserver((mutations) => {
     }
     if (document.getElementById('Unity Start Menu'))
     {
-        if (document.querySelector('div[class*="map-selector_root"]'))
+        if (document.querySelector('div[class*="map-detail-page_content"]'))
         {
             document.getElementById('Unity Start Menu').style.display = "";
         }
@@ -990,7 +992,7 @@ function sleep(milliseconds) {
 // Highlight API Load Message
 
 function myHighlight(...args) {
-    console.log(`%c${[...args]}`, "color: dodgerblue; font-size: 24px;");
+    logger(`%c${[...args]}`, "color: dodgerblue; font-size: 24px;");
 }
 
 // Hex to number conversion for Baidu coordinate conversion
@@ -1402,16 +1404,16 @@ function resetBtnPos()
 
     // Manu Buttons
 
-    mainMenuBtn.style.top = "6em";
-    YoutubeBtn.style.top = "6em";
-    infoMenu.style.top = "9.5em";
-    teleportMenu.style.top = "12.5em";
-    MinimapMenuBtn.style.top = "15.5em";
-    satelliteMenu.style.top = "18.5em";
-    SpaceMenuBtn.style.top = "21.5em";
-    mosaicMenu.style.top = "24.5em";
-    ClockMenuBtn.style.top = "27.5em";
-    SpecialMapMenuBtn.style.top = "30.5em";
+    mainMenuBtn.style.top = "8em";
+    YoutubeBtn.style.top = "8em";
+    infoMenu.style.top = "11.5em";
+    teleportMenu.style.top = "14.5em";
+    MinimapMenuBtn.style.top = "17.5em";
+    satelliteMenu.style.top = "20.5em";
+    SpaceMenuBtn.style.top = "23.5em";
+    mosaicMenu.style.top = "26.5em";
+    ClockMenuBtn.style.top = "29.5em";
+    SpecialMapMenuBtn.style.top = "32.5em";
 
     mainMenuBtn.style.right = "0.5em";
     mainMenuBtn.style.width = "3em";
@@ -1441,7 +1443,7 @@ function AdjustBtnPos(top, right, arg)
 }
 
 function handleStyles()
-{
+{    
     let unityCSS =
         `visibility:hidden;
         border-radius: 25px;
@@ -1570,7 +1572,7 @@ function hideOtherBtn()
            clearTimeout(element._timer);
 
            element.style.transition = "0.2s top ease";
-           element.style.top = "calc(6em)";
+           element.style.top = "calc(8em)";
            element._timer = setTimeout(()=>{
                element.style.visibility = "hidden";
                element.style.transition = "";
@@ -2355,7 +2357,9 @@ function UnityInitiate() {
     mainMenuBtn.menuBtnCache = true;
     mainMenuBtn.innerHTML = "<font size=2>Unity<br><font size=1 id='unity_version'>v7.4.3EC</font></font>";
     mainMenuBtn.style =
-        "border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;";
+        `border-radius: 10px;visibility:hidden;height:2.5em;position:absolute;z-index:99999;background-repeat:no-repeat;
+        background-image:linear-gradient(180deg, #0066cc 50%, #ffcc00 50%);border: none;color: white;padding: none;
+        text-align: center;vertical-align: text-top;text-decoration: none;display: inline-block;font-size: 16px;line-height: 15px;`;
     // document.querySelector(".game-layout__status").appendChild(mainMenuBtn)
     document.body.appendChild(mainMenuBtn);
     mainMenuBtn.addEventListener("click", () => {
@@ -4036,7 +4040,7 @@ function UnityInitiate() {
        if (svCanvas) svCanvas.style.visibility = "hidden";
    }
 
-    console.log("Script buttons Loaded");
+    logger("Script buttons Loaded");
     UnityInitiate.callbacks.forEach( cb => cb() );
 }// End UntityInitiate();
 
@@ -4766,7 +4770,9 @@ function launchObserver() {
     if (sat4) {
         // Added by EC.
         const svCanvas = document.body.querySelector(GENERAL_CANVAS);
-        if (svCanvas) svCanvas.style.visibility = "hidden";
+        if (svCanvas) {
+            svCanvas.style.visibility = "hidden";
+        }
     }
 
     UnityInitiate();
@@ -4774,7 +4780,7 @@ function launchObserver() {
     SyncListener();
     kBoard();
 
-    console.log("Unity Main Observer");
+    logger("Unity Main Observer");
     
     //     const OBSERVER = new MutationObserver((mutations, observer) => {
     //         detectGamePage();
@@ -4848,7 +4854,7 @@ function launchObserver() {
                        // if (document.body.querySelector(`[class*="game_panoramaMessage"]`))
                         if (checkFailedToLoadRoundMsg())
                         {
-                            console.log("Fail to load canvas message - observer3")
+                            logger("Fail to load canvas message - observer3")
                             if (allowDetect)
                             {
                                 detectGamePage();
@@ -5329,14 +5335,16 @@ function waitLoad() {
 function checkRound() {
     //   console.log("Check Round");
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
+
     let switchCovergeButton = document.getElementById("switch");
     if (!isBattleRoyale) {
         // console.log("Check Round");
+
         let currentRound = getRoundFromPage();
         if (ROUND != currentRound) {
             // fire1 = true;
             switchCovergeButton.init = true;
-            console.log("New round");
+            logger("New round");
             ROUND = currentRound;
             // NEW_ROUND_LOADED = true;
             COMPASS = null;
@@ -5531,7 +5539,7 @@ guessButtonCallback.removeCallback = function(cb){
 
 function loaderChecker(map_name, map_description)
 {
-    console.log('load checker')
+    logger('load checker')
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
     let substrings = ["Yangle", "Goodex", "Yandex", "Bing Streetside", "Kakao", "Mapbox", "Bing Satellite", "Planets"]
     bullseyeMapillary = ((isBullseye || isLiveChallenge) && !["Mapillary", "A United World", "A Unity World", "Unity Test","Unity Special Edition"].some(v => map_name.includes(v)));
@@ -5816,7 +5824,7 @@ function loadPlayers() {
     playerLoaded = true;
     injectContainer();
     getSeed().then((data) => {
-        console.log('get seed', data)
+        logger('get seed', data)
         let map_name = "Default"
 
         if (typeof data.isRated !== 'undefined')
@@ -5980,7 +5988,6 @@ function modularget(data)
 
 function getMapData() {
     // myHighlight("Seed data");
-
     getSeed().then((data) => {
         let switchCovergeButton = document.getElementById("switch");
         let mainMenuBtn = document.getElementById("Show Buttons")
@@ -6146,7 +6153,6 @@ function handleButtons() {
 
 function locationCheck(data) {
     // let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
-    console.log(data)
     let curRound = data.rounds[data.rounds.length -1];
 
 
@@ -6191,7 +6197,6 @@ function locationCheck(data) {
     //
     // Start of Unity Nerd stuff
     //
-    console.log("Uinty nerd", data)
     setTimeout(()=>{
 
         unityNerdFn(data);
@@ -6423,7 +6428,6 @@ function locationCheck(data) {
     {
         satelliteSwitchButton.innerHTML = "Streetview mode";
     }
-    console.log(nextPlayer_save + "," + nextPlayer);
     if (!rtded)
     {
         injectCanvas();
@@ -6471,7 +6475,7 @@ function initializeCanvas() {
     }
     if (GAME_CANVAS && DUEL_CANVAS)
     {
-        console.log("Canvas injected");
+        logger("Canvas injected");
         GAME_CANVAS.id = "player";
 
         if (isDuel) {
@@ -7275,8 +7279,8 @@ let goToLocationTimerHack = Date.now();
 
 async function goToLocation(cond) {
     let [teleportBtn, teleportReverse, teleportMenu, teleportMoreBtn, teleportLessBtn, teleportDistResetBtn, switchCovergeButton, mainMenuBtn, timeMachineBtn, timeMachineOlderBtn, timeMachineNewerBtn, TeleportArisBtn, satelliteSwitchButton, RestrictBoundsBtn, RestrictBoundsDistBtn, RestrictMoreBtn, RestrictLessBtn, RestrictBoundsEnableBtn, RestrictResetBtn ] = setButtons();
-    console.log("Going to location");
-    console.log(nextPlayer);
+    logger("Going to location");
+    logger(nextPlayer);
 
     // Added by EC - I can't figure out how to show unity buttons on new round.
     setMenuBtnsUnhidden();
@@ -7373,7 +7377,7 @@ async function goToLocation(cond) {
                     }, 5000);
                 }
 
-                 console.log("official coverage or no yandex, resorting back to google sv - ", pano, pano?.length)
+                 logger("official coverage or no yandex, resorting back to google sv - ", pano, pano?.length)
                 const GOOGLE_MAPS_CANVAS = gCanvas();
                 GOOGLE_MAPS_CANVAS.style.visibility = "visible";
 
@@ -7442,7 +7446,7 @@ async function goToLocation(cond) {
                 }
 
                 failedToLoadRoundMsg.style.display = 'none';
-                console.log("failed to load display none");
+                logger("failed to load display none");
                 makeGuessMapHack({
                     markerIcon: {
                         // Path is just a filler for a 0 opacity marker.
@@ -7546,7 +7550,7 @@ async function goToLocation(cond) {
                 iframe.src = iId;
             }
             else if (randomMapChallenge_map){
-                console.log("IS RANDOM")
+                logger("IS RANDOM")
             }
             else if (WikiXplore_map){
                 iframe.style.top = '0px';
@@ -8121,7 +8125,7 @@ function SyncListener()
  */
 function getSeed() {
 
-    console.log("get seed");
+    logger("get seed");
     // myHighlight("Get Seed");
     return new Promise((resolve, reject) => {
         let token = getToken();
@@ -8231,12 +8235,12 @@ function getToken() {
  * @returns Round number
  */
 function getRoundFromPage() {
-    const roundData = document.querySelector("div[data-qa='round-number']");
+    const roundData = document.querySelector("div[data-qa='round-number']") || document.querySelector("span[data-qa='current-round-number']");
     if (roundData) {
-        let roundElement = roundData.querySelector("div:last-child");
+        let roundElement = roundData.querySelector("div:last-child") || roundData;
         if (roundElement) {
             let round = parseInt(roundElement.innerText.charAt(0));
-            if (!isNaN(round) && round >= 1 && round <= 5) {
+            if (!isNaN(round) && round >= 1 && round <= 10) {
                 return round;
             }
         }
@@ -9406,7 +9410,6 @@ function injectMapboxPlayer() {
 
 function handleMapillary(latlng, options)
 {
-    console.log("handleMapillary")
     return;// Added by EC
     handleMapillaryHelper(latlng, options).then((data) => {
         //console.log(data.data)
@@ -10858,7 +10861,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
                      glsl = vertexNew;
                         globalGL = ctx;
 
-                        console.log("ctx assigned to globalGL");
+                        logger("ctx assigned to globalGL");
 
                         let oldCtx = ctx.linkProgram;
                         ctx.linkProgram = function(...args){
@@ -11063,7 +11066,7 @@ float phiD = smoothstep(0.0, 1.0, y > 1.0 ? 2.0 - y : y);
         const isTimed = (/\[.*timed/i.test(data.mapName));
         const isUnhackable = (/\[.*UAC/i.test(data.mapName));
 
-        console.log("isunhackable", isUnhackable);
+        logger("isunhackable", isUnhackable);
 
         if (isUnhackable){
             let _url = hex2a(global_panoID);
